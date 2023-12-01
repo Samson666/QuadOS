@@ -1,6 +1,6 @@
 CC = i386-elf-gcc
 LD = i386-elf-ld
-CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -no-pie -Wall -Wextra -Isgfx
+CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -no-pie -Isgfx
 LDFLAGS = -melf_i386 -Tkernel.ld -Lsgfx -lsgfx -Lgcc
 ASFLAGS = -felf32
 
@@ -41,10 +41,10 @@ libsgfx:
 	make -C sgfx
 
 run: $(IMAGE)
-	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -serial stdio
+	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -cpu Haswell-v4 -serial stdio
 
 drun: $(IMAGE)
-	qemu-system-i386 -s -S -cdrom $(IMAGE) -machine accel=kvm -serial stdio
+	qemu-system-i386 -s -S -cdrom $(IMAGE) -machine accel=kvm  -serial stdio
 
 debug:
 	gdb --symbols=$(KERNEL) -ex 'target remote localhost:1234'
