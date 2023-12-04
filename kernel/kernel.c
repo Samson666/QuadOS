@@ -31,6 +31,7 @@ void kernel_main(struct multiboot_info* info) {
 
     graphics_enabled = info->framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB;
 
+    
     init_logging(true);
     kernel_log("Hello!");
 
