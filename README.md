@@ -1,4 +1,4 @@
-#QuadOS
+# QuadOS
 
 A fork of Untitled 32bit Graphical OS by sk-io (https://github.com/sk-io/os)
 You find the descrition of the orignal OS further down.
