@@ -1,7 +1,7 @@
 # QuadOS
 
 A fork of Untitled 32bit Graphical OS by sk-io (https://github.com/sk-io/os)
-You find the descrition of the original OS further down.
+You find the description of the original OS further down.
 Many thanks to sk-io who allowed me to use his complete code!
 
 ----------------------------------------------------------------------------------------
