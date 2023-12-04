@@ -36,7 +36,7 @@
 #include "printf.h"
 
 
-#define PRINTF_DISABLE_SUPPORT_LONG_LONG
+//#define PRINTF_DISABLE_SUPPORT_LONG_LONG
 // define this globally (e.g. gcc -DPRINTF_INCLUDE_CONFIG_H ...) to include the
 // printf_config.h header file
 // default: undefined
