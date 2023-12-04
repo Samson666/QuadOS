@@ -2,7 +2,7 @@
 
 A fork of Untitled 32bit Graphical OS by sk-io (https://github.com/sk-io/os)
 You find the descrition of the orignal OS further down.
-Many thanks to sk-io who allowed to use his complete code!
+Many thanks to sk-io who allowed me to use his complete code!
 
 ----------------------------------------------------------------------------------------
 
