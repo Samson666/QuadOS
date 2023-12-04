@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../kernel/types.h"
+#include "types.h"
 
 // basic software graphics library
 

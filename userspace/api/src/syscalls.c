@@ -1,6 +1,6 @@
 #include "os.h"
 
-#include "../../../kernel/syscall_list.h"
+#include "syscall_list.h"
 
 int syscall_get_task_id() {
     int ret;

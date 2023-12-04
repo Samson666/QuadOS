@@ -1,6 +1,6 @@
 CC = clang
 LD = clang
-CFLAGS = -g -I include -nostdlib -fvisibility=hidden -ffreestanding -m32 -fpic
+CFLAGS = -g -I include -nostdlib -fvisibility=hidden -ffreestanding -m32 -I../../kernel/include -fpic
 LDFLAGS = -g -ffreestanding -nostdlib -fvisibility=hidden -m32 -shared -fpic
 
 SOURCES_C = $(patsubst %.c, %.o, $(wildcard src/*.c))

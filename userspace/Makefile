@@ -1,6 +1,6 @@
 CC = clang
 LD = clang
-CFLAGS = -g -m32 -std=gnu11 -nostdlib -ffreestanding  -I ../api/include -I ../libc/include
+CFLAGS = -g -m32 -std=gnu11 -nostdlib -ffreestanding  -I ../api/include -I ../libc/include -I../kernel/include
 LDFLAGS = -g -std=gnu11 -nostdlib -ffreestanding -m32 -no-pie -L../api -l:api.so -L../libc -lc ../api/crt0.o
 ASFLAGS = -felf32
 
@@ -21,8 +21,6 @@ all:
 	cp timer/*.exe bin/
 	$(MAKE) -C breakout
 	cp breakout/*.exe bin/
-	$(MAKE) -C test
-	cp test/*.exe bin/
 	$(MAKE) -C tasks
 	cp tasks/*.exe bin/
 
@@ -34,5 +32,5 @@ clean:
 	$(MAKE) -C files clean
 	$(MAKE) -C breakout clean
 	$(MAKE) -C timer clean
-	$(MAKE) -C test clean
+	
 	rm -f bin/*.exe bin/*.so
