@@ -13,4 +13,4 @@ typedef struct {
 
 void init_graphics(GraphicsContext* context, u32* framebuffer, u32 width, u32 height);
 void graphics_fill(GraphicsContext* context, u32 color);
-void graphics_line(GraphicsContext* context, s32 x0, s32 y0, s32 x1, s32 y1, u32 color);
+void graphics_line(GraphicsContext* context, int32_t x0, int32_t y0, int32_t x1, int32_t y1, u32 color);

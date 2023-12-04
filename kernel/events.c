@@ -13,7 +13,7 @@
 
 static u32 get_event_buffer_shmem_id();
 static void task_wait_for_event();
-static void send_event_to_task(s32 task_id, const Event* event);
+static void send_event_to_task(int32_t task_id, const Event* event);
 
 void init_events() {
     register_syscall(SYSCALL_GET_EVENT_BUFFER_SHMEM_ID, get_event_buffer_shmem_id);
@@ -62,7 +62,7 @@ void handle_event(const Event* event) {
     pop_cli();
 }
 
-static void send_event_to_task(s32 task_id, const Event* event) {
+static void send_event_to_task(int32_t task_id, const Event* event) {
     assert(task_id > 1000);
     Task* task = get_task(task_id);
     assert(task->state != TASK_STATE_DEAD);

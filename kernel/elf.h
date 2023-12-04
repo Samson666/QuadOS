@@ -7,7 +7,7 @@ typedef u16 Elf32_Half;
 typedef u32 Elf32_Word;
 typedef u32 Elf32_Addr;
 typedef u32 Elf32_Off;
-typedef s32 Elf32_Sword;
+typedef int32_t Elf32_Sword;
 
 #define EI_NIDENT 16
 typedef struct {

@@ -38,7 +38,7 @@ void setup_tasks() {
     // task 0 represents the execution we're in right now
 }
 
-s32 create_user_task(const char* path) {
+int32_t create_user_task(const char* path) {
     // todo: handle all the errors
     push_cli();
 

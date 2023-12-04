@@ -9,10 +9,10 @@ extern GraphicsContext graphics;
 
 void init_graphics(u32* framebuffer, u32 width, u32 height, u32 bpp, u32 pitch);
 void graphics_fill(u32 color);
-void graphics_fill_rect(s32 x, s32 y, s32 width, s32 height, u32 color);
-void graphics_copy_rect(s32 xdest, s32 ydest, s32 width, s32 height, s32 xsrc, s32 ysrc, u32* source);
+void graphics_fill_rect(int32_t x, int32_t y, int32_t width, int32_t height, u32 color);
+void graphics_copy_rect(int32_t xdest, int32_t ydest, int32_t width, int32_t height, int32_t xsrc, int32_t ysrc, u32* source);
 void graphics_copy_backbuffer();
-void graphics_draw_char(u8 c, s32 x0, s32 y0, u32 color);
-void graphics_draw_string(const char* str, s32 x0, s32 y0, u32 color);
-void graphics_draw_hline(s32 x, s32 y, s32 w, u32 color);
-void graphics_draw_vline(s32 x, s32 y, s32 h, u32 color);
+void graphics_draw_char(u8 c, int32_t x0, int32_t y0, u32 color);
+void graphics_draw_string(const char* str, int32_t x0, int32_t y0, u32 color);
+void graphics_draw_hline(int32_t x, int32_t y, int32_t w, u32 color);
+void graphics_draw_vline(int32_t x, int32_t y, int32_t h, u32 color);

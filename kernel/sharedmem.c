@@ -11,7 +11,7 @@
 SharedMemory shmem[MAX_SHARED_MEMORY_OBJS];
 SharedMemoryMappingPool kernel_shmem_mappings;
 
-static s32 find_available_shmem_slot();
+static int32_t find_available_shmem_slot();
 
 void sharedmem_init() {
     memset(shmem, 0, sizeof(shmem));
@@ -20,11 +20,11 @@ void sharedmem_init() {
 }
 
 // problem: how do two processes agree on the same shmem obj id?
-s32 sharedmem_create(u32 size, u32 owner_task_id) {
+int32_t sharedmem_create(u32 size, u32 owner_task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(size);
 
-    s32 id = find_available_shmem_slot();
+    int32_t id = find_available_shmem_slot();
     SharedMemory* obj = &shmem[id];
 
     u32 num_pages = CEIL_DIV(size, 0x1000);
@@ -39,7 +39,7 @@ s32 sharedmem_create(u32 size, u32 owner_task_id) {
     return id;
 }
 
-void sharedmem_destroy(s32 id) {
+void sharedmem_destroy(int32_t id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));
 
@@ -73,7 +73,7 @@ void sharedmem_destroy(s32 id) {
     memset(obj, 0, sizeof(SharedMemory));
 }
 
-bool sharedmem_exists(s32 id) {
+bool sharedmem_exists(int32_t id) {
     if (id < 0 || id >= MAX_SHARED_MEMORY_OBJS)
         return false;
     return shmem[id].size_in_pages != 0;
@@ -108,7 +108,7 @@ static void remove_from_pool(SharedMemoryMappingPool* pool, int index) {
 }
 
 // if task_id == 0, map to kernel
-void* sharedmem_map(s32 id, u32 task_id) {
+void* sharedmem_map(int32_t id, u32 task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));
     // kernel_log("sharedmem_map    shmem obj=%u task_id=%u", id, task_id);
@@ -150,7 +150,7 @@ void* sharedmem_map(s32 id, u32 task_id) {
     return mapping->vaddr;
 }
 
-void sharedmem_unmap(s32 id, u32 task_id) {
+void sharedmem_unmap(int32_t id, u32 task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));
     // kernel_log("sharedmem_unmap    shmem obj=%u task_id=%u", id, task_id);
@@ -196,7 +196,7 @@ void sharedmem_unmap(s32 id, u32 task_id) {
     remove_from_pool(pool, pool_index);
 }
 
-static s32 find_available_shmem_slot() {
+static int32_t find_available_shmem_slot() {
     for (int i = 0; i < MAX_SHARED_MEMORY_OBJS; i++) {
         if (!sharedmem_exists(i)) {
             return i;

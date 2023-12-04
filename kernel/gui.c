@@ -15,15 +15,15 @@
 
 GUI gui;
 
-s32 testbutton_x, testbutton_y;
-s32 testbutton_w, testbutton_h;
+int32_t testbutton_x, testbutton_y;
+int32_t testbutton_w, testbutton_h;
 
-s32 redraw_indicator = 0;
+int32_t redraw_indicator = 0;
 
 static void gui_handle_events();
 static void gui_draw_frame();
 
-void init_gui(s32 width, s32 height) {
+void init_gui(int32_t width, int32_t height) {
     gui.width = width;
     gui.height = height;
     gui.cursor_x = width / 2;
@@ -152,8 +152,8 @@ static void gui_handle_events() {
     
     gui.left_click = mouse.left_button;
 
-    s32 dx = gui.cursor_x - gui.prev_cursor_x;
-    s32 dy = gui.cursor_y - gui.prev_cursor_y;
+    int32_t dx = gui.cursor_x - gui.prev_cursor_x;
+    int32_t dy = gui.cursor_y - gui.prev_cursor_y;
 
     if (dx != 0 || dy != 0) {
         gui.needs_redraw = true;

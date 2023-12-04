@@ -69,7 +69,7 @@ void* kmalloc(u32 bytes) {
 				last->size = 0;
 				last->used = 0;
 			} else {
-				s32 diff = (s32)chunk->size - (s32)real_size;
+				int32_t diff = (int32_t)chunk->size - (int32_t)real_size;
 
 				if (diff >= 8) { // big enough for 1 4byte malloc
 					// if big enough, split empty space into separate

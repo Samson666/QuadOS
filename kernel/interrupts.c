@@ -16,7 +16,7 @@ extern void* isr_redirect_table[];
 extern void isr128();
 
 static bool cli_init_state;
-static s32 cli_level = 0;
+static int32_t cli_level = 0;
 
 void setup_interrupts() {
     memset((u8*) &idt, 0, sizeof(IDTEntry) * 256);

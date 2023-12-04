@@ -123,15 +123,15 @@ static void syscall_set_timer_interval(int timer_id, int interval_ms) {
     timer->next_fire = get_system_time_millis() + interval_ms;
 }
 
-static void* syscall_sharedmem_map(s32 id) {
+static void* syscall_sharedmem_map(int32_t id) {
     return sharedmem_map(id, current_task->id);
 }
 
-static s32 syscall_shmem_create(u32 size) {
+static int32_t syscall_shmem_create(u32 size) {
     return sharedmem_create(size, current_task->id);
 }
 
-static s32 syscall_shmem_destroy(s32 id) {
+static int32_t syscall_shmem_destroy(int32_t id) {
     if (id < 0 || id >= MAX_SHARED_MEMORY_OBJS)
         assert(0);
     
@@ -144,11 +144,11 @@ static s32 syscall_shmem_destroy(s32 id) {
     return 0;
 }
 
-static bool syscall_sharedmem_exists(s32 id) {
+static bool syscall_sharedmem_exists(int32_t id) {
     return sharedmem_exists(id);
 }
 
-static void syscall_sharedmem_unmap(s32 id) {
+static void syscall_sharedmem_unmap(int32_t id) {
     sharedmem_unmap(id, current_task->id);
 }
 

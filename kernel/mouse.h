@@ -6,8 +6,8 @@
 
 typedef struct {
     // accumulators
-    s32 x_acc;
-    s32 y_acc;
+    int32_t x_acc;
+    int32_t y_acc;
     bool left_button;
 } Mouse;
 

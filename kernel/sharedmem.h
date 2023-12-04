@@ -24,9 +24,9 @@ typedef struct {
 extern SharedMemory shmem[MAX_SHARED_MEMORY_OBJS];
 
 void sharedmem_init();
-s32 sharedmem_create(u32 size, u32 owner_task_id);
-void sharedmem_destroy(s32 id);
-bool sharedmem_exists(s32 id);
-void* sharedmem_map(s32 id, u32 task_id);
-void sharedmem_unmap(s32 id, u32 task_id);
+int32_t sharedmem_create(u32 size, u32 owner_task_id);
+void sharedmem_destroy(int32_t id);
+bool sharedmem_exists(int32_t id);
+void* sharedmem_map(int32_t id, u32 task_id);
+void sharedmem_unmap(int32_t id, u32 task_id);
 void shmem_print_mappings(SharedMemoryMappingPool* pool);

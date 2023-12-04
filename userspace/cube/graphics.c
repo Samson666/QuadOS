@@ -3,7 +3,7 @@
 #define CLAMP(x, a, b) (((x) < (a)) ? (a) : ((x) > (b) ? (b) : (x)))
 #define abs(x) ((x)<0 ? -(x) : (x))
 
-static void pixel(GraphicsContext* context, s32 x, s32 y, u32 color) {
+static void pixel(GraphicsContext* context, int32_t x, int32_t y, u32 color) {
     if (x < 0) return;
     if (y < 0) return;
     if (x >= context->width) return;
@@ -25,7 +25,7 @@ void graphics_fill(GraphicsContext* context, u32 color) {
     }
 }
 
-void graphics_line(GraphicsContext* context, s32 x0, s32 y0, s32 x1, s32 y1, u32 color) {
+void graphics_line(GraphicsContext* context, int32_t x0, int32_t y0, int32_t x1, int32_t y1, u32 color) {
     int dx =  abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
     int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1; 
     int err = dx + dy, e2;

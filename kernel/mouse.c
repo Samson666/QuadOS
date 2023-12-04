@@ -40,7 +40,7 @@ void init_mouse() {
 }
 
 static void wait_write() {
-    s32 try_count = 1000;
+    int32_t try_count = 1000;
     while (((inb(0x64) & 2) != 0) && --try_count > 0);
 }
 
@@ -53,7 +53,7 @@ static void write_mouse(u8 data) {
 }
 
 static void handle_mouse_interrupt(TrapFrame* frame) {
-    s32 try_count = 1000;
+    int32_t try_count = 1000;
     while (((inb(0x64) & 0x20) == 0) && --try_count > 0);
 
     u8 data = inb(0x60);

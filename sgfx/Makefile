@@ -1,7 +1,7 @@
 CC = clang
 AR = ar
 LIB = libsgfx.a
-CFLAGS = -g -std=gnu11 -nostdlib -ffreestanding -m32 -Wall -Wextra -lgcc -O2
+CFLAGS = -g -std=gnu11 -nostdlib -ffreestanding -m32 -lgcc -O2
 
 all: $(LIB)
 

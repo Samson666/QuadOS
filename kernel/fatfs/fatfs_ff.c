@@ -103,13 +103,13 @@
 #define BS_55AA				510		/* Signature word (WORD) */
 
 #define BPB_FATSz32			36		/* FAT32: FAT size [sector] (DWORD) */
-#define BPB_ExtFlags32		40		/* FAT32: Extended flags (WORD) */
+#define BPB_ExtFlagint32_t		40		/* FAT32: Extended flags (WORD) */
 #define BPB_FSVer32			42		/* FAT32: Filesystem version (WORD) */
-#define BPB_RootClus32		44		/* FAT32: Root directory cluster (DWORD) */
+#define BPB_RootCluint32_t		44		/* FAT32: Root directory cluster (DWORD) */
 #define BPB_FSInfo32		48		/* FAT32: Offset of FSINFO sector (WORD) */
 #define BPB_BkBootSec32		50		/* FAT32: Offset of backup boot sector (WORD) */
 #define BS_DrvNum32			64		/* FAT32: Physical drive number for int13h (BYTE) */
-#define BS_NTres32			65		/* FAT32: Error flag (BYTE) */
+#define BS_NTreint32_t			65		/* FAT32: Error flag (BYTE) */
 #define BS_BootSig32		66		/* FAT32: Extended boot signature (BYTE) */
 #define BS_VolID32			67		/* FAT32: Volume serial number (DWORD) */
 #define BS_VolLab32			71		/* FAT32: Volume label string (8-byte) */
@@ -3363,7 +3363,7 @@ static FRESULT find_volume (	/* FR_OK(0): successful, !=0: an error occurred */
 		if (fmt == FS_FAT32) {
 			if (ld_word(fs->win + BPB_FSVer32) != 0) return FR_NO_FILESYSTEM;	/* (Must be FAT32 revision 0.0) */
 			if (fs->n_rootdir != 0) return FR_NO_FILESYSTEM;	/* (BPB_RootEntCnt must be 0) */
-			fs->dirbase = ld_dword(fs->win + BPB_RootClus32);	/* Root directory start cluster */
+			fs->dirbase = ld_dword(fs->win + BPB_RootCluint32_t);	/* Root directory start cluster */
 			szbfat = fs->n_fatent * 4;					/* (Needed FAT size) */
 		} else {
 			if (fs->n_rootdir == 0)	return FR_NO_FILESYSTEM;	/* (BPB_RootEntCnt must not be 0) */
@@ -5856,7 +5856,7 @@ FRESULT f_mkfs (
 		if (fmt == FS_FAT32) {
 			st_dword(buf + BS_VolID32, GET_FATTIME());	/* VSN */
 			st_dword(buf + BPB_FATSz32, sz_fat);		/* FAT size [sector] */
-			st_dword(buf + BPB_RootClus32, 2);			/* Root directory cluster # (2) */
+			st_dword(buf + BPB_RootCluint32_t, 2);			/* Root directory cluster # (2) */
 			st_word(buf + BPB_FSInfo32, 1);				/* Offset of FSINFO sector (VBR + 1) */
 			st_word(buf + BPB_BkBootSec32, 6);			/* Offset of backup VBR (VBR + 6) */
 			buf[BS_DrvNum32] = 0x80;					/* Drive number (for int13) */

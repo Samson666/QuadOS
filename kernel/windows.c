@@ -7,22 +7,22 @@
 #include "util.h"
 
 Window windows[MAX_WINDOWS];
-s32 currently_dragging_window = -1;
-s32 focused_window = -1;
-s32 window_under_cursor = -1;
+int32_t currently_dragging_window = -1;
+int32_t focused_window = -1;
+int32_t window_under_cursor = -1;
 bool window_under_cursor_inside_content = false;
 
-s32 window_z_order[MAX_WINDOWS]; // list of window indices, window_z_order[0] is frontmost window id
-s32 z_order_length = 0;
+int32_t window_z_order[MAX_WINDOWS]; // list of window indices, window_z_order[0] is frontmost window id
+int32_t z_order_length = 0;
 
-static s32 find_window_slot();
-static s32 get_framebuffer_shmem_id(s32 window_id);
-static s32 swap_buffers(s32 window_id);
-static s32 set_title(s32 window_id, const char* title);
-static void draw_window(s32 id);
-static s32 z_order_find_index(s32 window);
-static void z_order_add_at(s32 z_index, s32 window);
-static void z_order_remove_at(s32 z_index);
+static int32_t find_window_slot();
+static int32_t get_framebuffer_shmem_id(int32_t window_id);
+static int32_t swap_buffers(int32_t window_id);
+static int32_t set_title(int32_t window_id, const char* title);
+static void draw_window(int32_t id);
+static int32_t z_order_find_index(int32_t window);
+static void z_order_add_at(int32_t z_index, int32_t window);
+static void z_order_remove_at(int32_t z_index);
 
 void init_windows() {
     memset(windows, 0, sizeof(windows));
@@ -37,8 +37,8 @@ void init_windows() {
     register_syscall(SYSCALL_SET_WINDOW_TITLE, set_title);
 }
 
-s32 create_window(s32 width, s32 height, u32 flags) {
-    s32 index = find_window_slot();
+int32_t create_window(int32_t width, int32_t height, u32 flags) {
+    int32_t index = find_window_slot();
     assert(windows[index].state == 0);
 
     memset(&windows[index], 0, sizeof(Window));
@@ -70,7 +70,7 @@ s32 create_window(s32 width, s32 height, u32 flags) {
     return index;
 }
 
-void destroy_window(s32 window_id) {
+void destroy_window(int32_t window_id) {
     Window* w = &windows[window_id];
     sharedmem_destroy(w->fb_shmem_id);
 
@@ -84,8 +84,8 @@ void destroy_window(s32 window_id) {
     gui.needs_redraw = true;
 }
 
-static s32 find_window_slot() {
-    for (s32 i = 0; i < MAX_WINDOWS; i++) {
+static int32_t find_window_slot() {
+    for (int32_t i = 0; i < MAX_WINDOWS; i++) {
         if (windows[i].state == 0) {
             return i;
         }
@@ -93,11 +93,11 @@ static s32 find_window_slot() {
     assert(0);
 }
 
-static s32 get_framebuffer_shmem_id(s32 window_id) {
+static int32_t get_framebuffer_shmem_id(int32_t window_id) {
     return windows[window_id].fb_shmem_id;
 }
 
-static s32 swap_buffers(s32 window_id) {
+static int32_t swap_buffers(int32_t window_id) {
     gui.needs_redraw = true;
 
     Window* w = &windows[window_id];
@@ -114,7 +114,7 @@ static s32 swap_buffers(s32 window_id) {
     return w->shown_buffer;
 }
 
-static s32 set_title(s32 window_id, const char* title) {
+static int32_t set_title(int32_t window_id, const char* title) {
     Window* w = get_window(window_id);
     assert(w);
 
@@ -122,7 +122,7 @@ static s32 set_title(s32 window_id, const char* title) {
     strncpy(w->title, title, sizeof(w->title) - 1);
 }
 
-static void draw_window(s32 id) {
+static void draw_window(int32_t id) {
     Window* w = &windows[id];
 
     u32 border_color = focused_window == id ? 0x303030 : 0x101010;
@@ -144,8 +144,8 @@ static void draw_window(s32 id) {
     graphics_draw_string(w->title, w->x + 5, w->y + 5, 0xFFFFFF);
 
     // close button
-    s32 close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
-    s32 close_button_y = w->y + 1;
+    int32_t close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
+    int32_t close_button_y = w->y + 1;
     graphics_fill_rect(close_button_x, close_button_y, CLOSE_BUTTON_WIDTH, CLOSE_BUTTON_HEIGHT, 0xFFFFFF);
     graphics_draw_string("x", close_button_x + 5, close_button_y + 3, 0);
 
@@ -158,11 +158,11 @@ static void draw_window(s32 id) {
     pop_cli();
 }
 
-bool check_window_close(s32 window, s32 x, s32 y) {
+bool check_window_close(int32_t window, int32_t x, int32_t y) {
     Window* w = get_window(window);
 
-    s32 close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
-    s32 close_button_y = w->y + 1;
+    int32_t close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
+    int32_t close_button_y = w->y + 1;
 
     if (x < close_button_x) return false;
     if (y < close_button_y) return false;
@@ -172,10 +172,10 @@ bool check_window_close(s32 window, s32 x, s32 y) {
     return true;
 }
 
-s32 find_window_from_pos(s32 x, s32 y, bool* inside_content) {
+int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {
     *inside_content = false;
     for (int i = 0; i < z_order_length; i++) {
-        s32 id = window_z_order[i];
+        int32_t id = window_z_order[i];
         Window* w = get_window(id);
         if (w->state == 0)
             continue;
@@ -199,13 +199,13 @@ Window* get_focused_window() {
     return &windows[focused_window];
 }
 
-void destroy_all_windows_belonging_to(s32 task_id) {
+void destroy_all_windows_belonging_to(int32_t task_id) {
     // todo
 }
 
 void draw_windows() {
     for (int i = z_order_length - 1; i >= 0; i--) {
-        s32 id = window_z_order[i];
+        int32_t id = window_z_order[i];
 
         Window* w = &windows[id];
         if (!w->state)
@@ -215,14 +215,14 @@ void draw_windows() {
     }
 }
 
-Window* get_window(s32 id) {
+Window* get_window(int32_t id) {
     if (id < 0 || id >= MAX_WINDOWS)
         return NULL;
     return &windows[id];
 }
 
-static s32 z_order_find_index(s32 window) {
-    for (s32 i = 0; i < MAX_WINDOWS; i++) {
+static int32_t z_order_find_index(int32_t window) {
+    for (int32_t i = 0; i < MAX_WINDOWS; i++) {
         if (window_z_order[i] == window) {
             return i;
         }
@@ -230,24 +230,24 @@ static s32 z_order_find_index(s32 window) {
     return -1;
 }
 
-static void z_order_add_at(s32 z_index, s32 window) {
+static void z_order_add_at(int32_t z_index, int32_t window) {
     // todo
 }
 
-static void z_order_remove_at(s32 z_index) {
+static void z_order_remove_at(int32_t z_index) {
     // shift windows in the range [index, z_order_length] to the left once
-    for (s32 i = z_index; i < z_order_length; i++) {
+    for (int32_t i = z_index; i < z_order_length; i++) {
         window_z_order[i] = window_z_order[i + 1];
     }
     z_order_length--;
 }
 
-void move_window_to_front(s32 window) {
+void move_window_to_front(int32_t window) {
     if (window_z_order[0] == window)
         return;
     assert(window >= 0 && window < MAX_WINDOWS);
 
-    s32 index = z_order_find_index(window);
+    int32_t index = z_order_find_index(window);
     assert(index != -1);
 
     // shift windows in the range [0, index - 1] to the right once

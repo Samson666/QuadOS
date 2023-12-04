@@ -16,7 +16,7 @@ typedef uint64_t u64;
 
 typedef int8_t  s8;
 typedef int16_t s16;
-typedef int32_t s32;
+typedef int32_t int32_t;
 typedef int64_t s64;
 
 #define ALIGNMENT 16
@@ -82,7 +82,7 @@ static void* user_malloc(uint32_t bytes) {
 				last->size = 0;
 				last->used = 0;
 			} else {
-				s32 diff = (s32)chunk->size - (s32)real_size;
+				int32_t diff = (int32_t)chunk->size - (int32_t)real_size;
 
 				if (diff >= 8) { // big enough for 1 4byte malloc
 					// if big enough, split empty space into separate

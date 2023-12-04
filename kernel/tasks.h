@@ -43,7 +43,7 @@ typedef struct {
     u32 state; // task state enum
     FIL open_files[MAX_OPEN_FILES]; // hack
     void* event_buffer; // address to shared memory in kernel vmem (kernel-side)
-    s32 event_shmem_id; // used to share the buffer with userspace
+    int32_t event_shmem_id; // used to share the buffer with userspace
     SharedMemoryMappingPool shmem;
 
     u32 heap_start; // page aligned
@@ -60,7 +60,7 @@ extern Task* current_task;
 extern int num_tasks;
 
 void setup_tasks();
-s32 create_user_task(const char* path);
+int32_t create_user_task(const char* path);
 void create_kernel_task(void* func);
 void kill_task(u32 id);
 void task_schedule();

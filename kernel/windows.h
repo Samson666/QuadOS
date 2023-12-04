@@ -28,21 +28,21 @@ typedef struct {
     s16 fb_shmem_id;
     u8 shown_buffer; // buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
     char title[WINDOW_TITLE_MAX_LENGTH];
-    s32 owner_task_id;
+    int32_t owner_task_id;
 } Window;
 
 #define MAX_WINDOWS 64
 extern Window windows[MAX_WINDOWS];
 
-extern s32 currently_dragging_window;
-extern s32 focused_window;
-extern s32 window_under_cursor;
+extern int32_t currently_dragging_window;
+extern int32_t focused_window;
+extern int32_t window_under_cursor;
 extern bool window_under_cursor_inside_content;
 
 void init_windows();
-s32 create_window(s32 width, s32 height, u32 flags);
-void destroy_window(s32 window_id);
-bool check_window_close(s32 window, s32 x, s32 y);
-s32 find_window_from_pos(s32 x, s32 y, bool* inside_content);
-Window* get_window(s32 id);
-void move_window_to_front(s32 window);
+int32_t create_window(int32_t width, int32_t height, u32 flags);
+void destroy_window(int32_t window_id);
+bool check_window_close(int32_t window, int32_t x, int32_t y);
+int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content);
+Window* get_window(int32_t id);
+void move_window_to_front(int32_t window);
