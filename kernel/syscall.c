@@ -33,7 +33,7 @@ static void syscall_exec(const char* path) {
     create_user_task(path);
 }
 
-static u32 syscall_open_file(const char* path) {
+static uint32_t syscall_open_file(const char* path) {
     int fd = -1;
     for (int i = 0; i < MAX_OPEN_FILES; i++) {
         if (current_task->open_files[i].obj.fs == 0) {
@@ -51,7 +51,7 @@ static u32 syscall_open_file(const char* path) {
     return fd;
 }
 
-static u32 syscall_read_file(u32 fd, u8* buf, u32 num_bytes) {
+static uint32_t syscall_read_file(uint32_t fd, uint8_t* buf, uint32_t num_bytes) {
     assert_msg(fd < MAX_OPEN_FILES, "");
     assert_msg(current_task->open_files[fd].obj.fs != 0, "");
     UINT br;
@@ -60,28 +60,28 @@ static u32 syscall_read_file(u32 fd, u8* buf, u32 num_bytes) {
     return br;
 }
 
-static void syscall_close_file(u32 fd) {
+static void syscall_close_file(uint32_t fd) {
     assert_msg(fd < MAX_OPEN_FILES, "");
 
     FRESULT res = f_close(&current_task->open_files[fd]);
     assert_msg(res == FR_OK, "");
 }
 
-static u32 syscall_get_file_size(u32 fd) {
+static uint32_t syscall_get_file_size(uint32_t fd) {
     assert_msg(fd < MAX_OPEN_FILES, "");
 
     return f_size(&current_task->open_files[fd]);
 }
 
-static u32 syscall_get_heap_start() {
+static uint32_t syscall_get_heap_start() {
     return current_task->heap_start;
 }
 
-static u32 syscall_get_heap_end() {
+static uint32_t syscall_get_heap_end() {
     return current_task->heap_end;
 }
 
-static void syscall_set_heap_end(u32 heap_end) {
+static void syscall_set_heap_end(uint32_t heap_end) {
     set_user_heap_end(current_task, heap_end);
 }
 
@@ -127,7 +127,7 @@ static void* syscall_sharedmem_map(int32_t id) {
     return sharedmem_map(id, current_task->id);
 }
 
-static int32_t syscall_shmem_create(u32 size) {
+static int32_t syscall_shmem_create(uint32_t size) {
     return sharedmem_create(size, current_task->id);
 }
 
@@ -135,7 +135,7 @@ static int32_t syscall_shmem_destroy(int32_t id) {
     if (id < 0 || id >= MAX_SHARED_MEMORY_OBJS)
         assert(0);
     
-    u32 task_id = current_task->id;
+    uint32_t task_id = current_task->id;
     // kernel_log("id = %d task_id = %d owner_task_id = %u", id, task_id, shmem[id].owner_task_id);
     if (shmem[id].owner_task_id != task_id)
         assert(0);
@@ -156,10 +156,10 @@ static void syscall_debug() {
     kernel_log("-- syscall debug BEGIN");
     kernel_log("our pdir=%x", mem_get_current_page_directory());
 
-    u32 phys = pmm_alloc_pageframe();
+    uint32_t phys = pmm_alloc_pageframe();
 
-    for (u32 i = 0; i < 1024 * 1024; i++) {
-        u32 valid = mem_is_valid_vaddr(i * 0x1000);
+    for (uint32_t i = 0; i < 1024 * 1024; i++) {
+        uint32_t valid = mem_is_valid_vaddr(i * 0x1000);
         if (valid)
             kernel_log("%x is valid!", i * 0x1000);
     }
@@ -227,7 +227,7 @@ void init_syscalls() {
     register_isr(0x80, handle_syscall_interrupt);
 }
 
-void register_syscall(u32 vector, void* func) {
+void register_syscall(uint32_t vector, void* func) {
     assert(syscall_handlers[vector] == 0);
     syscall_handlers[vector] = func;
 }
@@ -235,7 +235,7 @@ void register_syscall(u32 vector, void* func) {
 static void handle_syscall_interrupt(TrapFrame* frame) {
     // kernel_log("syscall %u", frame->eax);
 
-    u32 vector = frame->eax;
+    uint32_t vector = frame->eax;
     void* handler = syscall_handlers[vector];
 
     assert_msg(handler, "invalid syscall");

@@ -12,17 +12,17 @@
 #define DPL_USER 3
 
 typedef struct {
-    u16 limit_low;
-    u16 base_low;
-    u8  base_mid;
-    u8  access;
-    u8  granularity;
-    u8  base_high;
+    uint16_t limit_low;
+    uint16_t base_low;
+    uint8_t  base_mid;
+    uint8_t  access;
+    uint8_t  granularity;
+    uint8_t  base_high;
 } __attribute__((packed)) GDTEntry;
 
 typedef struct {
-    u16 limit;
-    u32 base;
+    uint16_t limit;
+    uint32_t base;
 } __attribute__((packed)) GDTPointer;
 
 typedef struct {
@@ -46,4 +46,4 @@ typedef struct {
 } __attribute__ ((packed)) TSS;
 
 void setup_gdt();
-void update_tss_esp0(u32 esp0);
+void update_tss_esp0(uint32_t esp0);

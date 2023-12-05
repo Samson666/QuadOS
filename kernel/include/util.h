@@ -2,18 +2,18 @@
 
 #include "types.h"
 
-void* memset(void* vdest, u8 val, u32 len);
-void* memcpy(void* dest, const void* src, u32 len);
-u32 strcmp(const char* s1, const char* s2);
-u32 strncmp(const char* s1, const char* s2, u32 n);
-char* strncpy(char* dst, const char* src, u32 n);
+void* memset(void* vdest, uint8_t val, uint32_t len);
+void* memcpy(void* dest, const void* src, uint32_t len);
+uint32_t strcmp(const char* s1, const char* s2);
+uint32_t strncmp(const char* s1, const char* s2, uint32_t n);
+char* strncpy(char* dst, const char* src, uint32_t n);
 
-static inline void outb(u16 port, u8 value) {
+static inline void outb(uint16_t port, uint8_t value) {
     asm volatile("outb %1, %0" :: "dN" (port), "a" (value));
 }
 
-static inline u8 inb(u16 port) {
-    u8 ret;
+static inline uint8_t inb(uint16_t port) {
+    uint8_t ret;
     asm volatile("inb %1, %0" : "=a" (ret) : "dN" (port));
     return ret;
 }
@@ -33,8 +33,8 @@ void kernel_assert(int condition, const char* file, int line, const char* error_
 #define MIN(x, y) (((x) < (y)) ?  (x) : (y))
 #define MAX(x, y) (((x) > (y)) ?  (x) : (y))
 
-static inline u32 read_eflags() {
-    u32 eflags;
+static inline uint32_t read_eflags() {
+    uint32_t eflags;
     asm volatile(
         "pushfl \n"
         "popl %0 \n"

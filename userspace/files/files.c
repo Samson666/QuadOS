@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     read_directory();
 
     unsigned int prev_left_mouse_state = 0;
-    u32 last_mouse_button_state = 0;
+    uint32_t last_mouse_button_state = 0;
 
     OSEvent event;
     while (1) {
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < num_entries; i++) {
             const OSFileInfo* entry = &entries[i];
             
-            u32 color = (entry->attributes & OS_FILE_INFO_IS_DIR) ? 0xFF5b6ee1 : 0xFFcbdbfc;
+            uint32_t color = (entry->attributes & OS_FILE_INFO_IS_DIR) ? 0xFF5b6ee1 : 0xFFcbdbfc;
             if (selected_entry == i)
                 color = 0xFFFFFFFF;
             sgfx_draw_string(&ctx, entry->name, 3, FILE_LIST_Y_OFFSET + FILE_LIST_Y_SPACING * i, color);

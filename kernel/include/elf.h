@@ -3,10 +3,10 @@
 #include "types.h"
 #include "config.h"
 
-typedef u16 Elf32_Half;
-typedef u32 Elf32_Word;
-typedef u32 Elf32_Addr;
-typedef u32 Elf32_Off;
+typedef uint16_t Elf32_Half;
+typedef uint32_t Elf32_Word;
+typedef uint32_t Elf32_Addr;
+typedef uint32_t Elf32_Off;
 typedef int32_t Elf32_Sword;
 
 #define EI_NIDENT 16
@@ -116,11 +116,11 @@ typedef struct {
 #define R_386_JUMP_SLOT 7
 
 typedef struct {
-    u8* mem; // malloc align hack
-    u8* raw; // fill this only, owner?
-    u32 size;
+    uint8_t* mem; // malloc align hack
+    uint8_t* raw; // fill this only, owner?
+    uint32_t size;
 
-    u32 entry;
+    uint32_t entry;
     Elf32_Ehdr* header;
 
     // relevant sections (maybe NULL)

@@ -13,7 +13,7 @@
 const int cell_w = width / board_w;
 const int cell_h = 50 / board_h;
 
-u8 board[board_w * board_h];
+uint8_t board[board_w * board_h];
 
 GraphicsContext ctx;
 

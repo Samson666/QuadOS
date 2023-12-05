@@ -21,9 +21,9 @@ static int current_task_index;
 extern void isr_exit();
 extern void switch_context(Task* old, Task* new);
 
-static Task* create_task(u32 index, u32 eip, bool kernel_task, u32* pagedir);
-static u32 get_task_index(int task_id);
-static u32 find_available_task_slot();
+static Task* create_task(uint32_t index, uint32_t eip, bool kernel_task, uint32_t* pagedir);
+static uint32_t get_task_index(int task_id);
+static uint32_t find_available_task_slot();
 
 void setup_tasks() {
     memset(tasks, 0, sizeof(Task) * MAX_TASKS);
@@ -71,11 +71,11 @@ int32_t create_user_task(const char* path) {
     // elf.mem = kmalloc(elf.size + 0x1000);
 
     // elf.raw = elf.mem;
-    // if ((u32) elf.raw & 0xFFF) {
-    //     u32 addr = (u32) elf.raw;
+    // if ((uint32_t) elf.raw & 0xFFF) {
+    //     uint32_t addr = (uint32_t) elf.raw;
     //     addr &= ~0xFFF;
     //     addr += 0x1000;
-    //     elf.raw = (u8*) addr;
+    //     elf.raw = (uint8_t*) addr;
     // }
 
     UINT br;
@@ -92,8 +92,8 @@ int32_t create_user_task(const char* path) {
     int index = find_available_task_slot();
 
     // set up memory space
-    u32* prev_pd = mem_get_current_page_directory();
-    u32* pagedir = mem_alloc_page_dir();
+    uint32_t* prev_pd = mem_get_current_page_directory();
+    uint32_t* pagedir = mem_alloc_page_dir();
     mem_change_page_directory(pagedir);
 
     // allocate and map user stack
@@ -154,10 +154,10 @@ void create_kernel_task(void* func) {
     int index = find_available_task_slot();
 
     num_tasks++;
-    create_task(index, (u32) func, true, initial_page_dir);
+    create_task(index, (uint32_t) func, true, initial_page_dir);
 }
 
-void kill_task(u32 id) {
+void kill_task(uint32_t id) {
     push_cli();
 
     kernel_log("kill_task %u", id);
@@ -230,7 +230,7 @@ void task_schedule() {
 }
 
 // set up initial state of task
-static Task* create_task(u32 index, u32 eip, bool kernel_task, u32* pagedir) {
+static Task* create_task(uint32_t index, uint32_t eip, bool kernel_task, uint32_t* pagedir) {
     assert(tasks[index].id == 0);
 
     Task* task = tasks + index;
@@ -239,15 +239,15 @@ static Task* create_task(u32 index, u32 eip, bool kernel_task, u32* pagedir) {
     
     // each task has its own kernel stack for syscalls.
     // setup initial kernel stack
-    u32 kernel_stack = ((u32) kmalloc(KERNEL_STACK_SIZE)) + KERNEL_STACK_SIZE;
-    u8* kesp = (u8*) (kernel_stack);
+    uint32_t kernel_stack = ((uint32_t) kmalloc(KERNEL_STACK_SIZE)) + KERNEL_STACK_SIZE;
+    uint8_t* kesp = (uint8_t*) (kernel_stack);
     
     kesp -= sizeof(TrapFrame);
     TrapFrame* trap = (TrapFrame*) kesp;
     memset(trap, 0, sizeof(TrapFrame));
 
-    u32 code_selector = kernel_task ? GDT_KERNEL_CODE : (GDT_USER_CODE | DPL_USER);
-    u32 data_selector = kernel_task ? GDT_KERNEL_DATA : (GDT_USER_DATA | DPL_USER);
+    uint32_t code_selector = kernel_task ? GDT_KERNEL_CODE : (GDT_USER_CODE | DPL_USER);
+    uint32_t data_selector = kernel_task ? GDT_KERNEL_DATA : (GDT_USER_DATA | DPL_USER);
 
     trap->cs = code_selector;
     trap->ds = data_selector;
@@ -267,10 +267,10 @@ static Task* create_task(u32 index, u32 eip, bool kernel_task, u32* pagedir) {
     context->esi = 0;
     context->ebx = 0;
     context->ebp = 0;
-    context->eip = (u32) isr_exit;
+    context->eip = (uint32_t) isr_exit;
 
     tasks[index].kesp0 = kernel_stack;
-    tasks[index].kesp = (u32) kesp;
+    tasks[index].kesp = (uint32_t) kesp;
     tasks[index].id = index + 1000;
     tasks[index].state = TASK_STATE_READY;
     tasks[index].pagedir = pagedir;
@@ -280,12 +280,12 @@ static Task* create_task(u32 index, u32 eip, bool kernel_task, u32* pagedir) {
     return task;
 }
 
-static u32 get_task_index(int task_id) {
+static uint32_t get_task_index(int task_id) {
     assert(task_id >= 1000);
     return task_id - 1000;
 }
 
-static u32 find_available_task_slot() {
+static uint32_t find_available_task_slot() {
     for (int i = 0; i < MAX_TASKS; i++) {
         if (tasks[i].state == TASK_STATE_DEAD) {
             return i;

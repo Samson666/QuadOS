@@ -20,16 +20,16 @@ void sharedmem_init() {
 }
 
 // problem: how do two processes agree on the same shmem obj id?
-int32_t sharedmem_create(u32 size, u32 owner_task_id) {
+int32_t sharedmem_create(uint32_t size, uint32_t owner_task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(size);
 
     int32_t id = find_available_shmem_slot();
     SharedMemory* obj = &shmem[id];
 
-    u32 num_pages = CEIL_DIV(size, 0x1000);
+    uint32_t num_pages = CEIL_DIV(size, 0x1000);
     obj->size_in_pages = num_pages;
-    obj->physical_pages = kmalloc(num_pages * sizeof(u32));
+    obj->physical_pages = kmalloc(num_pages * sizeof(uint32_t));
     obj->owner_task_id = owner_task_id;
 
     for (int i = 0; i < num_pages; i++) {
@@ -108,7 +108,7 @@ static void remove_from_pool(SharedMemoryMappingPool* pool, int index) {
 }
 
 // if task_id == 0, map to kernel
-void* sharedmem_map(int32_t id, u32 task_id) {
+void* sharedmem_map(int32_t id, uint32_t task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));
     // kernel_log("sharedmem_map    shmem obj=%u task_id=%u", id, task_id);
@@ -126,7 +126,7 @@ void* sharedmem_map(int32_t id, u32 task_id) {
 
     bool map_to_kernel = task_id == 0;
 
-    u32* prev_pd = NULL;
+    uint32_t* prev_pd = NULL;
     if (!map_to_kernel) {
         prev_pd = mem_get_current_page_directory();
         Task* task = get_task(task_id);
@@ -134,7 +134,7 @@ void* sharedmem_map(int32_t id, u32 task_id) {
     }
 
     for (int i = 0; i < obj->size_in_pages; i++) {
-        u32 flags = PAGE_FLAG_WRITE;
+        uint32_t flags = PAGE_FLAG_WRITE;
         if (!map_to_kernel)
             flags |= PAGE_FLAG_USER;
 
@@ -150,7 +150,7 @@ void* sharedmem_map(int32_t id, u32 task_id) {
     return mapping->vaddr;
 }
 
-void sharedmem_unmap(int32_t id, u32 task_id) {
+void sharedmem_unmap(int32_t id, uint32_t task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));
     // kernel_log("sharedmem_unmap    shmem obj=%u task_id=%u", id, task_id);
@@ -177,7 +177,7 @@ void sharedmem_unmap(int32_t id, u32 task_id) {
 
     bool kernel_space = task_id == 0;
 
-    u32* prev_pd = NULL;
+    uint32_t* prev_pd = NULL;
     if (!kernel_space) {
         prev_pd = mem_get_current_page_directory();
 

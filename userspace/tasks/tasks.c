@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     sgfx_init(&ctx, fb, width, height);
 
     unsigned int prev_left_mouse_state = 0;
-    u32 last_mouse_button_state = 0;
+    uint32_t last_mouse_button_state = 0;
 
     update_task_info();
 

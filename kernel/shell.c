@@ -74,7 +74,7 @@ void shell_execute(const char* code) {
     }
 
     if (code[0] == 'k') {
-        u32 num = (u32) code[1] - (u32) '0';
+        uint32_t num = (uint32_t) code[1] - (uint32_t) '0';
         kill_task(1000 + num);
         return;
     }

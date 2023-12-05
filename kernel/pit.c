@@ -9,14 +9,14 @@ PIT pit = {0};
 
 void handle_timer_int(TrapFrame* frame);
 
-void init_timer(u32 frequency) {
+void init_timer(uint32_t frequency) {
     pit.freq = frequency;
-    u32 divisor = 1193180 / frequency;
+    uint32_t divisor = 1193180 / frequency;
 
     outb(0x43, 0x36);
 
-    u8 l = (u8)(divisor & 0xFF);
-    u8 h = (u8)(divisor >> 8 & 0xFF);
+    uint8_t l = (uint8_t)(divisor & 0xFF);
+    uint8_t h = (uint8_t)(divisor >> 8 & 0xFF);
 
     outb(0x40, l);
     outb(0x40, h);

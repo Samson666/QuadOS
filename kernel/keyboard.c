@@ -9,7 +9,7 @@
 #include "kernel.h"
 
 static void handle_key_event(TrapFrame* frame);
-static u8 translate_to_ascii(u8 scancode, bool shift, bool alt);
+static uint8_t translate_to_ascii(uint8_t scancode, bool shift, bool alt);
 
 static bool holding_shift = false;
 
@@ -20,7 +20,7 @@ void init_keyboard() {
 void handle_key_event(TrapFrame* frame) {
     UNUSED_VAR(frame);
 
-    u8 scancode = 0;
+    uint8_t scancode = 0;
     do {
         scancode = inb(0x64);
     } while ((scancode & 0x01) == 0);
@@ -145,7 +145,7 @@ unsigned char scancode_map_alt[128] = {
     0, /* All other keys are undefined */
 };
 
-u8 translate_to_ascii(u8 scancode, bool shift, bool alt) {
+uint8_t translate_to_ascii(uint8_t scancode, bool shift, bool alt) {
     if (shift && alt)
         return 0;
     

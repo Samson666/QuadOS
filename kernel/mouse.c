@@ -8,12 +8,12 @@
 Mouse mouse;
 
 #define PACKET_BYTES 3
-static u8 buffer[PACKET_BYTES];
-static u8 buffer_index;
+static uint8_t buffer[PACKET_BYTES];
+static uint8_t buffer_index;
 
 static void wait_read();
 static void wait_write();
-static void write_mouse(u8 data);
+static void write_mouse(uint8_t data);
 static void handle_mouse_interrupt(TrapFrame* frame);
 
 void init_mouse() {
@@ -29,7 +29,7 @@ void init_mouse() {
     wait_write();
     outb(0x64, 0x20);
 
-    u8 status = inb(0x60);
+    uint8_t status = inb(0x60);
     status |= 2;
     outb(0x64, 0x60);
     outb(0x60, status);
@@ -44,7 +44,7 @@ static void wait_write() {
     while (((inb(0x64) & 2) != 0) && --try_count > 0);
 }
 
-static void write_mouse(u8 data) {
+static void write_mouse(uint8_t data) {
     wait_write();
     outb(0x64, 0xD4);
 
@@ -56,7 +56,7 @@ static void handle_mouse_interrupt(TrapFrame* frame) {
     int32_t try_count = 1000;
     while (((inb(0x64) & 0x20) == 0) && --try_count > 0);
 
-    u8 data = inb(0x60);
+    uint8_t data = inb(0x60);
 
     buffer[buffer_index++] = data;
 

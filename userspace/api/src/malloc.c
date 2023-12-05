@@ -9,9 +9,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef uint8_t  u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
+typedef uint8_t  uint8_t;
+typedef uint16_t uint16_t;
+typedef uint32_t uint32_t;
 typedef uint64_t u64;
 
 typedef int8_t  s8;
@@ -22,18 +22,18 @@ typedef int64_t s64;
 #define ALIGNMENT 16
 
 typedef struct {
-	u32 size : 31; // including this header
-	u32 used : 1;
+	uint32_t size : 31; // including this header
+	uint32_t used : 1;
 #if ALIGNMENT > 4
-	u32 pad[(ALIGNMENT / 4) - 1];
+	uint32_t pad[(ALIGNMENT / 4) - 1];
 #endif
 } ChunkHeader;
 
 // last chunk has to be 0 to know when to stop
 
-static u32 heap_start;
-static u32 heap_size;
-static u32 threshold;
+static uint32_t heap_start;
+static uint32_t heap_size;
+static uint32_t threshold;
 static bool malloc_initialized = false;
 
 static void merge_free_chunks();
@@ -49,17 +49,17 @@ void malloc_init(unsigned int initial_heap_size) {
     change_heap_size(initial_heap_size);
 
 	//memset(pool_start, 0, pool_size);
-	*((u32*)heap_start) = 0;
+	*((uint32_t*)heap_start) = 0;
 }
 
 static void* user_malloc(uint32_t bytes) {
 	// debug_printf("os_malloc %x", bytes);
-	u32 real_size = bytes + sizeof(ChunkHeader);
+	uint32_t real_size = bytes + sizeof(ChunkHeader);
 	if (real_size & (ALIGNMENT - 1)) {
 		real_size += ALIGNMENT - (real_size & (ALIGNMENT - 1));
 	}
 
-	u32 pos = heap_start;
+	uint32_t pos = heap_start;
 	while (true) {
 		if (pos + real_size + sizeof(ChunkHeader) > heap_start + heap_size) {
             // download more ram
@@ -96,7 +96,7 @@ static void* user_malloc(uint32_t bytes) {
 				}
 			}
 
-			u32 addr = pos + sizeof(ChunkHeader);
+			uint32_t addr = pos + sizeof(ChunkHeader);
 			if (addr > threshold)
 				threshold = addr;
 			return (void*) addr;
@@ -110,7 +110,7 @@ static void* user_malloc(uint32_t bytes) {
 }
 
 static void user_free(void* addr) {
-	ChunkHeader* chunk = (ChunkHeader*) (((u32) addr) - sizeof(ChunkHeader));
+	ChunkHeader* chunk = (ChunkHeader*) (((uint32_t) addr) - sizeof(ChunkHeader));
 
 	if (!chunk->used) {
 		return;
@@ -124,14 +124,14 @@ static void user_free(void* addr) {
 }
 
 void merge_free_chunks() {
-	u32 pos = heap_start;
+	uint32_t pos = heap_start;
 	while (true) {
 		ChunkHeader* chunk = (ChunkHeader*)pos;
 		if (chunk->size == 0)
 			break;
 
 		if (!chunk->used) {
-			u32 next_pos = ((u32)chunk) + chunk->size;
+			uint32_t next_pos = ((uint32_t)chunk) + chunk->size;
 			while (true) {
 				ChunkHeader* next = (ChunkHeader*) next_pos;
 				// swallow it.
@@ -141,7 +141,7 @@ void merge_free_chunks() {
 				if (next->size == 0) {
 					// we've reached the end, stop merging
 					chunk->size = 0;
-					threshold = (u32)chunk;
+					threshold = (uint32_t)chunk;
 					return;
 				}
 				chunk->size += next->size;
@@ -157,7 +157,7 @@ void merge_free_chunks() {
 	}
 }
 
-u32 get_total_bytes() {
+uint32_t get_total_bytes() {
 	return threshold - heap_start;
 }
 

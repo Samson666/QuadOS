@@ -7,12 +7,12 @@
 #include "log.h"
 
 static struct {
-    u32 location;
-    u32 size;
+    uint32_t location;
+    uint32_t size;
     FATFS fs;
 } ramdisk;
 
-void init_ramdisk(u32 location, u32 size) {
+void init_ramdisk(uint32_t location, uint32_t size) {
     kernel_log("Ram disk located at %x with size %u bytes", location, size);
     ramdisk.location = location;
     ramdisk.size = size;
@@ -22,7 +22,7 @@ void init_ramdisk(u32 location, u32 size) {
     res = f_mount(&ramdisk.fs, "", 0);
 
     if (res != FR_OK) {
-        kernel_log("f_mount error: %u\n", (u32) res);
+        kernel_log("f_mount error: %u\n", (uint32_t) res);
         crash_and_burn();
     }
 }
@@ -40,7 +40,7 @@ DRESULT disk_read(BYTE pdrv, BYTE* buffer, DWORD sector, UINT count) {
     uint32_t size = count * RAMDISK_BLOCKSIZE;
 
     // disable_interrupts();
-    memcpy(buffer, (u8*) (ramdisk.location + offset), size);
+    memcpy(buffer, (uint8_t*) (ramdisk.location + offset), size);
     // enable_interrupts();
 
     return RES_OK;

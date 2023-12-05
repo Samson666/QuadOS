@@ -107,7 +107,7 @@ static void handle_left_click() {
             // we are clicking on its border
             if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y)) {
                 Window* w = get_window(window_under_cursor);
-                u32 task_id = w->owner_task_id;
+                uint32_t task_id = w->owner_task_id;
                 // todo: allow for multiple windows
                 destroy_window(window_under_cursor);
                 kill_task(task_id);
@@ -175,11 +175,11 @@ static void gui_handle_events() {
     }
 }
 
-void draw_debug_console(u32 color) {
+void draw_debug_console(uint32_t color) {
     int index = 0;
     for (int y = 0; y < 50; y++) {
         for (int x = 0; x < 80; x++) {
-            u16 c = gui.fake_console_buffer[index];
+            uint16_t c = gui.fake_console_buffer[index];
             graphics_draw_char(c & 0xFF, x * 10, y * 10, color);
             index++;
         }

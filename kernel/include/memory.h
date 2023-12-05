@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "multiboot.h"
 
 /*
     Virtual Address Space:
@@ -32,19 +33,20 @@
 #define P_PHYS_ADDR(x) ((x) & ~0xFFF)
 
 // note that these are virtual addresses!
-#define REC_PAGEDIR ((u32*) 0xFFFFF000)
-#define REC_PAGETABLE(i) ((u32*) (0xFFC00000 + ((i) << 12)))
-// #define REC_PAGETABLE(i) ((u32*) (0xFFC00000 + ((i) * 0x400)))
+#define REC_PAGEDIR ((uint32_t*) 0xFFFFF000)
+#define REC_PAGETABLE(i) ((uint32_t*) (0xFFC00000 + ((i) << 12)))
+// #define REC_PAGETABLE(i) ((uint32_t*) (0xFFC00000 + ((i) * 0x400)))
 
-extern u32 initial_page_dir[1024];
+extern uint32_t initial_page_dir[1024];
 extern int mem_num_vpages;
 
-void init_memory(u32 mem_high);
-void mem_map_page(u32 virt_addr, u32 phys_addr, u32 flags);
-u32 mem_unmap_page(u32 virt_addr);
-u32* mem_alloc_page_dir();
-void mem_free_page_dir(u32* page_dir);
-void mem_change_page_directory(u32* pd);
-u32* mem_get_current_page_directory();
-u32 mem_get_phys_from_virt(u32 virt_addr);
-bool mem_is_valid_vaddr(u32 vaddr);
+void init_memory(uint32_t mem_high);
+void mem_map_page(uint32_t virt_addr, uint32_t phys_addr, uint32_t flags);
+uint32_t mem_unmap_page(uint32_t virt_addr);
+uint32_t* mem_alloc_page_dir();
+void mem_free_page_dir(uint32_t* page_dir);
+void mem_change_page_directory(uint32_t* pd);
+uint32_t* mem_get_current_page_directory();
+uint32_t mem_get_phys_from_virt(uint32_t virt_addr);
+bool mem_is_valid_vaddr(uint32_t vaddr);
+

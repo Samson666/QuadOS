@@ -43,7 +43,7 @@ libsgfx:
 	make -C sgfx
 
 run: $(IMAGE)
-	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -cpu Haswell-v4 -serial stdio
+	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -m 4G -cpu Haswell-v4 -serial stdio
 
 drun: $(IMAGE)
 	qemu-system-i386 -s -S -cdrom $(IMAGE) -machine accel=kvm  -serial stdio

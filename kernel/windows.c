@@ -37,7 +37,7 @@ void init_windows() {
     register_syscall(SYSCALL_SET_WINDOW_TITLE, set_title);
 }
 
-int32_t create_window(int32_t width, int32_t height, u32 flags) {
+int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
     int32_t index = find_window_slot();
     assert(windows[index].state == 0);
 
@@ -51,7 +51,7 @@ int32_t create_window(int32_t width, int32_t height, u32 flags) {
     windows[index].flags = flags;
     windows[index].actual_width = width + 2;
     windows[index].actual_height = height + WINDOW_CONTENT_YOFFSET + 1;
-    u32 fb_bytes = width * height * 4;
+    uint32_t fb_bytes = width * height * 4;
     windows[index].framebuffer_size_bytes = fb_bytes;
     windows[index].fb_shmem_id = sharedmem_create(fb_bytes * (flags & WINDOW_FLAG_DOUBLE_BUFFERED ? 2 : 1), 0);
     windows[index].framebuffer = sharedmem_map(windows[index].fb_shmem_id, 0);
@@ -125,10 +125,10 @@ static int32_t set_title(int32_t window_id, const char* title) {
 static void draw_window(int32_t id) {
     Window* w = &windows[id];
 
-    u32 border_color = focused_window == id ? 0x303030 : 0x101010;
+    uint32_t border_color = focused_window == id ? 0x303030 : 0x101010;
 
     // copy the contents of the framebuffer to the screen
-    u32* source = ((u32) w->framebuffer) + (w->shown_buffer == 0 ? 0 : w->framebuffer_size_bytes);
+    uint32_t* source = ((uint32_t) w->framebuffer) + (w->shown_buffer == 0 ? 0 : w->framebuffer_size_bytes);
     graphics_copy_rect(w->x + WINDOW_CONTENT_XOFFSET, w->y + WINDOW_CONTENT_YOFFSET, w->width, w->height, 0, 0, source);
 
     // window title bar

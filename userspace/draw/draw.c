@@ -4,7 +4,7 @@
 #define width 300
 #define height 240
 
-u32* memcpy32(u32* dest, const u32* src, u32 len) {
+uint32_t* memcpy32(uint32_t* dest, const uint32_t* src, uint32_t len) {
     len >>= 2;
     for (; len != 0; len--) *dest++ = *src++;
     return dest;

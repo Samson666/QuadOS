@@ -2,7 +2,7 @@
 
 #include "types.h"
 
-void kmalloc_init(u32 heap_size);
-void* kmalloc(u32 bytes);
+void kmalloc_init(uint32_t heap_size);
+void* kmalloc(uint32_t bytes);
 void kfree(void* addr);
-u32 kmalloc_get_total_bytes();
+uint32_t kmalloc_get_total_bytes();

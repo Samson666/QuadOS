@@ -6,10 +6,10 @@ static GDTEntry gdt_entries[NUM_GDT_ENTRIES];
 static GDTPointer gdt_pointer;
 static TSS tss;
 
-extern void flush_gdt(u32 gdt_pointer);
+extern void flush_gdt(uint32_t gdt_pointer);
 extern void flush_tss();
 
-static void set_gdt_entry(u32 num, u32 base, u32 limit, u8 access, u8 flags) {
+static void set_gdt_entry(uint32_t num, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
     gdt_entries[num].base_low    = (base & 0xFFFF);
     gdt_entries[num].base_mid    = (base >> 16) & 0xFF;
     gdt_entries[num].base_high   = (base >> 24) & 0xFF;
@@ -23,7 +23,7 @@ static void set_gdt_entry(u32 num, u32 base, u32 limit, u8 access, u8 flags) {
 
 void setup_gdt() {
     gdt_pointer.limit = NUM_GDT_ENTRIES * 8 - 1;
-    gdt_pointer.base = (u32) &gdt_entries;
+    gdt_pointer.base = (uint32_t) &gdt_entries;
 
     memset(&tss, 0, sizeof(tss));
     tss.ss0 = GDT_KERNEL_DATA;
@@ -33,12 +33,12 @@ void setup_gdt() {
     set_gdt_entry(2, 0, 0xFFFFFFFF, 0x92, 0xC0); // 0x10: kernel data
     set_gdt_entry(3, 0, 0xFFFFFFFF, 0xFA, 0xC0); // 0x18: User mode code segment
     set_gdt_entry(4, 0, 0xFFFFFFFF, 0xF2, 0xC0); // 0x20: User mode data segment
-    set_gdt_entry(5, (u32) &tss, sizeof(tss), 0x89, 0x40); // 0x28: tss
+    set_gdt_entry(5, (uint32_t) &tss, sizeof(tss), 0x89, 0x40); // 0x28: tss
 
-    flush_gdt((u32) &gdt_pointer);
+    flush_gdt((uint32_t) &gdt_pointer);
     flush_tss();
 }
 
-void update_tss_esp0(u32 esp0) {
+void update_tss_esp0(uint32_t esp0) {
     tss.esp0 = esp0;
 }

@@ -11,7 +11,7 @@
 #include "time.h"
 #include "log.h"
 
-static u32 get_event_buffer_shmem_id();
+static uint32_t get_event_buffer_shmem_id();
 static void task_wait_for_event();
 static void send_event_to_task(int32_t task_id, const Event* event);
 
@@ -76,7 +76,7 @@ static void send_event_to_task(int32_t task_id, const Event* event) {
         task->state = TASK_STATE_READY;
 }
 
-u32 get_event_buffer_shmem_id() {
+uint32_t get_event_buffer_shmem_id() {
     return current_task->event_shmem_id;
 }
 

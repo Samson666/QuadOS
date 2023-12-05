@@ -5,7 +5,7 @@
 
 // from https://github.com/stevej/osdev/blob/master/kernel/devices/fpu.c
 
-void set_fpu_cw(const u16 cw) {
+void set_fpu_cw(const uint16_t cw) {
 	asm volatile("fldcw %0" :: "m"(cw));
 }
 

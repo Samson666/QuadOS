@@ -9,7 +9,7 @@ IDTEntry idt[256] __attribute__((aligned(0x10)));
 IDTPointer idt_pointer;
 ISRFunction isr_functions[256];
 
-static void set_idt_entry(u8 vector, void* isr, u8 attributes);
+static void set_idt_entry(uint8_t vector, void* isr, uint8_t attributes);
 static void remap_pic();
 // in interrupt_asm
 extern void* isr_redirect_table[];
@@ -19,11 +19,11 @@ static bool cli_init_state;
 static int32_t cli_level = 0;
 
 void setup_interrupts() {
-    memset((u8*) &idt, 0, sizeof(IDTEntry) * 256);
-    memset((u8*) &isr_functions, 0, sizeof(ISRFunction) * 256);
+    memset((uint8_t*) &idt, 0, sizeof(IDTEntry) * 256);
+    memset((uint8_t*) &isr_functions, 0, sizeof(ISRFunction) * 256);
 
     idt_pointer.limit = sizeof(IDTEntry) * 256 - 1;
-    idt_pointer.base = (u32) &idt;
+    idt_pointer.base = (uint32_t) &idt;
 
     remap_pic();
 
@@ -36,12 +36,12 @@ void setup_interrupts() {
     asm volatile("lidt %0" :: "m"(idt_pointer));
 }
 
-void set_idt_entry(u8 vector, void* isr, u8 attributes) {
-    idt[vector].isr_low    = (u32) isr & 0xFFFF;
+void set_idt_entry(uint8_t vector, void* isr, uint8_t attributes) {
+    idt[vector].isr_low    = (uint32_t) isr & 0xFFFF;
     idt[vector].kernel_cs  = GDT_KERNEL_CODE;
     idt[vector].reserved   = 0;
     idt[vector].attributes = attributes;
-    idt[vector].isr_high   = (u32) isr >> 16;
+    idt[vector].isr_high   = (uint32_t) isr >> 16;
 }
 
 void remap_pic() {
@@ -58,7 +58,7 @@ void remap_pic() {
     outb(0xA1, 0x00);
 }
 
-void register_isr(u8 vector, ISRFunction func) {
+void register_isr(uint8_t vector, ISRFunction func) {
     isr_functions[vector] = func;
 }
 
@@ -99,7 +99,7 @@ void handle_interrupt(TrapFrame* frame) {
 }
 
 void push_cli() {
-    u32 eflags = read_eflags();
+    uint32_t eflags = read_eflags();
 
     disable_interrupts();
 
@@ -111,7 +111,7 @@ void push_cli() {
 }
 
 void pop_cli() {
-    u32 eflags = read_eflags();
+    uint32_t eflags = read_eflags();
     assert((eflags & FL_IF) == 0);
 
     assert(cli_level > 0);

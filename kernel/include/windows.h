@@ -15,18 +15,18 @@
 #define WINDOW_FLAG_DOUBLE_BUFFERED (1 << 1)
 
 typedef struct {
-    u16 state;
+    uint16_t state;
     s16 x; // top left of actual window
     s16 y;
     s16 width; // content/inner width
     s16 height; // content/inner height
-    u32 flags;
+    uint32_t flags;
     s16 actual_width;
     s16 actual_height;
-    u32* framebuffer;
-    u32 framebuffer_size_bytes;
+    uint32_t* framebuffer;
+    uint32_t framebuffer_size_bytes;
     s16 fb_shmem_id;
-    u8 shown_buffer; // buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
+    uint8_t shown_buffer; // buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
     char title[WINDOW_TITLE_MAX_LENGTH];
     int32_t owner_task_id;
 } Window;
@@ -40,7 +40,7 @@ extern int32_t window_under_cursor;
 extern bool window_under_cursor_inside_content;
 
 void init_windows();
-int32_t create_window(int32_t width, int32_t height, u32 flags);
+int32_t create_window(int32_t width, int32_t height, uint32_t flags);
 void destroy_window(int32_t window_id);
 bool check_window_close(int32_t window, int32_t x, int32_t y);
 int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content);

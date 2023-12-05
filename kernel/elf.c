@@ -9,12 +9,12 @@
 
 static void parse_dynamic_section(ELFObject* elf, Elf32_Shdr* section);
 static void parse_symbol_table(ELFObject* elf, Elf32_Shdr* section, Elf32_Shdr* string_table);
-static const char* get_string(const ELFObject* elf, u32 str_offset, Elf32_Shdr* string_table_section);
+static const char* get_string(const ELFObject* elf, uint32_t str_offset, Elf32_Shdr* string_table_section);
 Elf32_Sym* find_symbol(ELFObject* elf, Elf32_Shdr* symtab_section, Elf32_Shdr* string_table, const char* symbol);
 
 typedef struct {
     const char** table;
-    u32 num_entries;
+    uint32_t num_entries;
 } SymbolTable;
 
 // verify the magic identifer matches
@@ -23,7 +23,7 @@ bool elf_is_valid(Elf32_Ehdr* hdr) {
         hdr->e_ident[2] == 'L' && hdr->e_ident[3] == 'F';
 }
 
-static Elf32_Shdr* get_section(const ELFObject* elf, u32 index) {
+static Elf32_Shdr* get_section(const ELFObject* elf, uint32_t index) {
     return (Elf32_Shdr*) (elf->raw + elf->header->e_shoff + index * elf->header->e_shentsize);
 }
 
@@ -32,7 +32,7 @@ static const char* get_section_name(const ELFObject* elf, Elf32_Shdr* section) {
     return get_string(elf, section->sh_name, shstrtab_section);
 }
 
-static const char* get_string(const ELFObject* elf, u32 str_offset, Elf32_Shdr* string_table_section) {
+static const char* get_string(const ELFObject* elf, uint32_t str_offset, Elf32_Shdr* string_table_section) {
     const char* string_table = elf->raw + string_table_section->sh_offset;
     return string_table + str_offset;
 }
@@ -79,7 +79,7 @@ void parse_symbol_table(ELFObject* elf, Elf32_Shdr* section, Elf32_Shdr* string_
     // kernel_log("parsing symbol table");
 
     Elf32_Sym* table = elf->raw + section->sh_offset;
-    u32 num_entries = section->sh_size / section->sh_entsize;
+    uint32_t num_entries = section->sh_size / section->sh_entsize;
 
     for (int i = 0; i < num_entries; i++) {
         const char* name = get_string(elf, table[i].st_name, string_table);
@@ -95,9 +95,9 @@ bool parse_elf(ELFObject* elf) {
         return false;
     }
 
-    u32 num_sections = elf->header->e_shnum;
+    uint32_t num_sections = elf->header->e_shnum;
     // kernel_log("ELF: num sections %u", num_sections);
-    for (u32 i = 0; i < num_sections; i++) {
+    for (uint32_t i = 0; i < num_sections; i++) {
         Elf32_Shdr* section = get_section(elf, i);
         const char* name = get_section_name(elf, section);
         // kernel_log("parsing section %s: type=%u size=%u", name, section->sh_type, section->sh_size);
@@ -132,8 +132,8 @@ bool load_elf_executable(ELFObject* elf) {
 
     elf->entry = elf->header->e_entry;
 
-    u32 num_segments = elf->header->e_phnum;
-    for (u32 i = 0; i < num_segments; i++) {
+    uint32_t num_segments = elf->header->e_phnum;
+    for (uint32_t i = 0; i < num_segments; i++) {
         Elf32_Phdr* segment = (Elf32_Phdr*) (elf->raw + elf->header->e_phoff + i * elf->header->e_phentsize);
         
         // only copy segments with the LOAD flag
@@ -143,12 +143,12 @@ bool load_elf_executable(ELFObject* elf) {
         if (segment->p_memsz == 0)
             continue;
         
-        u32 flags = PAGE_FLAG_USER;
+        uint32_t flags = PAGE_FLAG_USER;
         if (segment->p_flags & PF_W)
             flags |= PAGE_FLAG_WRITE;
         // TODO: executable??
         
-        u32 num_pages = CEIL_DIV(segment->p_memsz, 0x1000);
+        uint32_t num_pages = CEIL_DIV(segment->p_memsz, 0x1000);
         if (segment->p_vaddr & 0xFFF) {
             // if vaddr is not page aligned we need to map the next one aswell
             num_pages++;
@@ -179,7 +179,7 @@ Elf32_Sym* find_symbol(ELFObject* elf, Elf32_Shdr* symtab_section, Elf32_Shdr* s
     // kernel_log("parsing symbol table");
 
     Elf32_Sym* table = elf->raw + symtab_section->sh_offset;
-    u32 num_entries = symtab_section->sh_size / symtab_section->sh_entsize;
+    uint32_t num_entries = symtab_section->sh_size / symtab_section->sh_entsize;
 
     for (int i = 0; i < num_entries; i++) {
         const char* name = get_string(elf, table[i].st_name, string_table);

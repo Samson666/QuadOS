@@ -35,16 +35,16 @@ void kernel_main(struct multiboot_info* info) {
     init_logging(true);                     //Initialize the logging to stdout
     kernel_log("Wellcome to QuadOS. Warming up");               //Print out a wellcome Message to stdout
 
-    u32 mod_count = info->mods_count;       //Get the number of modules from the multiboot structure
+    uint32_t mod_count = info->mods_count;       //Get the number of modules from the multiboot structure
     assert_msg(mod_count, "zero modules!"); //No modules found? -> exit
-    u32 mod0 = *(u32*) (info->mods_addr);   //Getting the adress of the GRUB modules
-    u32 mod1 = *(u32*) (info->mods_addr + 4);
+    uint32_t mod0 = *(uint32_t*) (info->mods_addr);   //Getting the adress of the GRUB modules
+    uint32_t mod1 = *(uint32_t*) (info->mods_addr + 4);
 
-    u32 framebuffer_addr = info->framebuffer_addr;      //Getting the framebuffer address from the multiboot structure
-    u32 framebuffer_width = info->framebuffer_width;    //Getting the framebuffer width from the multiboot structure
-    u32 framebuffer_height = info->framebuffer_height;  //Getting the framebuffer height from the multiboot structure
-    u32 framebuffer_bpp = info->framebuffer_bpp;        //Getting the framebuffer bits per pixel from the multiboot structure
-    u32 framebuffer_pitch = info->framebuffer_pitch;    //Getting the framebuffer pixel pitch from the multiboot structure
+    uint32_t framebuffer_addr = info->framebuffer_addr;      //Getting the framebuffer address from the multiboot structure
+    uint32_t framebuffer_width = info->framebuffer_width;    //Getting the framebuffer width from the multiboot structure
+    uint32_t framebuffer_height = info->framebuffer_height;  //Getting the framebuffer height from the multiboot structure
+    uint32_t framebuffer_bpp = info->framebuffer_bpp;        //Getting the framebuffer bits per pixel from the multiboot structure
+    uint32_t framebuffer_pitch = info->framebuffer_pitch;    //Getting the framebuffer pixel pitch from the multiboot structure
 
     kernel_log("Available memory: %uMB", info->mem_upper / 1024);
 
@@ -53,7 +53,7 @@ void kernel_main(struct multiboot_info* info) {
     init_exceptions();                                  //Setup the exceptions                        
     init_syscalls();                                    //Initalize the syscalls
 
-    //enable_fpu();
+    enable_fpu();
 
     init_timer(1000);                                   //initialise the timer
     
@@ -67,12 +67,12 @@ void kernel_main(struct multiboot_info* info) {
     init_shared_libs();                                 //Initialise the shared librarys
     init_events();                                      //Init events
 
-    u32 ramdisk_size = mod1 - mod0;                     //Getting the Ramdisk size (from GRUB Module)
+    uint32_t ramdisk_size = mod1 - mod0;                     //Getting the Ramdisk size (from GRUB Module)
     init_ramdisk(mod0 + 0xC0000000, ramdisk_size);      //Initialise the Ramdisk
 
     //If graphics is enabled:
     if (graphics_enabled) {
-        init_graphics((u32*) framebuffer_addr, framebuffer_width, framebuffer_height, (u32) framebuffer_bpp / 8, framebuffer_pitch);
+        init_graphics((uint32_t*) framebuffer_addr, framebuffer_width, framebuffer_height, (uint32_t) framebuffer_bpp / 8, framebuffer_pitch);
                                                         //Initialise the graphics
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
         create_kernel_task(gui_thread_entry);           //Create the kernel task for the GUI
@@ -86,11 +86,11 @@ void kernel_main(struct multiboot_info* info) {
     set_timer_enabled(true);                            //Enable the timer    
     
            
-
+    kernel_log("QuadOS is up and running");             //Message success to stdout
     console_set_prompt_enabled(true);                   //Enable the prompt in the graphical console
     enable_interrupts();                                //Enable interrupts
     
-    kernel_log("QuadOS is up and running");             //Message success to stdout 
+    
 
     //Idle loop for kernel task (this task)
     while (true) {

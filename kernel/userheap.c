@@ -10,7 +10,7 @@ void init_user_heap(Task* task) {
 	task->heap_start = task->heap_end = USER_HEAP_START;
 }
 
-void set_user_heap_end(Task* task, u32 new_heap_end) {
+void set_user_heap_end(Task* task, uint32_t new_heap_end) {
 	assert(new_heap_end > task->heap_start);
     // kernel_log("heap start is %x", task->heap_start);
 
@@ -23,8 +23,8 @@ void set_user_heap_end(Task* task, u32 new_heap_end) {
         // kernel_log("expanding process heap by %d pages", num);
 
         for (int i = 0; i < num; i++) {
-            u32 phys = pmm_alloc_pageframe();
-            u32 virt = old_page_top * 0x1000 + i * 0x1000;
+            uint32_t phys = pmm_alloc_pageframe();
+            uint32_t virt = old_page_top * 0x1000 + i * 0x1000;
 
             // kernel_log("mapping %x", virt);
 

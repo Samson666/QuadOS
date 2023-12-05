@@ -11,40 +11,40 @@
 #define VERIFY_INTERRUPTS_DISABLED assert(!are_interrupts_enabled())
 
 typedef struct {
-    u16 isr_low;
-    u16 kernel_cs;
-    u8  reserved;
-    u8  attributes;
-    u16 isr_high;
+    uint16_t isr_low;
+    uint16_t kernel_cs;
+    uint8_t  reserved;
+    uint8_t  attributes;
+    uint16_t isr_high;
 } __attribute__((packed)) IDTEntry;
 
 typedef struct {
-    u16 limit;
-    u32 base;
+    uint16_t limit;
+    uint32_t base;
 } __attribute__((packed)) IDTPointer;
 
 typedef struct {
     // pushed by us:
-    u32 gs, fs, es, ds;
-    u32 edi, esi, ebp, esp, ebx, edx, ecx, eax; // esp is ignored
-    u32 interrupt, error;
+    uint32_t gs, fs, es, ds;
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // esp is ignored
+    uint32_t interrupt, error;
 
     // pushed by the CPU:
-    u32 eip, cs, eflags, usermode_esp, usermode_ss;
+    uint32_t eip, cs, eflags, usermode_esp, usermode_ss;
 } TrapFrame;
 
 typedef struct {
-    u32 edi;
-    u32 esi;
-    u32 ebx;
-    u32 ebp;
-    u32 eip;
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebx;
+    uint32_t ebp;
+    uint32_t eip;
 } TaskSwitchContext;
 
 typedef void (*ISRFunction)(TrapFrame*);
 
 void setup_interrupts();
-void register_isr(u8 vector, ISRFunction func);
+void register_isr(uint8_t vector, ISRFunction func);
 void handle_interrupt(TrapFrame* frame);
 void push_cli();
 void pop_cli();

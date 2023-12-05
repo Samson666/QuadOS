@@ -4,11 +4,11 @@
 
 typedef struct {
     u64 ticks;
-    u32 freq;
+    uint32_t freq;
     bool enabled;
 } PIT;
 
 extern PIT pit;
 
-void init_timer(u32 frequency);
+void init_timer(uint32_t frequency);
 void set_timer_enabled(bool enabled);

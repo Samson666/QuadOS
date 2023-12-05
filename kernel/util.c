@@ -7,21 +7,21 @@
 #include "gui.h"
 #include "graphics.h"
 
-void* memset(void* vdest, u8 val, u32 len) {
-    u8* dest = (u8*) vdest;
-    u8* temp = (u8*) dest;
+void* memset(void* vdest, uint8_t val, uint32_t len) {
+    uint8_t* dest = (uint8_t*) vdest;
+    uint8_t* temp = (uint8_t*) dest;
     for (; len != 0; len--) *temp++ = val;
     return dest;
 }
 
-void* memcpy(void* dest, const void* src, u32 len) {
-    const u8* sp = (const u8*) src;
-    u8* dp = (u8*) dest;
+void* memcpy(void* dest, const void* src, uint32_t len) {
+    const uint8_t* sp = (const uint8_t*) src;
+    uint8_t* dp = (uint8_t*) dest;
     for (; len != 0; len--) *dp++ = *sp++;
     return dest;
 }
 
-u32 strcmp(const char* s1, const char* s2) {
+uint32_t strcmp(const char* s1, const char* s2) {
     while (*s1 != '\0' && *s2 != '\0' && *s1 == *s2) {
         s1++;
         s2++;
@@ -29,7 +29,7 @@ u32 strcmp(const char* s1, const char* s2) {
     return *s1 - *s2;
 }
 
-u32 strncmp(const char* s1, const char* s2, u32 n) {
+uint32_t strncmp(const char* s1, const char* s2, uint32_t n) {
     register unsigned char u1, u2;
 
     while (n-- > 0) {
@@ -41,7 +41,7 @@ u32 strncmp(const char* s1, const char* s2, u32 n) {
     return 0;
 }
 
-char* strncpy(char* dst, const char* src, u32 n) {
+char* strncpy(char* dst, const char* src, uint32_t n) {
     if (n != 0) {
         char* d = dst;
         const char* s = src;

@@ -19,7 +19,7 @@ void init_console() {
     console.height = graphics_enabled ? 50 : 25;
     console.cursor_x = 0;
     console.cursor_y = 0;
-    console.buffer = (u8*) (graphics_enabled ? gui.fake_console_buffer : 0xC00B8000);
+    console.buffer = (uint8_t*) (graphics_enabled ? gui.fake_console_buffer : 0xC00B8000);
     console.clear_color = 0x0F;
 
     clear_prompt();
@@ -66,9 +66,9 @@ void console_set_prompt_enabled(bool enabled) {
 }
 
 void vga_clear() {
-    u16 c = console.clear_color << 8;
+    uint16_t c = console.clear_color << 8;
     for (int i = 0; i < console.width * console.height; i++) {
-        ((u16*) console.buffer)[i] = c;
+        ((uint16_t*) console.buffer)[i] = c;
     }
 }
 
@@ -80,12 +80,12 @@ void vga_write_char(char c) {
 
     if (c == '\b') {
         console.cursor_x--;
-        u32 i = console.cursor_x + console.cursor_y * console.width;
+        uint32_t i = console.cursor_x + console.cursor_y * console.width;
         console.buffer[i << 1] = ' ';
         return;
     }
 
-    u32 i = console.cursor_x + console.cursor_y * console.width;
+    uint32_t i = console.cursor_x + console.cursor_y * console.width;
     console.buffer[i << 1] = c;
     console.cursor_x++;
     if (console.cursor_x == console.width) {
@@ -107,8 +107,8 @@ void vga_scroll_up() {
 
     for (int y = 0; y < console.height - 1; y++) {
         for (int x = 0; x < console.width; x++) {
-            u32 current = x + y * console.width;
-            u32 next = x + (y + 1) * console.width;
+            uint32_t current = x + y * console.width;
+            uint32_t next = x + (y + 1) * console.width;
 
             current <<= 1;
             next <<= 1;
@@ -120,7 +120,7 @@ void vga_scroll_up() {
 
     // clear last line
     for (int x = 0; x < console.width; x++) {
-        u32 current = x + (console.height - 1) * console.width;
+        uint32_t current = x + (console.height - 1) * console.width;
 
         current <<= 1;
 
@@ -130,12 +130,12 @@ void vga_scroll_up() {
 }
 
 void update_cursor_pos() {
-    u16 pos = console.cursor_y * console.width + console.cursor_x;
+    uint16_t pos = console.cursor_y * console.width + console.cursor_x;
 
 	outb(0x3D4, 0x0F);
-	outb(0x3D5, (u8) (pos & 0xFF));
+	outb(0x3D5, (uint8_t) (pos & 0xFF));
 	outb(0x3D4, 0x0E);
-	outb(0x3D5, (u8) ((pos >> 8) & 0xFF));
+	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
 void vga_set_cursor_enabled(bool enabled) {

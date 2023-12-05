@@ -9,11 +9,11 @@
 
 // used for newly created tasks
 typedef struct {
-    u32 edi;
-    u32 esi;
-    u32 ebx;
-    u32 ebp;
-    u32 eip;
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebx;
+    uint32_t ebp;
+    uint32_t eip;
 } TaskReturnContext;
 
 enum {
@@ -25,29 +25,29 @@ enum {
 };
 
 typedef struct {
-    u32 interval;
+    uint32_t interval;
     u64 next_fire;
     bool active;
 } Timer;
 
 typedef struct {
-    u32 id;
+    uint32_t id;
 
     // kernel stack
-    u32 kesp; // exchanged on task switch
-    u32 kesp0; // top of kernel stack (highest address) ...
+    uint32_t kesp; // exchanged on task switch
+    uint32_t kesp0; // top of kernel stack (highest address) ...
     // ... stack ptr is set to this (via TSS) when transitioning from user to kernel mode (on interrupt/syscall)
 
-    u32* pagedir; // this task's page directory, kernel tasks use the initial pagedir
-    u32 is_kernel_task;
-    u32 state; // task state enum
+    uint32_t* pagedir; // this task's page directory, kernel tasks use the initial pagedir
+    uint32_t is_kernel_task;
+    uint32_t state; // task state enum
     FIL open_files[MAX_OPEN_FILES]; // hack
     void* event_buffer; // address to shared memory in kernel vmem (kernel-side)
     int32_t event_shmem_id; // used to share the buffer with userspace
     SharedMemoryMappingPool shmem;
 
-    u32 heap_start; // page aligned
-    u32 heap_end;
+    uint32_t heap_start; // page aligned
+    uint32_t heap_end;
 
     DIR open_dir;
 
@@ -62,6 +62,6 @@ extern int num_tasks;
 void setup_tasks();
 int32_t create_user_task(const char* path);
 void create_kernel_task(void* func);
-void kill_task(u32 id);
+void kill_task(uint32_t id);
 void task_schedule();
 Task* get_task(int id);
