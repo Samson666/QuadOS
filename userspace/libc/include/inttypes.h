@@ -77,9 +77,9 @@ __extern uintmax_t strntoumax(const char *, char **, int, size_t);
 #define PRIoMAX	 __PRI64_RANK "o"
 #define PRIoPTR  __PRIPTR_RANK "o"
 
-#define PRIuint8_t	"u"
-#define PRIuint16_t	"u"
-#define PRIuint32_t	"u"
+#define PRIu8	"u"
+#define PRIu16	"u"
+#define PRIu32	"u"
 #define PRIu64	__PRI64_RANK "u"
 
 #define PRIuLEAST8	"u"
@@ -185,8 +185,8 @@ __extern uintmax_t strntoumax(const char *, char **, int, size_t);
 #define SCNoMAX	 __PRI64_RANK "o"
 #define SCNoPTR  __PRIPTR_RANK "o"
 
-#define SCNuint8_t	"hhu"
-#define SCNuint16_t	"hu"
+#define SCNu8	"hhu"
+#define SCNu16	"hu"
 #define SCNuint32_t	"u"
 #define SCNu64	__PRI64_RANK "u"
 

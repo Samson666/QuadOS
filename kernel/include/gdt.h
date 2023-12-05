@@ -12,8 +12,8 @@
 #define DPL_USER 3
 
 typedef struct {
-    uint16_t limit_low;
-    uint16_t base_low;
+    u16 limit_low;
+    u16 base_low;
     uint8_t  base_mid;
     uint8_t  access;
     uint8_t  granularity;
@@ -21,7 +21,7 @@ typedef struct {
 } __attribute__((packed)) GDTEntry;
 
 typedef struct {
-    uint16_t limit;
+    u16 limit;
     uint32_t base;
 } __attribute__((packed)) GDTPointer;
 

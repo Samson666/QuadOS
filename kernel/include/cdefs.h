@@ -292,7 +292,7 @@
 #endif
 
 /* GCC 4.3 and above with -std=c99 or -std=gnu99 implements ISO C99
-   inline semantics, unless -fgnuint8_t9-inline is used.  */
+   inline semantics, unless -fgnu89-inline is used.  */
 #if !defined __cplusplus || __GNUC_PREREQ (4,3)
 # if defined __GNUC_STDC_INLINE__ || defined __cplusplus
 #  define __extern_inline extern __inline __attribute__ ((__gnu_inline__))

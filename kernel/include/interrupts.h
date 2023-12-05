@@ -11,15 +11,15 @@
 #define VERIFY_INTERRUPTS_DISABLED assert(!are_interrupts_enabled())
 
 typedef struct {
-    uint16_t isr_low;
-    uint16_t kernel_cs;
+    u16 isr_low;
+    u16 kernel_cs;
     uint8_t  reserved;
     uint8_t  attributes;
-    uint16_t isr_high;
+    u16 isr_high;
 } __attribute__((packed)) IDTEntry;
 
 typedef struct {
-    uint16_t limit;
+    u16 limit;
     uint32_t base;
 } __attribute__((packed)) IDTPointer;
 

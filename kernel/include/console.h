@@ -24,12 +24,12 @@ enum VGAColor {
 };
 
 typedef struct Console {
-    uint16_t width;
-    uint16_t height;
+    u16 width;
+    u16 height;
     uint8_t* buffer;
 
-    uint16_t cursor_x;
-    uint16_t cursor_y;
+    u16 cursor_x;
+    u16 cursor_y;
 
     uint8_t clear_color;
 	

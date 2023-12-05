@@ -15,7 +15,7 @@
 #define WINDOW_FLAG_DOUBLE_BUFFERED (1 << 1)
 
 typedef struct {
-    uint16_t state;
+    u16 state;
     s16 x; // top left of actual window
     s16 y;
     s16 width; // content/inner width

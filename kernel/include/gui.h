@@ -8,7 +8,7 @@ typedef struct {
     int32_t prev_cursor_x, prev_cursor_y;
     bool needs_redraw;
     bool left_click;
-    uint16_t fake_console_buffer[50 * 80];
+    u16 fake_console_buffer[50 * 80];
 } GUI;
 
 extern GUI gui;

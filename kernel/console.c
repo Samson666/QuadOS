@@ -8,11 +8,11 @@
 static Console console;
 
 static void vga_clear();
-void vga_write_char(char c);
-void vga_scroll_up();
-void vga_newline();
-void update_cursor_pos();
-void clear_prompt();
+static void vga_write_char(char c);
+static void vga_scroll_up();
+static void vga_newline();
+static void update_cursor_pos();
+static void clear_prompt();
 
 void init_console() {
     console.width = 80;
@@ -66,9 +66,9 @@ void console_set_prompt_enabled(bool enabled) {
 }
 
 void vga_clear() {
-    uint16_t c = console.clear_color << 8;
+    u16 c = console.clear_color << 8;
     for (int i = 0; i < console.width * console.height; i++) {
-        ((uint16_t*) console.buffer)[i] = c;
+        ((u16*) console.buffer)[i] = c;
     }
 }
 
@@ -130,7 +130,7 @@ void vga_scroll_up() {
 }
 
 void update_cursor_pos() {
-    uint16_t pos = console.cursor_y * console.width + console.cursor_x;
+    u16 pos = console.cursor_y * console.width + console.cursor_x;
 
 	outb(0x3D4, 0x0F);
 	outb(0x3D5, (uint8_t) (pos & 0xFF));

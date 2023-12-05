@@ -40,6 +40,7 @@ void init_gui(int32_t width, int32_t height) {
     testbutton_h = 50;
 }
 
+//The GUI thread / task
 void gui_thread_entry() {
     // disable_interrupts();
     while (1) {
@@ -54,32 +55,33 @@ void gui_thread_entry() {
     }
 }
 
+//Draw the complete frame
 static void gui_draw_frame() {
-    graphics_fill(0xFFFFFFFF);
+    graphics_fill(0xFF800000);  //Frame with given color (RRRGGGBBB, last byte of color is the brightness)
 
-    draw_debug_console(0);
-    draw_windows();
+    //draw_debug_console(0);
+    draw_windows();             //drawing the windows
 
-    graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF);
+    graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF); //Drawing the testbutton to start file.exe
 
-    graphics_fill_rect(graphics.width - 10, 2, 8, 8, redraw_indicator ? 0xFF00FF : 0);
-    redraw_indicator ^= 1;
+    graphics_fill_rect(graphics.width - 10, 2, 8, 8, redraw_indicator ? 0xFF00FF : 0); //Drawing the indicator rectangle
+    redraw_indicator ^= 1; //Invers the indicator color
 
     // draw time
-    u64 time = get_system_time_millis();
+    u64 time = get_system_time_millis(); //Get the system time in milliseconds
     // if (time)
     //     time /= 1000;
     char time_str[128];
 
-    int phys_mem = pmm_get_total_allocated_pages() * 4;
+    int phys_mem = pmm_get_total_allocated_pages() * 4; //get used physical memory
     // 2504
     // 2536
     // 32 kib = 8 pages
 
     sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
-    graphics_draw_string(time_str, 3, graphics.height - 15, 0);
+    graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame
 
-    graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, res_cursor_raw);
+    graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, res_cursor_raw); //draw the cursor
 
     graphics_copy_backbuffer();
 }
@@ -179,7 +181,7 @@ void draw_debug_console(uint32_t color) {
     int index = 0;
     for (int y = 0; y < 50; y++) {
         for (int x = 0; x < 80; x++) {
-            uint16_t c = gui.fake_console_buffer[index];
+            u16 c = gui.fake_console_buffer[index];
             graphics_draw_char(c & 0xFF, x * 10, y * 10, color);
             index++;
         }

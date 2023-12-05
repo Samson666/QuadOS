@@ -8,11 +8,11 @@ uint32_t strcmp(const char* s1, const char* s2);
 uint32_t strncmp(const char* s1, const char* s2, uint32_t n);
 char* strncpy(char* dst, const char* src, uint32_t n);
 
-static inline void outb(uint16_t port, uint8_t value) {
+static inline void outb(u16 port, uint8_t value) {
     asm volatile("outb %1, %0" :: "dN" (port), "a" (value));
 }
 
-static inline uint8_t inb(uint16_t port) {
+static inline uint8_t inb(u16 port) {
     uint8_t ret;
     asm volatile("inb %1, %0" : "=a" (ret) : "dN" (port));
     return ret;

@@ -3,7 +3,7 @@
 #include "types.h"
 #include "config.h"
 
-typedef uint16_t Elf32_Half;
+typedef u16 Elf32_Half;
 typedef uint32_t Elf32_Word;
 typedef uint32_t Elf32_Addr;
 typedef uint32_t Elf32_Off;
