@@ -1,7 +1,18 @@
+#define SGFX_OPTIMIZE
+
 #include "sgfx.h"
 
 #define CLAMP(x, a, b) (((x) < (a)) ? (a) : ((x) > (b) ? (b) : (x)))
 #define ABS(x) (((x) < 0) ? (-(x)) : (x))
+
+
+static void * x_memset (void* dest, int value, size_t len)
+{
+    size_t dwords = len;
+    len %= 4;
+    	asm ("cld\n" "rep stosl" : : "a"(value), "D"(dest), "c"(dwords));
+        asm (        "rep movsb" : : "c"(len));
+}
 
 void sgfx_init(GraphicsContext* ctx, uint32_t* framebuffer, uint32_t width, uint32_t height) {
     ctx->framebuffer = framebuffer;
@@ -10,12 +21,19 @@ void sgfx_init(GraphicsContext* ctx, uint32_t* framebuffer, uint32_t width, uint
     ctx->bytesize = width * height * 4;;
 }
 
+#ifndef SGFX_OPTIMIZE
 void sgfx_fill(const GraphicsContext* ctx, uint32_t color) {
     uint32_t size = ctx->bytesize >> 2;
     for (uint32_t i = 0; i < size; i++) {
         ctx->framebuffer[i] = color;
     }
 }
+#else
+void sgfx_fill(const GraphicsContext* ctx, uint32_t color) {
+    uint32_t size = ctx->bytesize >> 2;
+    x_memset(ctx->framebuffer,color,size);
+}
+#endif
 
 void sgfx_fill_rect(const GraphicsContext* ctx, int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color) {
     // TODO: optimize?

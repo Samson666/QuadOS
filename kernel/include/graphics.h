@@ -3,7 +3,7 @@
 // basic software graphics
 
 #include "types.h"
-#include <sgfx.h>
+#include "sgfx.h"
 
 extern GraphicsContext graphics;
 
