@@ -3,6 +3,7 @@
 #include "memory.h"
 #include "kmalloc.h"
 #include "util.h"
+#include "log.h"
 
 GraphicsContext graphics;
 
@@ -36,8 +37,14 @@ void graphics_copy_rect(int32_t xdest, int32_t ydest, int32_t width, int32_t hei
 }
 
 void graphics_copy_backbuffer() {
+    uint64_t time1 = get_system_time_millis();
+    kernel_log("Copy backbuffer starttime %lu", time1 );
     uint32_t total = graphics.width * graphics.height;
-    memcpy_asm(frontbuffer, graphics.framebuffer, total*4);
+    for(int i=0; i<1000;i++)
+        memcpy(frontbuffer, graphics.framebuffer, total*4);
+    uint64_t time2 = get_system_time_millis();
+    kernel_log("Copy backbuffer stoptime %lu", time2 );
+    kernel_log("Elapsed time %lu", time2-time1);
 }
 
 void graphics_draw_char(uint8_t c, int32_t x0, int32_t y0, uint32_t color) {

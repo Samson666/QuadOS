@@ -3,7 +3,7 @@
 #include "types.h"
 
 void* memset(void* vdest, uint8_t val, uint32_t len);
-void* memcpy(void* dest, const void* src, uint32_t len);
+void* memcpy(void* dest, const void* src, size_t bytes);
 uint32_t strcmp(const char* s1, const char* s2);
 uint32_t strncmp(const char* s1, const char* s2, uint32_t n);
 char* strncpy(char* dst, const char* src, uint32_t n);

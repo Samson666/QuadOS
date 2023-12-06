@@ -1,3 +1,10 @@
+#undef _GLIBCXX_DEBUG                // disable run-time bound checking, etc
+#pragma GCC optimize("Ofast,inline") // Ofast = O3,fast-math,allow-store-data-races,no-protect-parens
+
+#pragma GCC target("bmi,bmi2,lzcnt,popcnt")                      // bit manipulation
+#pragma GCC target("movbe")                                      // byte swap
+#pragma GCC target("aes,pclmul,rdrnd")                           // encryption
+
 #include "util.h"
 
 #include "interrupts.h"
@@ -7,6 +14,7 @@
 #include "gui.h"
 #include "graphics.h"
 
+
 void* memset(void* vdest, uint8_t val, uint32_t len) {
     uint8_t* dest = (uint8_t*) vdest;
     uint8_t* temp = (uint8_t*) dest;
@@ -14,15 +22,15 @@ void* memset(void* vdest, uint8_t val, uint32_t len) {
     return dest;
 }
 
-void* memcpy(void* dest, const void* src, uint32_t len) {
-    const uint8_t* sp = (const uint8_t*) src;
-    uint8_t* dp = (uint8_t*) dest;
-    for (; len != 0; len--) *dp++ = *sp++;
-    return dest;
-}
+// void* memcpy(void* dest, const void* src, uint32_t len) {
+//     const uint8_t* sp = (const uint8_t*) src;
+//     uint8_t* dp = (uint8_t*) dest;
+//     for (; len != 0; len--) *dp++ = *sp++;
+//     return dest;
+// }
 
-void* memcpy_asm(void* dest, const void* src, size_t bytes)
-{
+void* memcpy(void* dest, const void* src, size_t bytes)
+{    
     size_t dwords = bytes/4;
     bytes %= 4;
     __asm__ volatile("cld\n" "rep movsl" : : "S" (src), "D" (dest), "c" (dwords));

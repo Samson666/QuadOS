@@ -3,7 +3,7 @@
 #include "types.h"
 
 typedef struct {
-    u64 ticks;
+    uint64_t ticks;
     uint32_t freq;
     bool enabled;
 } PIT;

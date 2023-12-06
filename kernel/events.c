@@ -95,7 +95,7 @@ typedef struct {
 } OSTimerEvent;
 
 void check_event_timers() {
-    u64 time = get_system_time_millis();
+    uint64_t time = get_system_time_millis();
 
     for (int i = 0; i < MAX_TASKS; i++) {
         Task* task = &tasks[i];

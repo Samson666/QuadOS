@@ -68,7 +68,7 @@ static void gui_draw_frame() {
     redraw_indicator ^= 1; //Invers the indicator color
 
     // draw time
-    u64 time = get_system_time_millis(); //Get the system time in milliseconds
+    uint64_t time = get_system_time_millis(); //Get the system time in milliseconds
     // if (time)
     //     time /= 1000;
     char time_str[128];

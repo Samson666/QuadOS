@@ -26,7 +26,7 @@ enum {
 
 typedef struct {
     uint32_t interval;
-    u64 next_fire;
+    uint64_t next_fire;
     bool active;
 } Timer;
 
