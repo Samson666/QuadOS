@@ -9,6 +9,7 @@ typedef struct {
     uint32_t width;
     uint32_t height;
     uint32_t bytesize;
+    uint32_t bpp;
 } GraphicsContext;
 
 void sgfx_init(GraphicsContext* ctx, uint32_t* framebuffer, uint32_t width, uint32_t height);

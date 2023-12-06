@@ -7,7 +7,7 @@ void sgfx_init(GraphicsContext* ctx, uint32_t* framebuffer, uint32_t width, uint
     ctx->framebuffer = framebuffer;
     ctx->width = width;
     ctx->height = height;
-    ctx->bytesize = width * height * 4;
+    ctx->bytesize = width * height * 4;;
 }
 
 void sgfx_fill(const GraphicsContext* ctx, uint32_t color) {

@@ -31,6 +31,8 @@ typedef struct {
     int32_t owner_task_id;
 } Window;
 
+
+//Global variables for windows / gui
 #define MAX_WINDOWS 64
 extern Window windows[MAX_WINDOWS];
 
@@ -39,6 +41,7 @@ extern int32_t focused_window;
 extern int32_t window_under_cursor;
 extern bool window_under_cursor_inside_content;
 
+//function declarations
 void init_windows();
 int32_t create_window(int32_t width, int32_t height, uint32_t flags);
 void destroy_window(int32_t window_id);

@@ -5,6 +5,7 @@
 
 #define width 240
 #define height 320
+#define bpp 4
 
 #define MAX_ENTRIES 64
 #define FILE_LIST_Y_OFFSET 32

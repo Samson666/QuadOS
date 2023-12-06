@@ -21,6 +21,15 @@ void* memcpy(void* dest, const void* src, uint32_t len) {
     return dest;
 }
 
+void* memcpy_asm(void* dest, const void* src, size_t bytes)
+{
+    size_t dwords = bytes/4;
+    bytes %= 4;
+    __asm__ volatile("cld\n" "rep movsl" : : "S" (src), "D" (dest), "c" (dwords));
+    __asm__ volatile(        "rep movsb" : : "c" (bytes));
+    return(dest);
+}
+
 uint32_t strcmp(const char* s1, const char* s2) {
     while (*s1 != '\0' && *s2 != '\0' && *s1 == *s2) {
         s1++;

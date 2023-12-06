@@ -36,10 +36,8 @@ void graphics_copy_rect(int32_t xdest, int32_t ydest, int32_t width, int32_t hei
 }
 
 void graphics_copy_backbuffer() {
-    int total = graphics.width * graphics.height;
-    for (int i = 0; i < total; i++) {
-        frontbuffer[i] = graphics.framebuffer[i];
-    }
+    uint32_t total = graphics.width * graphics.height;
+    memcpy_asm(frontbuffer, graphics.framebuffer, total*4);
 }
 
 void graphics_draw_char(uint8_t c, int32_t x0, int32_t y0, uint32_t color) {

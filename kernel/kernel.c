@@ -46,6 +46,8 @@ void kernel_main(struct multiboot_info* info) {
     uint32_t framebuffer_bpp = info->framebuffer_bpp;        //Getting the framebuffer bits per pixel from the multiboot structure
     uint32_t framebuffer_pitch = info->framebuffer_pitch;    //Getting the framebuffer pixel pitch from the multiboot structure
 
+    kernel_log("Framebuffer bpp: %d", framebuffer_bpp);
+
     kernel_log("Available memory: %uMB", info->mem_upper / 1024);
 
     kernel_log("Setting up interrupts");                

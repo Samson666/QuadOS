@@ -83,10 +83,12 @@ static void gui_draw_frame() {
 
     graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, res_cursor_raw); //draw the cursor
 
+    //Since we draw everything to the backbuffer, we need to copy the backbuffer to the actual framebuffer
     graphics_copy_backbuffer();
 }
 
 static void handle_left_click() {
+    //Testbutton was clicked -> start files.exe in a new usertask
     if (gui.cursor_x >= testbutton_x && gui.cursor_x < testbutton_x + testbutton_w
         && gui.cursor_y >= testbutton_y && gui.cursor_y < testbutton_y + testbutton_h) {
         create_user_task("files.exe");
