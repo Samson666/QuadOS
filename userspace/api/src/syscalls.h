@@ -2,10 +2,10 @@
 
 #include "os.h"
 
-int syscall_get_task_id();
+int syscall_get_task_id();              //Get the id of the active task
 void syscall_exit();
 void syscall_print(const char* str);
-void syscall_exec(const char* path);
+uint32_t syscall_exec(const char* path);    //Start a task from (ram-)Disk of the program path
 int syscall_get_event_buffer_shmem_id();
 void syscall_wait_for_events();
 void syscall_set_timer_interval(int timer_id, int interval_ms);

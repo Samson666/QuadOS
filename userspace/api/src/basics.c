@@ -14,6 +14,6 @@ void os_print(const char* str) {
     syscall_print(str);
 }
 
-void os_exec(const char* path) {
-    syscall_exec(path);
+uint32_t os_exec(const char* path) {
+    return syscall_exec(path);
 }

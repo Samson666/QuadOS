@@ -17,7 +17,7 @@ OS_EXPORT void os_temp_init(); // todo: remove this?
 // basics
 OS_EXPORT int32_t os_get_task_id();
 OS_EXPORT void os_print(const char* msg);
-OS_EXPORT void os_exec(const char* path);
+OS_EXPORT uint32_t os_exec(const char* path);
 OS_EXPORT void os_exit();
 
 // file i/o
@@ -107,7 +107,6 @@ OS_EXPORT void os_printf(const char* msg, ...);
 typedef struct {
     uint32_t id;
     uint32_t state;
-    char* name[64];
 } OSTaskInfo;
 
 OS_EXPORT os_errorcode os_get_task_info(OSTaskInfo* list, uint32_t list_max_size, uint32_t* num_tasks);

@@ -28,9 +28,9 @@ static void syscall_print(const char* string) {
     kernel_log("task %u: %s", current_task->id, string);
 }
 
-static void syscall_exec(const char* path) {
+static uint32_t syscall_exec(const char* path) {
     // kernel_log("task %u exec: %s", current_task->id, path);
-    create_user_task(path);
+    return(create_user_task(path));
 }
 
 static uint32_t syscall_open_file(const char* path) {

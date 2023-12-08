@@ -107,7 +107,9 @@ static void handle_left_click(int x, int y) {
         read_directory();
     } else {
         // execute binary
-        os_exec(entries[selected_entry].name);
+        uint32_t id = 0;
+        id = os_exec(entries[selected_entry].name);     //starting task from file and return the task id
+        //os_printf("Created Task with ID: %d\n", id);
     }
 }
 
