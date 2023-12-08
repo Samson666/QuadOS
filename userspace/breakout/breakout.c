@@ -148,15 +148,21 @@ int main(int argc, char* argv[]) {
     int shown_buffer = 0;
     OSEvent event;
 
+    
+
     sgfx_init(&ctx, fb, width, height);
 
     paddle.x = width / 2;
     reset();
+    os_set_timer_interval(0,1000);
 
+    int i, x;
     while (1) {
+        
         ctx.framebuffer = fb + (shown_buffer == 0 ? (width * height) : 0);
+        
         frame();
-
+       
         shown_buffer = os_swap_window_buffers(window);
 
         while (os_poll_event(&event)) {

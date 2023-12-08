@@ -59,7 +59,7 @@ void gui_thread_entry() {
 static void gui_draw_frame() {
     graphics_fill(0xFF800000);  //Frame with given color (RRRGGGBBB, last byte of color is the brightness)
 
-    //draw_debug_console(0);
+    draw_debug_console(0);
     draw_windows();             //drawing the windows
 
     graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF); //Drawing the testbutton to start file.exe

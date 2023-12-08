@@ -2,7 +2,7 @@
 
 #include "syscalls.h"
 
-#define EVENT_BUFFER_SIZE 256
+#define EVENT_BUFFER_SIZE 256                                   //How many events we handle
 
 typedef struct {
     uint32_t num_events;
