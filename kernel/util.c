@@ -58,6 +58,25 @@ uint32_t strncmp(const char* s1, const char* s2, uint32_t n) {
     return 0;
 }
 
+// Returns the length of a character array.
+size_t strlen(const char *str)
+{
+size_t retval;
+for(retval = 0; *str != '\0'; str++) retval++;
+return retval;
+}
+
+char* strcpy(char* dest, const char* src)
+{
+    int i=0;
+    while(src[i]!='\0')
+    {
+        dest[i]=src[i];
+        i++;
+    }
+    return dest;
+}
+
 char* strncpy(char* dst, const char* src, uint32_t n) {
     if (n != 0) {
         char* d = dst;

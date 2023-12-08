@@ -147,6 +147,7 @@ int32_t create_user_task(const char* path) {
     num_tasks++;
 
     pop_cli();
+    strcpy(tasks[index].name, path);
     return tasks[index].id;
 }
 

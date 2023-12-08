@@ -107,6 +107,7 @@ OS_EXPORT void os_printf(const char* msg, ...);
 typedef struct {
     uint32_t id;
     uint32_t state;
+    char* name[64];
 } OSTaskInfo;
 
 OS_EXPORT os_errorcode os_get_task_info(OSTaskInfo* list, uint32_t list_max_size, uint32_t* num_tasks);

@@ -170,6 +170,7 @@ static void syscall_debug() {
 typedef struct {
     uint32_t id;
     uint32_t state;
+    char* name[64];
 } OSTaskInfo;
 
 os_errorcode syscall_get_task_info(OSTaskInfo* list, uint32_t list_max_size, uint32_t* num_tasks) {
@@ -185,7 +186,15 @@ os_errorcode syscall_get_task_info(OSTaskInfo* list, uint32_t list_max_size, uin
         OSTaskInfo* info = list + index;
         info->id = task->id;
         info->state = task->state;
-    
+        if(strlen(task->name)>0)
+            strcpy(info->name, task->name);
+        else
+            strcpy(info->name, "no name");
+        kernel_log("get task info name (task): %s", task->name);
+        kernel_log("strlen of task->name: %d", strlen(task->name));
+           
+        kernel_log("get task info name (info): %s", info->name);
+
         index++;
         if (index >= list_max_size)
             break;

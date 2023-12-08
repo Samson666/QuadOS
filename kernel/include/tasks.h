@@ -53,6 +53,7 @@ typedef struct {
 
     Timer timers[MAX_TIMERS];
     OpenSharedLibrary slibs[MAX_SHARED_LIBS_PER_TASK];
+    char* name[64];
 } Task;
 
 extern Task tasks[MAX_TASKS];
