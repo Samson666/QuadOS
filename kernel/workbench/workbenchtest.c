@@ -15,11 +15,12 @@ void cwindow()
 {
     disable_interrupts();               //NOTE - Important! Disable interrupts
     init_events_for_task(current_task); //NOTE - Important! Initialise events for this task
-    uint32_t wid = create_window(200,200,0);           //Creating Window
+    uint32_t wid = create_window(300,300,0);           //Creating Window
     int32_t id = get_framebuffer_shmem_id(wid);
     int* fb = sharedmem_map(id, current_task->id);
-    sgfx_init(&ctx, fb, 200, 200);
+    sgfx_init(&ctx, fb, 300, 300);
     enable_interrupts();                //NOTE - Important! Enable interrupts
+    set_title(wid, "First Workbench window");
     sgfx_fill(&ctx, 0xFFA00000);
 
     while(1);                           //Endless loop to keep task alive

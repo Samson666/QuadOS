@@ -23,7 +23,7 @@
 #include "fpu.h"
 #include "slib.h"
 
-#include "windowtest.h"
+#include "workbenchtest.h"
 
 bool graphics_enabled;
 
