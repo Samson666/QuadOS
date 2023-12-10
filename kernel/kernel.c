@@ -23,7 +23,7 @@
 #include "fpu.h"
 #include "slib.h"
 
-#include "workbenchtest.h"
+#include "console_window.h"
 
 bool graphics_enabled;
 
@@ -71,7 +71,7 @@ void kernel_main(struct multiboot_info* info) {
     init_shared_libs();                                 //Initialise the shared librarys
     init_events();                                      //Init events
 
-    uint32_t ramdisk_size = mod1 - mod0;                     //Getting the Ramdisk size (from GRUB Module)
+    uint32_t ramdisk_size = mod1 - mod0;                //Getting the Ramdisk size (from GRUB Module)
     init_ramdisk(mod0 + 0xC0000000, ramdisk_size);      //Initialise the Ramdisk
 
     //If graphics is enabled:
@@ -79,10 +79,9 @@ void kernel_main(struct multiboot_info* info) {
         init_graphics((uint32_t*) framebuffer_addr, framebuffer_width, framebuffer_height, (uint32_t) framebuffer_bpp / 8, framebuffer_pitch);
                                                         //Initialise the graphics
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
-        create_kernel_task(gui_thread_entry);           //Create the kernel task for the GUI
+        create_named_kernel_task(gui_thread_entry, "GUI");           //Create the kernel task for the GUI
 
         create_user_task("files.exe");                  //Starting task from file
-        create_named_kernel_task(cwindow,"Cwindow");
     }
 
     init_keyboard();                                    //Initalise the keyboard

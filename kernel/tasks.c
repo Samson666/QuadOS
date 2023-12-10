@@ -34,6 +34,7 @@ void setup_tasks() {
     current_task->state = TASK_STATE_IDLE;
     current_task->pagedir = mem_get_current_page_directory();
     current_task_index = 0;
+    strcpy(current_task->name, "root");
 
     // task 0 represents the execution we're in right now
 }
@@ -158,6 +159,11 @@ void create_kernel_task(void* func) {
     create_task(index, (uint32_t) func, true, initial_page_dir);
 }
 
+// Functionname: create_named_kernel_task
+// Parameters: point to function, pointer to name
+// Returns: void
+// Description: creates a kernel task and fill the name field with the given name
+// Note: 
 void create_named_kernel_task(void* func, char* name) {
     int index = find_available_task_slot();
 
