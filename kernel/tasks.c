@@ -158,6 +158,15 @@ void create_kernel_task(void* func) {
     create_task(index, (uint32_t) func, true, initial_page_dir);
 }
 
+void create_named_kernel_task(void* func, char* name) {
+    int index = find_available_task_slot();
+
+    num_tasks++;
+    Task* t = create_task(index, (uint32_t) func, true, initial_page_dir);
+    strcpy(t->name, name);
+
+}
+
 void kill_task(uint32_t id) {
     push_cli();
 

@@ -66,3 +66,4 @@ void create_kernel_task(void* func);
 void kill_task(uint32_t id);
 void task_schedule();
 Task* get_task(int id);
+void create_named_kernel_task(void* func, char* name);

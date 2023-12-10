@@ -82,7 +82,7 @@ void kernel_main(struct multiboot_info* info) {
         create_kernel_task(gui_thread_entry);           //Create the kernel task for the GUI
 
         create_user_task("files.exe");                  //Starting task from file
-        create_kernel_task(cwindow);
+        create_named_kernel_task(cwindow,"Cwindow");
     }
 
     init_keyboard();                                    //Initalise the keyboard
