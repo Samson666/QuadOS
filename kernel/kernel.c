@@ -92,8 +92,14 @@ void kernel_main(struct multiboot_info* info) {
            
     kernel_log("QuadOS is up and running");             //Message success to stdout
     console_set_prompt_enabled(true);                   //Enable the prompt in the graphical console
+
+    int32_t id = sharedmem_create(10000,0);
+    sharedmem_resize(id, 20000);
+
     enable_interrupts();                                //Enable interrupts
+
     
+
   
 
     //Idle loop for kernel task (this task)

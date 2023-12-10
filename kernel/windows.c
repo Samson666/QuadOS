@@ -1,3 +1,8 @@
+//Filename		: windows.c
+//First created: 10.12.2023
+//Last changed	:
+//Description	: Handles the windows
+ 
 #include "windows.h"
 
 #include "syscall.h"
@@ -15,6 +20,7 @@ bool window_under_cursor_inside_content = false;
 int32_t window_z_order[MAX_WINDOWS]; // list of window indices, window_z_order[0] is frontmost window id
 int32_t z_order_length = 0;
 
+//forward declarations
 static int32_t find_window_slot();
 static int32_t swap_buffers(int32_t window_id);
 static void draw_window(int32_t id);
@@ -22,12 +28,14 @@ static int32_t z_order_find_index(int32_t window);
 static void z_order_add_at(int32_t z_index, int32_t window);
 static void z_order_remove_at(int32_t z_index);
 
+//Initialize the windows system
 void init_windows() {
     memset(windows, 0, sizeof(windows));
 
     for (int i = 0; i < MAX_WINDOWS; i++)
         window_z_order[i] = -1;
     
+    //register syscall to use kernel function in usercontext
     register_syscall(SYSCALL_CREATE_WINDOW, create_window);
     register_syscall(SYSCALL_DESTROY_WINDOW, destroy_window);
     register_syscall(SYSCALL_GET_WINDOW_FB_SHMEM_ID, get_framebuffer_shmem_id);
@@ -35,6 +43,12 @@ void init_windows() {
     register_syscall(SYSCALL_SET_WINDOW_TITLE, set_title);
 }
 
+// Functionname 	: create_window
+// Parameters		: width, height, flags
+// Returns			: window id
+// Description		: 
+// Note				: 
+  
 int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
     int32_t index = find_window_slot();
     assert(windows[index].state == 0);

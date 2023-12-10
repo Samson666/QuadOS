@@ -19,8 +19,14 @@ void sharedmem_init() {
     kernel_shmem_mappings.vaddr_start = KERNEL_SHARED_MEMORY;
 }
 
-// problem: how do two processes agree on the same shmem obj id?
+// Functionname 	: sharedmem_create
+// Parameters		: size, id of the owner task
+// Returns			: id of the sharedmem object
+// Description		: Allocates memory for shared memory
+// Note				: problem: how do two processes agree on the same shmem obj id?
+
 int32_t sharedmem_create(uint32_t size, uint32_t owner_task_id) {
+    //Are interrupts disabled? If not assert!
     VERIFY_INTERRUPTS_DISABLED;
     assert(size);
 
@@ -38,6 +44,40 @@ int32_t sharedmem_create(uint32_t size, uint32_t owner_task_id) {
 
     return id;
 }
+
+// Functionname 	: sharedmem_resize
+// Parameters		: id of the sharedmem object
+// Returns			: void
+// Description		: resizes the allocated memory of the shared memory object
+// Note				: 
+ 
+void sharedmem_resize(int32_t id, uint32_t newsize)
+{
+    int i = 0;
+    //Are interrupts disabled? If not assert!
+    VERIFY_INTERRUPTS_DISABLED;
+    assert(newsize);
+    
+    SharedMemory* obj = &shmem[id];
+    uint32_t num_pages = CEIL_DIV(newsize, 0x1000);
+
+    kernel_log("size in pages before resizing: %d", obj->size_in_pages * 4096);
+    
+    for (i = 0; i < obj->size_in_pages; i++) {
+        pmm_free_pageframe(obj->physical_pages[i]);
+    }
+    kfree(obj->physical_pages);
+
+    obj->size_in_pages = num_pages;
+    obj->physical_pages = kmalloc(num_pages * sizeof(uint32_t));
+
+     for (i = 0; i < num_pages; i++) {
+        obj->physical_pages[i] = pmm_alloc_pageframe();
+    }
+
+    kernel_log("size in pages after resizing: %d", obj->size_in_pages * 4096);
+}
+
 
 void sharedmem_destroy(int32_t id) {
     VERIFY_INTERRUPTS_DISABLED;
@@ -79,6 +119,12 @@ bool sharedmem_exists(int32_t id) {
     return shmem[id].size_in_pages != 0;
 }
 
+// Functionname 	: insert_into_pool
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 // dont store pointer returned by this
 static SharedMemoryMapping* insert_into_pool(SharedMemoryMappingPool* pool, int size_in_pages, int shmem_id) {
     assert(pool->num < MAX_SHARED_MEMORY_MAPPINGS);

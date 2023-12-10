@@ -190,11 +190,7 @@ os_errorcode syscall_get_task_info(OSTaskInfo* list, uint32_t list_max_size, uin
             strcpy(info->name, task->name);
         else
             strcpy(info->name, "no name");
-        kernel_log("get task info name (task): %s", task->name);
-        kernel_log("strlen of task->name: %d", strlen(task->name));
-           
-        kernel_log("get task info name (info): %s", info->name);
-
+            
         index++;
         if (index >= list_max_size)
             break;

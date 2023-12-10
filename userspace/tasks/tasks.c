@@ -43,7 +43,6 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < num_entries; i++) {
             const OSTaskInfo* entry = &entries[i];
             char buffer[128];
-            os_printf("user task.c name: %s", entry->name);
             snprintf(buffer, sizeof(buffer), "task id=%u state=%u name=%s", entry->id, entry->state, entry->name);
             
             sgfx_draw_string(&ctx, buffer, 3, FILE_LIST_Y_OFFSET + FILE_LIST_Y_SPACING * i, 0xFFFFFFFF);
