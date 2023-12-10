@@ -16,7 +16,7 @@ int32_t window_z_order[MAX_WINDOWS]; // list of window indices, window_z_order[0
 int32_t z_order_length = 0;
 
 static int32_t find_window_slot();
-static int32_t get_framebuffer_shmem_id(int32_t window_id);
+int32_t get_framebuffer_shmem_id(int32_t window_id);
 static int32_t swap_buffers(int32_t window_id);
 static int32_t set_title(int32_t window_id, const char* title);
 static void draw_window(int32_t id);
@@ -93,7 +93,7 @@ static int32_t find_window_slot() {
     assert(0);
 }
 
-static int32_t get_framebuffer_shmem_id(int32_t window_id) {
+int32_t get_framebuffer_shmem_id(int32_t window_id) {
     return windows[window_id].fb_shmem_id;
 }
 

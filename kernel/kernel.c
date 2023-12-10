@@ -23,6 +23,8 @@
 #include "fpu.h"
 #include "slib.h"
 
+#include "windowtest.h"
+
 bool graphics_enabled;
 
 void kernel_main(struct multiboot_info* info) {
@@ -80,6 +82,7 @@ void kernel_main(struct multiboot_info* info) {
         create_kernel_task(gui_thread_entry);           //Create the kernel task for the GUI
 
         create_user_task("files.exe");                  //Starting task from file
+        create_kernel_task(cwindow);
     }
 
     init_keyboard();                                    //Initalise the keyboard
@@ -92,7 +95,7 @@ void kernel_main(struct multiboot_info* info) {
     console_set_prompt_enabled(true);                   //Enable the prompt in the graphical console
     enable_interrupts();                                //Enable interrupts
     
-    
+  
 
     //Idle loop for kernel task (this task)
     while (true) {

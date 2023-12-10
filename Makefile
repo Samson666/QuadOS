@@ -1,6 +1,6 @@
 CC = i386-elf-gcc
 LD = i386-elf-ld
-CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -Isgfx -Ikernel -Ikernel/include -no-pie
+CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -Isgfx -Ikernel -Ikernel/include -Ikernel/test -no-pie
 LDFLAGS = -melf_i386 -Tkernel.ld -Lsgfx -lsgfx
 ASFLAGS = -felf32
 LIBGCC = /usr/bin/../lib/gcc/i386-elf/7.5.0/libgcc.a

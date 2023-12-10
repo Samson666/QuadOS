@@ -49,3 +49,4 @@ bool check_window_close(int32_t window, int32_t x, int32_t y);
 int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content);
 Window* get_window(int32_t id);
 void move_window_to_front(int32_t window);
+int32_t get_framebuffer_shmem_id(int32_t window_id);
