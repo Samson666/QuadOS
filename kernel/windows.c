@@ -95,7 +95,6 @@ int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
 void resize_window(int32_t id, int32_t width, int32_t height)
 {
     kernel_log("Func. resize_window window id: %d, width: %d, height: %d current task id: %d", id, width, height, current_task->id);
-    //return;
     uint32_t fb_bytes = width * height * 4;
     Window* w = &windows[id];
     windows[id].width = width;
@@ -190,6 +189,11 @@ static void draw_window(int32_t id) {
     graphics_fill_rect(close_button_x, close_button_y, CLOSE_BUTTON_WIDTH, CLOSE_BUTTON_HEIGHT, 0xFFFFFF);
     graphics_draw_string("x", close_button_x + 5, close_button_y + 3, 0);
 
+    // resize grip
+    int32_t grip_x = w->x + w->width - GRIP_SIZE;
+    int32_t grip_y = w->y + w->height + WINDOW_CONTENT_YOFFSET - GRIP_SIZE;
+    graphics_draw_vline(grip_x,grip_y,GRIP_SIZE,0xFFFFFF);
+    graphics_draw_hline(grip_x, grip_y, GRIP_SIZE + WINDOW_CONTENT_XOFFSET, 0xFFFFFF);
     // signal task
     push_cli();
     Task* task = get_task(w->owner_task_id);
@@ -203,7 +207,7 @@ bool check_window_close(int32_t window, int32_t x, int32_t y) {
     Window* w = get_window(window);
 
     int32_t close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
-    int32_t close_button_y = w->y + 1;
+    int32_t close_button_y = w->y + 10;
 
     if (x < close_button_x) return false;
     if (y < close_button_y) return false;

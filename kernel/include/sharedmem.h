@@ -30,4 +30,3 @@ bool sharedmem_exists(int32_t id);
 void* sharedmem_map(int32_t id, uint32_t task_id);
 void sharedmem_unmap(int32_t id, uint32_t task_id);
 void shmem_print_mappings(SharedMemoryMappingPool* pool);
-void sharedmem_resize(int32_t id, uint32_t newsize);

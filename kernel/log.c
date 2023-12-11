@@ -13,7 +13,10 @@ void init_logging(bool serial) {
     init_console();
 }
 
+//#define _LOGING_ON
+
 void kernel_log(const char* format, ...) {
+    #ifdef _LOGING_ON
     char buffer[256];
 
     va_list args;
@@ -29,6 +32,7 @@ void kernel_log(const char* format, ...) {
         serial_write(buffer[i]);
     }
     serial_write('\n');
+    #endif //_LOGING_ON
 }
 
 void _putchar(char character) {

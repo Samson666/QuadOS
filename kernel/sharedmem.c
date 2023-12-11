@@ -46,40 +46,6 @@ int32_t sharedmem_create(uint32_t size, uint32_t owner_task_id) {
     return id;
 }
 
-// Functionname 	: sharedmem_resize
-// Parameters		: id of the sharedmem object
-// Returns			: void
-// Description		: resizes the allocated memory of the shared memory object
-// Note				: mainly used for resizing windows
-
-void sharedmem_resize(int32_t id, uint32_t newsize)
-{
-    int i = 0;
-    //Are interrupts disabled? If not assert!
-    //VERIFY_INTERRUPTS_DISABLED;
-    //assert(newsize);
-    
-    SharedMemory* obj = &shmem[id];
-    uint32_t num_pages = CEIL_DIV(newsize, 0x1000);
-
-    kernel_log("size in bytes before resizing: %d", obj->size_in_pages * 4096);
-    
-    for (i = 0; i < obj->size_in_pages; i++) {
-        pmm_free_pageframe(obj->physical_pages[i]);
-    }
-    kfree(obj->physical_pages);
-
-    obj->size_in_pages = num_pages;
-    obj->physical_pages = kmalloc(num_pages * sizeof(uint32_t));
-
-     for (i = 0; i < num_pages; i++) {
-        obj->physical_pages[i] = pmm_alloc_pageframe();
-    }
-
-    kernel_log("size in bytes after resizing: %d", obj->size_in_pages * 4096);
-}
-
-
 void sharedmem_destroy(int32_t id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));

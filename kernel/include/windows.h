@@ -9,10 +9,14 @@
 
 #define CLOSE_BUTTON_WIDTH 18
 #define CLOSE_BUTTON_HEIGHT 18
+#define GRIP_SIZE 10
+
+
 
 #define WINDOW_TITLE_MAX_LENGTH 64
 #define WINDOW_FLAG_FULLSCREEN (1 << 0)
 #define WINDOW_FLAG_DOUBLE_BUFFERED (1 << 1)
+#define WINDOW_FLAG_RESIZABLE (1<<2)
 
 typedef struct {
     u16 state;
