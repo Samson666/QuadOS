@@ -10,6 +10,7 @@
 #include "gui.h"
 #include "sharedmem.h"
 #include "util.h"
+#include "log.h"
 
 Window windows[MAX_WINDOWS];
 int32_t currently_dragging_window = -1;
@@ -41,6 +42,7 @@ void init_windows() {
     register_syscall(SYSCALL_GET_WINDOW_FB_SHMEM_ID, get_framebuffer_shmem_id);
     register_syscall(SYSCALL_WINDOW_SWAP_BUFFERS, swap_buffers);
     register_syscall(SYSCALL_SET_WINDOW_TITLE, set_title);
+    register_syscall(SYSCALL_RESIZE_WINDOW, resize_window);
 }
 
 // Functionname 	: create_window
@@ -50,6 +52,7 @@ void init_windows() {
 // Note				: 
   
 int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
+    kernel_log("Function create_window widht=%d, height=%d, flags=%x", width, height, flags);
     int32_t index = find_window_slot();
     assert(windows[index].state == 0);
 
@@ -82,6 +85,30 @@ int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
     return index;
 }
 
+// Functionname 	: resize_window
+// Parameters		: the windows id, new width and height
+// Returns			: void
+// Description		: 
+// Note				: Seems to work now. Had to create shared mem object and first map it to kernel and
+// Note             : map it later to the current task
+ 
+void resize_window(int32_t id, int32_t width, int32_t height)
+{
+    kernel_log("Func. resize_window window id: %d, width: %d, height: %d current task id: %d", id, width, height, current_task->id);
+    //return;
+    uint32_t fb_bytes = width * height * 4;
+    Window* w = &windows[id];
+    windows[id].width = width;
+    windows[id].height = height;
+    windows[id].actual_width = width + 2;
+    windows[id].actual_height = height + WINDOW_CONTENT_YOFFSET + 1;
+    sharedmem_destroy(w->fb_shmem_id);
+    windows[id].fb_shmem_id = sharedmem_create(fb_bytes * (windows[id].flags & WINDOW_FLAG_DOUBLE_BUFFERED ? 2 : 1),0);
+    windows[id].framebuffer = sharedmem_map(windows[id].fb_shmem_id, 0);
+    sharedmem_map(windows[id].fb_shmem_id, current_task->id);
+    gui.needs_redraw = true;
+}
+
 void destroy_window(int32_t window_id) {
     Window* w = &windows[window_id];
     sharedmem_destroy(w->fb_shmem_id);
@@ -106,6 +133,8 @@ static int32_t find_window_slot() {
 }
 
 int32_t get_framebuffer_shmem_id(int32_t window_id) {
+    int32_t shmem_id= windows[window_id].fb_shmem_id;
+    kernel_log("Function: get_framebuffer_shmem_id windows id: %d fb_shmem_id: %d", window_id, shmem_id);
     return windows[window_id].fb_shmem_id;
 }
 

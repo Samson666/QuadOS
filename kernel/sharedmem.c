@@ -26,6 +26,7 @@ void sharedmem_init() {
 // Note				: problem: how do two processes agree on the same shmem obj id?
 
 int32_t sharedmem_create(uint32_t size, uint32_t owner_task_id) {
+    kernel_log("Function sharedmem_create size: %d owner_task_id: %d", size, owner_task_id);
     //Are interrupts disabled? If not assert!
     VERIFY_INTERRUPTS_DISABLED;
     assert(size);
@@ -49,19 +50,19 @@ int32_t sharedmem_create(uint32_t size, uint32_t owner_task_id) {
 // Parameters		: id of the sharedmem object
 // Returns			: void
 // Description		: resizes the allocated memory of the shared memory object
-// Note				: 
- 
+// Note				: mainly used for resizing windows
+
 void sharedmem_resize(int32_t id, uint32_t newsize)
 {
     int i = 0;
     //Are interrupts disabled? If not assert!
-    VERIFY_INTERRUPTS_DISABLED;
-    assert(newsize);
+    //VERIFY_INTERRUPTS_DISABLED;
+    //assert(newsize);
     
     SharedMemory* obj = &shmem[id];
     uint32_t num_pages = CEIL_DIV(newsize, 0x1000);
 
-    kernel_log("size in pages before resizing: %d", obj->size_in_pages * 4096);
+    kernel_log("size in bytes before resizing: %d", obj->size_in_pages * 4096);
     
     for (i = 0; i < obj->size_in_pages; i++) {
         pmm_free_pageframe(obj->physical_pages[i]);
@@ -75,7 +76,7 @@ void sharedmem_resize(int32_t id, uint32_t newsize)
         obj->physical_pages[i] = pmm_alloc_pageframe();
     }
 
-    kernel_log("size in pages after resizing: %d", obj->size_in_pages * 4096);
+    kernel_log("size in bytes after resizing: %d", obj->size_in_pages * 4096);
 }
 
 
@@ -153,11 +154,16 @@ static void remove_from_pool(SharedMemoryMappingPool* pool, int index) {
     pool->num--;
 }
 
-// if task_id == 0, map to kernel
+// Functionname 	: sharedmem_map
+// Parameters		: id of shared memory object
+// Returns			: ptr to virtual adress of sharemem object
+// Description		: maps the sharedmem object to virtual memory and given task
+// Note				: 
+ 
 void* sharedmem_map(int32_t id, uint32_t task_id) {
     VERIFY_INTERRUPTS_DISABLED;
     assert(sharedmem_exists(id));
-    // kernel_log("sharedmem_map    shmem obj=%u task_id=%u", id, task_id);
+    kernel_log("sharedmem_map    shmem obj=%u task_id=%u", id, task_id);
 
     SharedMemory* obj = &shmem[id];
     SharedMemoryMappingPool* pool = &kernel_shmem_mappings;
@@ -184,7 +190,7 @@ void* sharedmem_map(int32_t id, uint32_t task_id) {
         if (!map_to_kernel)
             flags |= PAGE_FLAG_USER;
 
-        // kernel_log("sharedmem: mapping %x to %x", mapping->vaddr + i * 0x1000, obj->physical_pages[i]);
+        //kernel_log("sharedmem: mapping %x to %x", mapping->vaddr + i * 0x1000, obj->physical_pages[i]);
         mem_map_page(mapping->vaddr + i * 0x1000, obj->physical_pages[i], flags);
     }
 

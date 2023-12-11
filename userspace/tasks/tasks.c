@@ -35,6 +35,11 @@ int main(int argc, char* argv[]) {
 
     os_set_timer_interval(0, 500);
 
+    os_resize_window(window, 700, 500);
+    
+    sgfx_init(&ctx, fb, 700, 500);
+
+    
     OSEvent event;
     while (1) {
         sgfx_fill(&ctx, 0xFF000000);

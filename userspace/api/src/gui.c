@@ -6,6 +6,11 @@ int32_t os_create_window(int32_t width, int32_t height, uint32_t flags) {
     return syscall_create_window(width, height, flags);
 }
 
+void os_resize_window(int32_t id, int32_t width, int32_t height)
+{
+    syscall_resize_window(id, width, height);
+}
+
 int32_t os_destroy_window(int32_t window_id) {
     return syscall_destroy_window(window_id);
 }

@@ -20,7 +20,7 @@ void init_console() {
     console.cursor_x = 0;
     console.cursor_y = 0;
     console.buffer = (uint8_t*) (graphics_enabled ? gui.fake_console_buffer : 0xC00B8000);
-    console.clear_color = 0x0F;
+    console.clear_color = 0xA;
 
     clear_prompt();
     vga_clear();
