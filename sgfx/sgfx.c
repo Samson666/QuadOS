@@ -1,3 +1,8 @@
+//Filename			: sgfx.c
+//First created: 12.12.2023
+//Last changed		: 
+//Description		: Provides low level graphic operations directly to the framebuffer
+ 
 #define SGFX_OPTIMIZE
 
 #include "sgfx.h"

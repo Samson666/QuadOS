@@ -65,7 +65,7 @@ int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
     windows[index].height = height;
     windows[index].flags = flags;
     windows[index].actual_width = width + 2;
-    windows[index].actual_height = height + WINDOW_CONTENT_YOFFSET + 1;
+    windows[index].actual_height = height + WINDOW_TITLE_BAR_HEIGHT + 1;
     uint32_t fb_bytes = width * height * 4;
     windows[index].framebuffer_size_bytes = fb_bytes;
     windows[index].fb_shmem_id = sharedmem_create(fb_bytes * (flags & WINDOW_FLAG_DOUBLE_BUFFERED ? 2 : 1), 0);
@@ -100,7 +100,7 @@ void resize_window(int32_t id, int32_t width, int32_t height)
     windows[id].width = width;
     windows[id].height = height;
     windows[id].actual_width = width + 2;
-    windows[id].actual_height = height + WINDOW_CONTENT_YOFFSET + 1;
+    windows[id].actual_height = height + WINDOW_TITLE_BAR_HEIGHT + 1;
     sharedmem_destroy(w->fb_shmem_id);
     windows[id].fb_shmem_id = sharedmem_create(fb_bytes * (windows[id].flags & WINDOW_FLAG_DOUBLE_BUFFERED ? 2 : 1),0);
     windows[id].framebuffer = sharedmem_map(windows[id].fb_shmem_id, 0);
@@ -169,16 +169,16 @@ static void draw_window(int32_t id) {
 
     // copy the contents of the framebuffer to the screen
     uint32_t* source = ((uint32_t) w->framebuffer) + (w->shown_buffer == 0 ? 0 : w->framebuffer_size_bytes);
-    graphics_copy_rect(w->x + WINDOW_CONTENT_XOFFSET, w->y + WINDOW_CONTENT_YOFFSET, w->width, w->height, 0, 0, source);
+    graphics_copy_rect(w->x + WINDOW_CONTENT_XOFFSET, w->y + WINDOW_TITLE_BAR_HEIGHT, w->width, w->height, 0, 0, source);
 
     // window title bar
-    graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_CONTENT_YOFFSET - 1, border_color);
+    graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_TITLE_BAR_HEIGHT - 1, border_color);
 
     // window outline
     graphics_draw_hline(w->x, w->y, w->width + WINDOW_CONTENT_XOFFSET * 2, border_color);
-    graphics_draw_hline(w->x, w->y + WINDOW_CONTENT_YOFFSET + w->height, w->width + WINDOW_CONTENT_XOFFSET * 2, border_color);
-    graphics_draw_vline(w->x, w->y, w->height + WINDOW_CONTENT_YOFFSET, border_color);
-    graphics_draw_vline(w->x + w->width + 1, w->y, w->height + WINDOW_CONTENT_YOFFSET, border_color);
+    graphics_draw_hline(w->x, w->y + WINDOW_TITLE_BAR_HEIGHT + w->height, w->width + WINDOW_CONTENT_XOFFSET * 2, border_color);
+    graphics_draw_vline(w->x, w->y, w->height + WINDOW_TITLE_BAR_HEIGHT, border_color);
+    graphics_draw_vline(w->x + w->width + 1, w->y, w->height + WINDOW_TITLE_BAR_HEIGHT, border_color);
 
     // window title
     graphics_draw_string(w->title, w->x + 5, w->y + 5, 0xFFFFFF);
@@ -193,7 +193,7 @@ static void draw_window(int32_t id) {
     if(w->flags & WINDOW_FLAG_RESIZABLE)
     {
         int32_t grip_x = w->x + w->width - GRIP_SIZE;
-        int32_t grip_y = w->y + w->height + WINDOW_CONTENT_YOFFSET - GRIP_SIZE;
+        int32_t grip_y = w->y + w->height + WINDOW_TITLE_BAR_HEIGHT - GRIP_SIZE;
         graphics_draw_vline(grip_x,grip_y,GRIP_SIZE,0xFFFFFF);
         graphics_draw_hline(grip_x, grip_y, GRIP_SIZE + WINDOW_CONTENT_XOFFSET, 0xFFFFFF);
     }
@@ -226,7 +226,7 @@ bool check_window_resize(int32_t window, int32_t x, int32_t y)
     Window* w = get_window(window);
     int ret = 1;
     int32_t resize_grip_x = w->x + w->width - GRIP_SIZE;
-    int32_t resize_grip_y = w->y + w->height + WINDOW_CONTENT_YOFFSET - GRIP_SIZE;
+    int32_t resize_grip_y = w->y + w->height + WINDOW_TITLE_BAR_HEIGHT - GRIP_SIZE;
     if (x < resize_grip_x)ret=0;
     if (y < resize_grip_y) ret=0;
     if (x >= resize_grip_x + GRIP_SIZE) ret=0;
@@ -248,7 +248,7 @@ int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {
         if (w->x + w->actual_width < x) continue;
         if (w->y + w->actual_height < y) continue;
 
-        if (y - w->y > WINDOW_CONTENT_YOFFSET)
+        if (y - w->y > WINDOW_TITLE_BAR_HEIGHT)
             *inside_content = true;
         return id;
     }

@@ -1,3 +1,8 @@
+//Filename			: gui.c
+//First created: 12.12.2023
+//Last changed		: 
+//Description		: 
+ 
 #include "gui.h"
 
 #include "graphics.h"
@@ -104,7 +109,7 @@ static void handle_left_click() {
             Event click;
             click.type = EVENT_MOUSE_CLICK;
             click.data0 = gui.cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
-            click.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_CONTENT_YOFFSET;
+            click.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
             click.data2 = 1;
             handle_event(&click);
         } else {
@@ -177,7 +182,7 @@ static void gui_handle_events() {
             Event move;
             move.type = EVENT_MOUSE_MOVE;
             move.data0 = gui.cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
-            move.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_CONTENT_YOFFSET;
+            move.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
             move.data2 = 0;
             handle_event(&move);
         }
