@@ -1,7 +1,7 @@
 OBJ = $(patsubst %.c, %.o, $(wildcard *.c))
 EXE = tasks.exe
 
-CFLAGS += -I../../sgfx
+CFLAGS += -I../../sgfx -I../../kernel/include
 LDFLAGS += -L../../sgfx -lsgfx
 
 all: $(EXE)

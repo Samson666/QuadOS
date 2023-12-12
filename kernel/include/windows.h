@@ -56,3 +56,4 @@ void move_window_to_front(int32_t window);
 int32_t get_framebuffer_shmem_id(int32_t window_id);
 int32_t set_title(int32_t window_id, const char* title);
 void resize_window(int32_t id, int32_t width, int32_t height);
+bool check_window_resize(int32_t window, int32_t x, int32_t y);

@@ -98,7 +98,7 @@ static void handle_left_click() {
 
     if (window_under_cursor != -1) {
         // we are clicking on a window
-        move_window_to_front(window_under_cursor);
+        move_window_to_front(window_under_cursor);      //bring the window to front
 
         if (window_under_cursor_inside_content) {
             Event click;
@@ -109,7 +109,8 @@ static void handle_left_click() {
             handle_event(&click);
         } else {
             // we are clicking on its border
-            if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y)) {
+            if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            {
                 Window* w = get_window(window_under_cursor);
                 uint32_t task_id = w->owner_task_id;
                 // todo: allow for multiple windows
@@ -117,6 +118,10 @@ static void handle_left_click() {
                 kill_task(task_id);
                 window_under_cursor = -1;
                 focused_window = -1;
+            }
+            if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            {
+                
             }
             currently_dragging_window = window_under_cursor;
         }
@@ -126,11 +131,13 @@ static void handle_left_click() {
 }
 
 static void gui_handle_events() {
+    //get the movement of the mousepointer
     gui.cursor_x += mouse.x_acc;
     mouse.x_acc = 0;
     gui.cursor_y += mouse.y_acc;
     mouse.y_acc = 0;
 
+    //check if mousepointer is in the boundaries.
     if (gui.cursor_x < 0)
         gui.cursor_x = 0;
     if (gui.cursor_y < 0)
@@ -140,6 +147,7 @@ static void gui_handle_events() {
     if (gui.cursor_y >= graphics.height)
         gui.cursor_y = graphics.height - 1;
 
+    //get the window which is currently under the cursor
     window_under_cursor = find_window_from_pos(gui.cursor_x, gui.cursor_y, &window_under_cursor_inside_content);
 
     static bool prev_mouse_left_button = 0;

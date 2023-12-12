@@ -13,7 +13,7 @@ void init_logging(bool serial) {
     init_console();
 }
 
-//#define _LOGING_ON
+#define _LOGING_ON
 
 void kernel_log(const char* format, ...) {
     #ifdef _LOGING_ON

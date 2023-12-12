@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sgfx.h>
 #include <stdio.h>
+#include "windows.h"
 
 #define width 400
 #define height 320
@@ -22,7 +23,7 @@ static void update_task_info();
 static GraphicsContext ctx;
 
 int main(int argc, char* argv[]) {
-    int window = os_create_window(width, height, 0);
+    int window = os_create_window(width, height, (unsigned int) WINDOW_FLAG_RESIZABLE);
     os_set_window_title(window, "Task Manager");
     int* fb = os_map_window_framebuffer(window);
 
@@ -41,8 +42,6 @@ int main(int argc, char* argv[]) {
     os_resize_window(window, 700, 500);   
     sgfx_init(&ctx, fb, 700, 500);
 
-
-    
     OSEvent event;
     while (1) {
         sgfx_fill(&ctx, 0xFF000000);

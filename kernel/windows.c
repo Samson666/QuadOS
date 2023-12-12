@@ -190,10 +190,14 @@ static void draw_window(int32_t id) {
     graphics_draw_string("x", close_button_x + 5, close_button_y + 3, 0);
 
     // resize grip
-    int32_t grip_x = w->x + w->width - GRIP_SIZE;
-    int32_t grip_y = w->y + w->height + WINDOW_CONTENT_YOFFSET - GRIP_SIZE;
-    graphics_draw_vline(grip_x,grip_y,GRIP_SIZE,0xFFFFFF);
-    graphics_draw_hline(grip_x, grip_y, GRIP_SIZE + WINDOW_CONTENT_XOFFSET, 0xFFFFFF);
+    if(w->flags & WINDOW_FLAG_RESIZABLE)
+    {
+        int32_t grip_x = w->x + w->width - GRIP_SIZE;
+        int32_t grip_y = w->y + w->height + WINDOW_CONTENT_YOFFSET - GRIP_SIZE;
+        graphics_draw_vline(grip_x,grip_y,GRIP_SIZE,0xFFFFFF);
+        graphics_draw_hline(grip_x, grip_y, GRIP_SIZE + WINDOW_CONTENT_XOFFSET, 0xFFFFFF);
+    }
+
     // signal task
     push_cli();
     Task* task = get_task(w->owner_task_id);
@@ -215,6 +219,20 @@ bool check_window_close(int32_t window, int32_t x, int32_t y) {
     if (y >= close_button_y + CLOSE_BUTTON_HEIGHT) return false;
 
     return true;
+}
+
+bool check_window_resize(int32_t window, int32_t x, int32_t y)
+{
+    Window* w = get_window(window);
+    int ret = 1;
+    int32_t resize_grip_x = w->x + w->width - GRIP_SIZE;
+    int32_t resize_grip_y = w->y + w->height + WINDOW_CONTENT_YOFFSET - GRIP_SIZE;
+    if (x < resize_grip_x)ret=0;
+    if (y < resize_grip_y) ret=0;
+    if (x >= resize_grip_x + GRIP_SIZE) ret=0;
+    if (y >= resize_grip_y + GRIP_SIZE) ret=0;
+
+    kernel_log("Function check_window_resize grip_x: %d, grip_y %d, return %d", resize_grip_x, resize_grip_y, ret);
 }
 
 int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {

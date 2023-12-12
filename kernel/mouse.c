@@ -63,8 +63,8 @@ static void handle_mouse_interrupt(TrapFrame* frame) {
     if (buffer_index >= PACKET_BYTES) {
         buffer_index = 0;
 
-        mouse.x_acc += (s8) buffer[2];
-        mouse.y_acc -= (s8) buffer[0];
+        mouse.x_acc += (int8_t) buffer[2];
+        mouse.y_acc -= (int8_t) buffer[0];
         mouse.left_button = buffer[1] & 1;
         if (mouse.left_button)
             gui.left_click = true;
