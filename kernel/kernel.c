@@ -79,7 +79,7 @@ void kernel_main(struct multiboot_info* info) {
         init_graphics((uint32_t*) framebuffer_addr, framebuffer_width, framebuffer_height, (uint32_t) framebuffer_bpp / 8, framebuffer_pitch);
                                                         //Initialise the graphics
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
-        create_named_kernel_task(gui_thread_entry, "GUI");           //Create the kernel task for the GUI
+        create_named_kernel_task(gui_task, "GUI");           //Create the kernel task for the GUI
 
         create_user_task("files.exe");                  //Starting task from file
     }

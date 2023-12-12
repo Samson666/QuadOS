@@ -10,7 +10,7 @@
 
 #define CLOSE_BUTTON_WIDTH 18                   //x dimension of the window close button
 #define CLOSE_BUTTON_HEIGHT 18                  //y dimension of the window close button
-#define GRIP_SIZE WINDOW_STATUS_BAR_HEIGHT      //The size of the resizing grip                           
+#define GRIP_SIZE WINDOW_STATUS_BAR_HEIGHT      //The size of the resizing grip. For now it has the same size (width and height) as the status bar height.                           
 
 #define WINDOW_TITLE_MAX_LENGTH 64              //The maximum length of the window title
 #define WINDOW_FLAG_FULLSCREEN (1 << 0)         //Window is opened in fullscreen size
@@ -18,6 +18,7 @@
 #define WINDOW_FLAG_RESIZABLE (1<<2)            //Window has a resize grip
 #define WINDOW_FLAG_TITLE_BAR (1<<3)            //Window has a title bar (at the top of the window)
 #define WINDOW_FLAG_STATUSBAR (1<<4)            //Window has a status bar (at the bottom of the window)
+#define WINDOW_FLAG_IS_WORKBENCH (1<<5)         //This window is the workbench window. Allways stay in the back
 
 typedef struct {
     uint16_t state;

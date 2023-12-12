@@ -45,8 +45,8 @@ void init_gui(int32_t width, int32_t height) {
     testbutton_h = 50;
 }
 
-//The GUI thread / task
-void gui_thread_entry() {
+//The GUI task
+void gui_task() {
     // disable_interrupts();
     while (1) {
         if (gui.needs_redraw) {
@@ -135,6 +135,12 @@ static void handle_left_click() {
     gui.needs_redraw = true;
 }
 
+// Functionname 	: gui_handle_events
+// Parameters		: none
+// Returns			: void
+// Description		: handles the events in gui thread loop (gui_task in this file)
+// Note				: 
+ 
 static void gui_handle_events() {
     //get the movement of the mousepointer
     gui.cursor_x += mouse.x_acc;

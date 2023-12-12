@@ -14,5 +14,5 @@ typedef struct {
 extern GUI gui;
 
 void init_gui(int32_t width, int32_t height);
-void gui_thread_entry();
+void gui_task();
 void draw_debug_console(uint32_t color);
