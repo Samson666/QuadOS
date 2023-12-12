@@ -159,7 +159,8 @@ static void gui_handle_events() {
         gui.cursor_y = graphics.height - 1;
 
     //get the window which is currently under the cursor
-    window_under_cursor = find_window_from_pos(gui.cursor_x, gui.cursor_y, &window_under_cursor_inside_content);
+    if(gui.cursor_x != gui.prev_cursor_x && gui.cursor_y != gui.prev_cursor_y)
+        window_under_cursor = find_window_from_pos(gui.cursor_x, gui.cursor_y, &window_under_cursor_inside_content);
 
     static bool prev_mouse_left_button = 0;
 

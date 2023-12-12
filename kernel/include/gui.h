@@ -3,12 +3,12 @@
 #include "types.h"
 
 typedef struct {
-    int32_t width, height;
-    int32_t cursor_x, cursor_y;
-    int32_t prev_cursor_x, prev_cursor_y;
-    bool needs_redraw;
-    bool left_click;
-    u16 fake_console_buffer[50 * 80];
+    int32_t width, height;                  //holds the width an height of the gui
+    int32_t cursor_x, cursor_y;             //holds the current mouse coordinates    
+    int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates 
+    bool needs_redraw;                      //indicates if the frame needs a redraw
+    bool left_click;                        //left mouse button is clicked
+    u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
 } GUI;
 
 extern GUI gui;

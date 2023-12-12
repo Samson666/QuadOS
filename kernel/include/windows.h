@@ -26,10 +26,10 @@ typedef struct {
     int16_t y;                                  // ""          ""      ""
     int16_t width;                              //widht of the window width
     int16_t height;                             //content/inner height
-    uint32_t flags;                             //The window flags
-    int16_t actual_width;                       //currently not used
-    int16_t actual_height;                      //currently not used
-    uint32_t* framebuffer;                      //Pointer to the framebuffer
+    uint32_t flags;                             //the window flags
+    int16_t actual_width;                       //the window width of the content
+    int16_t actual_height;                      //the window height of the content
+    uint32_t* framebuffer;                      //pointer to the framebuffer
     uint32_t framebuffer_size_bytes;            //size of the buffer in bytes
     int16_t fb_shmem_id;                        //id of the used shared memory object
     uint8_t shown_buffer;                       //currently not used. buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
@@ -43,9 +43,9 @@ typedef struct {
 extern Window windows[MAX_WINDOWS];             //create maxwindow window structures (objects)
 
 //definition of some extern/global variables
-extern int32_t currently_dragging_window;
-extern int32_t focused_window;
-extern int32_t window_under_cursor;
+extern int32_t currently_dragging_window;       //holds the id of the current dragged window. -1 if none
+extern int32_t focused_window;                  //holds the id of the current focused window. -1 if none
+extern int32_t window_under_cursor;             //holds the id of the current window under the cursor. -1 if none
 extern bool window_under_cursor_inside_content;
 
 //function declarations
