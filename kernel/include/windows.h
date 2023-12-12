@@ -21,20 +21,20 @@
 #define WINDOW_FLAG_IS_WORKBENCH (1<<5)         //This window is the workbench window. Allways stay in the back
 
 typedef struct {
-    uint16_t state;
-    int16_t x; // top left of actual window
-    int16_t y;
-    int16_t width; // content/inner width
-    int16_t height; // content/inner height
-    uint32_t flags;
-    int16_t actual_width;
-    int16_t actual_height;
-    uint32_t* framebuffer;
-    uint32_t framebuffer_size_bytes;
-    int16_t fb_shmem_id;
-    uint8_t shown_buffer; // buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
-    char title[WINDOW_TITLE_MAX_LENGTH];
-    int32_t owner_task_id;
+    uint16_t state;                             //currently not used
+    int16_t x;                                  //top left coordinates of the window
+    int16_t y;                                  // ""          ""      ""
+    int16_t width;                              //widht of the window width
+    int16_t height;                             //content/inner height
+    uint32_t flags;                             //The window flags
+    int16_t actual_width;                       //currently not used
+    int16_t actual_height;                      //currently not used
+    uint32_t* framebuffer;                      //Pointer to the framebuffer
+    uint32_t framebuffer_size_bytes;            //size of the buffer in bytes
+    int16_t fb_shmem_id;                        //id of the used shared memory object
+    uint8_t shown_buffer;                       //currently not used. buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
+    char title[WINDOW_TITLE_MAX_LENGTH];        //character array for the window title
+    int32_t owner_task_id;                      //pointer to the owner task
 } Window;
 
 
@@ -42,7 +42,7 @@ typedef struct {
 #define MAX_WINDOWS 64                          //maximum count of windows
 extern Window windows[MAX_WINDOWS];             //create maxwindow window structures (objects)
 
-//definition of some extern variables
+//definition of some extern/global variables
 extern int32_t currently_dragging_window;
 extern int32_t focused_window;
 extern int32_t window_under_cursor;
