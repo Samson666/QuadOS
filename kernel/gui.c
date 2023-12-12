@@ -124,7 +124,7 @@ static void handle_left_click() {
                 window_under_cursor = -1;
                 focused_window = -1;
             }
-            if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            else if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
             {
                 
             }
