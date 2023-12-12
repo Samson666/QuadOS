@@ -6,7 +6,7 @@
 
 #define WINDOW_CONTENT_XOFFSET 1                //x-offset of the window. Used to give a distance between the windowborder and its content  
 #define WINDOW_TITLE_BAR_HEIGHT 20              //height of the window title bar
-#define WINDOW_STATUS_BAR_HEIGHT 10             //height of the window status bar
+#define WINDOW_STATUS_BAR_HEIGHT 20             //height of the window status bar
 
 #define CLOSE_BUTTON_WIDTH 18                   //x dimension of the window close button
 #define CLOSE_BUTTON_HEIGHT 18                  //y dimension of the window close button

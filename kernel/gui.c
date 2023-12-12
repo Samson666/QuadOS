@@ -17,6 +17,7 @@
 #include "res/cursor_img.h"
 #include "time.h"
 #include "interrupts.h"
+#include "defs.h"
 
 GUI gui;
 
@@ -62,7 +63,7 @@ void gui_task() {
 
 //Draw the complete frame
 static void gui_draw_frame() {
-    graphics_fill(0xFF800000);  //Frame with given color (RRRGGGBBB, last byte of color is the brightness)
+    graphics_fill(COLOR_BACKGROUND);  //Frame with given color (RRRGGGBBB, last byte of color is the brightness)
 
     draw_debug_console(0);
     draw_windows();             //drawing the windows

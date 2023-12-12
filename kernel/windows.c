@@ -166,12 +166,12 @@ int32_t set_title(int32_t window_id, const char* title) {
 static void draw_window(int32_t id) {
     Window* w = &windows[id];
 
-    uint32_t border_color = focused_window == id ? COLOR_LIGHT_GREY : COLOR_DARK_GREY;
+    uint32_t border_color = focused_window == id ? COLOR_ACTIVE_WINDOW : COLOR_WINDOW;
 
     // copy the contents of the framebuffer to the screen
     uint32_t* source = ((uint32_t) w->framebuffer) + (w->shown_buffer == 0 ? 0 : w->framebuffer_size_bytes);
     graphics_copy_rect(w->x + WINDOW_CONTENT_XOFFSET, w->y + WINDOW_TITLE_BAR_HEIGHT, w->width, w->height, 0, 0, source);
-
+ 
     // window title bar
     graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_TITLE_BAR_HEIGHT - 1, border_color);
 
@@ -250,7 +250,7 @@ int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {
         if (w->state == 0)
             continue;
 
-        kernel_log("Function find_window_from_pos w->x: %d, w->y: %d, x: %d, y: %d", w->x, w->y, x, y);
+        //kernel_log("Function find_window_from_pos w->x: %d, w->y: %d, x: %d, y: %d", w->x, w->y, x, y);
         if (w->x > x) continue;
         if (w->y > y) continue;
         if (w->x + w->actual_width < x) continue;

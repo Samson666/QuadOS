@@ -6,6 +6,7 @@
 #define SGFX_OPTIMIZE
 
 #include "sgfx.h"
+//#include "log.h"
 
 #define CLAMP(x, a, b) (((x) < (a)) ? (a) : ((x) > (b) ? (b) : (x)))
 #define ABS(x) (((x) < 0) ? (-(x)) : (x))
@@ -26,7 +27,7 @@ void sgfx_init(GraphicsContext* ctx, uint32_t* framebuffer, uint32_t width, uint
     ctx->bytesize = width * height * 4;;
 }
 
-#ifndef SGFX_OPTIMIZE
+#ifdef SGFX_OPTIMIZE
 void sgfx_fill(const GraphicsContext* ctx, uint32_t color) {
     uint32_t size = ctx->bytesize >> 2;
     for (uint32_t i = 0; i < size; i++) {

@@ -41,10 +41,10 @@ int main(int argc, char* argv[]) {
 
     os_resize_window(window, 700, 500);   
     sgfx_init(&ctx, fb, 700, 500);
-
+        
     OSEvent event;
     while (1) {
-        sgfx_fill(&ctx, 0xFF000000);
+        sgfx_fill(&ctx, 0x1100FF00);
         sgfx_draw_string(&ctx, "Tasks:", 3, 5, 0xFFFFFFFF);
 
         for (int i = 0; i < num_entries; i++) {

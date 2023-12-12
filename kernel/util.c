@@ -22,6 +22,13 @@ void* memset(void* vdest, uint8_t val, uint32_t len) {
     return dest;
 }
 
+void* memsetl(void* vdest, uint32_t val, uint32_t len) {
+    uint32_t* dest = (uint32_t*) vdest;
+    uint32_t* temp = (uint32_t*) dest;
+    for (; len != 0; len--) *temp++ = val;
+    return dest;
+}
+
 // void* memcpy(void* dest, const void* src, uint32_t len) {
 //     const uint8_t* sp = (const uint8_t*) src;
 //     uint8_t* dp = (uint8_t*) dest;
