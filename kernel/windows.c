@@ -109,6 +109,12 @@ void resize_window(int32_t id, int32_t width, int32_t height)
     gui.needs_redraw = true;
 }
 
+// Functionname 	: 
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 void destroy_window(int32_t window_id) {
     Window* w = &windows[window_id];
     sharedmem_destroy(w->fb_shmem_id);
@@ -123,6 +129,12 @@ void destroy_window(int32_t window_id) {
     gui.needs_redraw = true;
 }
 
+// Functionname 	: 
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 static int32_t find_window_slot() {
     for (int32_t i = 0; i < MAX_WINDOWS; i++) {
         if (windows[i].state == 0) {
@@ -138,6 +150,12 @@ int32_t get_framebuffer_shmem_id(int32_t window_id) {
     return windows[window_id].fb_shmem_id;
 }
 
+// Functionname 	: 
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 static int32_t swap_buffers(int32_t window_id) {
     gui.needs_redraw = true;
 
@@ -163,6 +181,26 @@ int32_t set_title(int32_t window_id, const char* title) {
     strncpy(w->title, title, sizeof(w->title) - 1);
 }
 
+// Functionname 	: draw_window_bars
+// Parameters		: window id
+// Returns			: void
+// Description		: draws the title bar and the status bar of the window
+// Note				: 
+ 
+void draw_window_bars(Window *w)
+{
+    // window title bar
+    graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_TITLE_BAR_HEIGHT - 1, COLOR_TITLE_BAR);
+
+    //window status bar
+    graphics_fill_rect(w->x+1, w->y + w->height, w->width, WINDOW_STATUS_BAR_HEIGHT, COLOR_STATUS_BAR);
+}
+// Functionname 	: draw_window
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 static void draw_window(int32_t id) {
     Window* w = &windows[id];
 
@@ -172,8 +210,8 @@ static void draw_window(int32_t id) {
     uint32_t* source = ((uint32_t) w->framebuffer) + (w->shown_buffer == 0 ? 0 : w->framebuffer_size_bytes);
     graphics_copy_rect(w->x + WINDOW_CONTENT_XOFFSET, w->y + WINDOW_TITLE_BAR_HEIGHT, w->width, w->height, 0, 0, source);
  
-    // window title bar
-    graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_TITLE_BAR_HEIGHT - 1, border_color);
+    // window bars
+    draw_window_bars(w);
 
     // window outline
     graphics_draw_hline(w->x, w->y, w->width + WINDOW_CONTENT_XOFFSET * 2, border_color);
@@ -208,6 +246,12 @@ static void draw_window(int32_t id) {
     pop_cli();
 }
 
+// Functionname 	: check_window_close
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 bool check_window_close(int32_t window, int32_t x, int32_t y) {
     Window* w = get_window(window);
 
@@ -222,6 +266,12 @@ bool check_window_close(int32_t window, int32_t x, int32_t y) {
     return true;
 }
 
+// Functionname 	: check_window_resize
+// Parameters		: window id, mouse x, mouse y
+// Returns			: true if mousepointer is on the resize grip
+// Description		: checks if the mousepointer is on the resize grip. Return true if it is.
+// Note				: 
+ 
 bool check_window_resize(int32_t window, int32_t x, int32_t y)
 {
     Window* w = get_window(window);
@@ -233,7 +283,7 @@ bool check_window_resize(int32_t window, int32_t x, int32_t y)
     if (x >= resize_grip_x + GRIP_SIZE) ret=0;
     if (y >= resize_grip_y + GRIP_SIZE) ret=0;
 
-    kernel_log("Function check_window_resize grip_x: %d, grip_y %d, return %d", resize_grip_x, resize_grip_y, ret);
+    //kernel_log("Function check_window_resize grip_x: %d, grip_y %d, w->x: %d, w->y: %d, x: %d, y: %d, return %d", resize_grip_x, resize_grip_y,w->x, w->y,x,y,ret);
 }
 
 // Functionname 	: find_window_from_pos
@@ -257,13 +307,19 @@ int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {
         if (w->y + w->actual_height < y) continue;
 
         //is the mouse cursor in between of both window bars?
-        if ((y > w->y + WINDOW_TITLE_BAR_HEIGHT) && (y < w->y + w->height - WINDOW_STATUS_BAR_HEIGHT))
+        if ((y > w->y + WINDOW_TITLE_BAR_HEIGHT) && (y < w->y + w->height))
             *inside_content = true;
         return id;
     }
     return -1;
 }
 
+// Functionname 	: get_focused_window
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 Window* get_focused_window() {
     if (focused_window == -1)
         return NULL;
@@ -271,10 +327,22 @@ Window* get_focused_window() {
     return &windows[focused_window];
 }
 
-void destroy_all_windows_belonging_to(int32_t task_id) {
+// Functionname 	: destroy_all_windows_belonging_to
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+
+ void destroy_all_windows_belonging_to(int32_t task_id) {
     // todo
 }
 
+// Functionname 	: draw_windows
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 void draw_windows() {
     for (int i = z_order_length - 1; i >= 0; i--) {
         int32_t id = window_z_order[i];
@@ -287,12 +355,24 @@ void draw_windows() {
     }
 }
 
+// Functionname 	: get_window
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 Window* get_window(int32_t id) {
     if (id < 0 || id >= MAX_WINDOWS)
         return NULL;
     return &windows[id];
 }
 
+// Functionname 	: z_oder_find_index
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 static int32_t z_order_find_index(int32_t window) {
     for (int32_t i = 0; i < MAX_WINDOWS; i++) {
         if (window_z_order[i] == window) {
@@ -302,10 +382,22 @@ static int32_t z_order_find_index(int32_t window) {
     return -1;
 }
 
+// Functionname 	: z_order_add_at
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 static void z_order_add_at(int32_t z_index, int32_t window) {
     // todo
 }
 
+// Functionname 	: z_order_remove_at
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 static void z_order_remove_at(int32_t z_index) {
     // shift windows in the range [index, z_order_length] to the left once
     for (int32_t i = z_index; i < z_order_length; i++) {
@@ -314,6 +406,12 @@ static void z_order_remove_at(int32_t z_index) {
     z_order_length--;
 }
 
+// Functionname 	: move_window_to_front
+// Parameters		: 
+// Returns			: 
+// Description		: 
+// Note				: 
+ 
 void move_window_to_front(int32_t window) {
     if (window_z_order[0] == window)
         return;

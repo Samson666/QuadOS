@@ -63,7 +63,7 @@ void gui_task() {
 
 //Draw the complete frame
 static void gui_draw_frame() {
-    graphics_fill(COLOR_BACKGROUND);  //Frame with given color (RRRGGGBBB, last byte of color is the brightness)
+    graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)
 
     draw_debug_console(0);
     draw_windows();             //drawing the windows
@@ -73,16 +73,11 @@ static void gui_draw_frame() {
     graphics_fill_rect(graphics.width - 10, 2, 8, 8, redraw_indicator ? 0xFF00FF : 0); //Drawing the indicator rectangle
     redraw_indicator ^= 1; //Invers the indicator color
 
-    // draw time
+    //get time and save it time_str
     uint64_t time = get_system_time_millis(); //Get the system time in milliseconds
-    // if (time)
-    //     time /= 1000;
     char time_str[128];
 
     int phys_mem = pmm_get_total_allocated_pages() * 4; //get used physical memory
-    // 2504
-    // 2536
-    // 32 kib = 8 pages
 
     sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
     graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame

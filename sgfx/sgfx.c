@@ -27,7 +27,7 @@ void sgfx_init(GraphicsContext* ctx, uint32_t* framebuffer, uint32_t width, uint
     ctx->bytesize = width * height * 4;;
 }
 
-#ifdef SGFX_OPTIMIZE
+#ifndef SGFX_OPTIMIZE
 void sgfx_fill(const GraphicsContext* ctx, uint32_t color) {
     uint32_t size = ctx->bytesize >> 2;
     for (uint32_t i = 0; i < size; i++) {

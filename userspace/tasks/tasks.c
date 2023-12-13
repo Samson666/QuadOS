@@ -4,6 +4,7 @@
 #include <sgfx.h>
 #include <stdio.h>
 #include "windows.h"
+#include "defs.h"
 
 #define width 400
 #define height 320
@@ -44,7 +45,7 @@ int main(int argc, char* argv[]) {
         
     OSEvent event;
     while (1) {
-        sgfx_fill(&ctx, 0x1100FF00);
+        sgfx_fill(&ctx, COLOR_WINDOW_BACKGROUND);
         sgfx_draw_string(&ctx, "Tasks:", 3, 5, 0xFFFFFFFF);
 
         for (int i = 0; i < num_entries; i++) {
