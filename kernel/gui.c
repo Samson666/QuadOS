@@ -61,7 +61,7 @@ void gui_task() {
     }
 }
 
-//Draw the complete frame
+//Draw the complete frame (screen)
 static void gui_draw_frame() {
     graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)
 
@@ -131,6 +131,19 @@ static void handle_left_click() {
     gui.needs_redraw = true;
 }
 
+// Functionname 	: handle_right_click
+// Parameters		: none
+// Returns			: void
+// Description		: handles the mouse right click
+// Note				: 
+ 
+static void handle_right_click()
+{
+
+    kernel_log("Mouse right click");
+}
+
+
 // Functionname 	: gui_handle_events
 // Parameters		: none
 // Returns			: void
@@ -159,18 +172,26 @@ static void gui_handle_events() {
         window_under_cursor = find_window_from_pos(gui.cursor_x, gui.cursor_y, &window_under_cursor_inside_content);
 
     static bool prev_mouse_left_button = 0;
+    static bool prev_mouse_right_button = 0;
 
-    if (prev_mouse_left_button != gui.left_click) {
+    if (prev_mouse_left_button != gui.left_click || prev_mouse_right_button != gui.right_click)
+    {
         if (gui.left_click) {
             handle_left_click();
-        } else {
+        }
+        else if (gui.right_click){
+            handle_right_click();
+        } 
+        else {
             currently_dragging_window = -1;
         }
 
         prev_mouse_left_button = gui.left_click;
+        prev_mouse_right_button = gui.right_click;
     }
     
     gui.left_click = mouse.left_button;
+    gui.right_click = mouse.right_button;
 
     int32_t dx = gui.cursor_x - gui.prev_cursor_x;
     int32_t dy = gui.cursor_y - gui.prev_cursor_y;

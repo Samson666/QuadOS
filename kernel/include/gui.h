@@ -8,6 +8,7 @@ typedef struct {
     int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates 
     bool needs_redraw;                      //indicates if the frame needs a redraw
     bool left_click;                        //left mouse button is clicked
+    bool right_click;                       //right mouse button is clicked
     u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
 } GUI;
 

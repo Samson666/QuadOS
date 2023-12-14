@@ -9,6 +9,7 @@ typedef struct {
     int32_t x_acc;
     int32_t y_acc;
     bool left_button;
+    bool right_button;
 } Mouse;
 
 extern Mouse mouse;

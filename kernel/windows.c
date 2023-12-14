@@ -187,14 +187,32 @@ int32_t set_title(int32_t window_id, const char* title) {
 // Description		: draws the title bar and the status bar of the window
 // Note				: 
  
-void draw_window_bars(Window *w)
+static void draw_window_bars(int32_t id)
 {
+    Window* w = &windows[id];
     // window title bar
-    graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_TITLE_BAR_HEIGHT - 1, COLOR_TITLE_BAR);
+    uint32_t tb_color = focused_window == id ? COLOR_TITLE_BAR_ACTIVE : COLOR_TITLE_BAR_INACTIVE;
+    graphics_fill_rect(w->x + 1, w->y + 1, w->width, WINDOW_TITLE_BAR_HEIGHT - 1, tb_color);
 
     //window status bar
-    graphics_fill_rect(w->x+1, w->y + w->height, w->width, WINDOW_STATUS_BAR_HEIGHT, COLOR_STATUS_BAR);
+    uint32_t sb_color = focused_window == id ? COLOR_STATUS_BAR_ACTIVE : COLOR_STATUS_BAR_INACTIVE;
+    graphics_fill_rect(w->x+1, w->y + w->height, w->width, WINDOW_STATUS_BAR_HEIGHT, sb_color);
 }
+
+static void draw_window_buttons(int32_t id)
+{
+    Window* w = &windows[id];
+
+    //Close Button
+    int32_t close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
+    int32_t close_button_y = w->y + 1;
+    graphics_fill_rect(close_button_x, close_button_y, CLOSE_BUTTON_WIDTH, CLOSE_BUTTON_HEIGHT, 0xFFFFFF);
+    graphics_draw_string("x", close_button_x + 5, close_button_y + 3, 0);
+
+    //Resize Grip
+}
+
+
 // Functionname 	: draw_window
 // Parameters		: 
 // Returns			: 
@@ -211,7 +229,7 @@ static void draw_window(int32_t id) {
     graphics_copy_rect(w->x + WINDOW_CONTENT_XOFFSET, w->y + WINDOW_TITLE_BAR_HEIGHT, w->width, w->height, 0, 0, source);
  
     // window bars
-    draw_window_bars(w);
+    draw_window_bars(id);
 
     // window outline
     graphics_draw_hline(w->x, w->y, w->width + WINDOW_CONTENT_XOFFSET * 2, border_color);
@@ -222,11 +240,8 @@ static void draw_window(int32_t id) {
     // window title
     graphics_draw_string(w->title, w->x + 5, w->y + 5, 0xFFFFFF);
 
-    // close button
-    int32_t close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
-    int32_t close_button_y = w->y + 1;
-    graphics_fill_rect(close_button_x, close_button_y, CLOSE_BUTTON_WIDTH, CLOSE_BUTTON_HEIGHT, 0xFFFFFF);
-    graphics_draw_string("x", close_button_x + 5, close_button_y + 3, 0);
+    // window buttons
+    draw_window_buttons(id);
 
     // resize grip
     if(w->flags & WINDOW_FLAG_RESIZABLE)

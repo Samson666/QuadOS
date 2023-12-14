@@ -237,8 +237,7 @@ void register_syscall(uint32_t vector, void* func) {
     syscall_handlers[vector] = func;
 }
 
-static void handle_syscall_interrupt(TrapFrame* frame) {
-    // kernel_log("syscall %u", frame->eax);
+static void handle_syscall_interrupt(TrapFrame* frame) {;
 
     uint32_t vector = frame->eax;
     void* handler = syscall_handlers[vector];

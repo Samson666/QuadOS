@@ -80,7 +80,16 @@ uint32_t get_event_buffer_shmem_id() {
     return current_task->event_shmem_id;
 }
 
+// Functionname 	: task_wait_for_event
+// Parameters		: none
+// Returns			: void
+// Description		: 
+// Note				: 
+ 
 static void task_wait_for_event() {
+
+    //kernel_log("Function task_wait_for_event");
+    
     current_task->state = TASK_STATE_WAIT_FOR_EVENT;
     
     task_schedule();
