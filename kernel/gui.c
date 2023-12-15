@@ -25,6 +25,7 @@ int32_t testbutton_x, testbutton_y;
 int32_t testbutton_w, testbutton_h;
 
 int32_t redraw_indicator = 0;
+int32_t window_index = 0;
 
 static void gui_handle_events();
 static void gui_draw_frame();
@@ -38,6 +39,8 @@ void init_gui(int32_t width, int32_t height) {
     gui.prev_cursor_y = gui.cursor_y;
     gui.needs_redraw = true;
 
+    gui.window_list = kmalloc(sizeof(list_t));
+    init_list(gui.window_list); 
     init_windows();
     
     testbutton_x = graphics.width - 100;
@@ -61,6 +64,67 @@ void gui_task() {
     }
 }
 
+int32_t init_list(list_t* list)
+{
+    list->new_node = 0;
+    list->next = 0;
+    list->active = 0;
+}
+
+list_node_t* add_node(list_t* list)
+{
+    list->new_node = kmalloc(sizeof(list_node_t));
+    list->new_node->next = list->next;
+    list->next = list->new_node;
+}
+
+int32_t add_window(int32_t width, int32_t height, uint32_t flags)
+{
+    Window* w = kmalloc(sizeof(Window)); 
+    assert_msg(w, "Could not allocate memory for new window_t");
+
+    memset(w, 0, sizeof(Window));
+
+    w->state = 1;
+    w->x = 30 + window_index * 40;
+    w->y = 50 +  window_index * 35;
+    w->width = width;
+    w->height = height;
+    w->flags = flags;
+    w->actual_width = width + 2;
+    w->actual_height = height + WINDOW_TITLE_BAR_HEIGHT + 1;
+    uint32_t fb_bytes = width * height * 4;
+    w->framebuffer_size_bytes = fb_bytes;
+    w->fb_shmem_id = sharedmem_create(fb_bytes * (flags & WINDOW_FLAG_DOUBLE_BUFFERED ? 2 : 1), 0);
+    w->framebuffer = sharedmem_map(w->fb_shmem_id, 0);
+    w->shown_buffer = 0;
+    w->owner_task_id = current_task->id;
+    w->id = window_index++;
+
+    strncpy(w->title, "Cool Titles!", WINDOW_TITLE_MAX_LENGTH);
+
+    gui.active_window = w;
+
+    window_z_order[z_order_length++] = w->id;
+
+    move_window_to_front(w->id);
+    focused_window = w->id;
+
+    gui.needs_redraw = true;
+
+    return(w->id);
+}
+
+int32_t remove_window(Window* w)
+{
+    assert_msg(w,"Could not remove window");
+    return(0);
+}
+
+Window* find_window(int32_t id)
+{
+
+}
 //Draw the complete frame (screen)
 static void gui_draw_frame() {
     graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)

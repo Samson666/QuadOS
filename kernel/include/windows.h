@@ -35,7 +35,7 @@ typedef struct {
     uint8_t shown_buffer;                       //currently not used. buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
     char title[WINDOW_TITLE_MAX_LENGTH];        //character array for the window title
     int32_t owner_task_id;                      //pointer to the owner task
-
+    int32_t id;
     void (*onClick);                            //point to function if window is clicked 
 } Window;
 
@@ -49,7 +49,8 @@ extern int32_t currently_dragging_window;       //holds the id of the current dr
 extern int32_t focused_window;                  //holds the id of the current focused window. -1 if none
 extern int32_t window_under_cursor;             //holds the id of the current window under the cursor. -1 if none
 extern bool window_under_cursor_inside_content;
-
+extern int32_t window_z_order[MAX_WINDOWS]; // list of window indices, window_z_order[0] is frontmost window id
+extern int32_t z_order_length;
 //function declarations
 void init_windows();
 int32_t create_window(int32_t width, int32_t height, uint32_t flags);

@@ -1,6 +1,22 @@
 #pragma once
 
 #include "types.h"
+#include "windows.h"
+
+typedef struct
+{
+    Window* head;
+    Window* node;
+    Window* next;
+}list_node_t;
+
+
+typedef struct
+{
+    list_node_t* new_node;                         //head of the list
+    list_node_t* next;                         //last window in list
+    list_node_t* active;                       //the active window (former focused window)
+}list_t;
 
 typedef struct {
     int32_t width, height;                  //holds the width an height of the gui
@@ -10,6 +26,8 @@ typedef struct {
     bool left_click;                        //left mouse button is clicked
     bool right_click;                       //right mouse button is clicked
     u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
+    Window* active_window;
+    list_t* window_list;
 } GUI;
 
 extern GUI gui;
