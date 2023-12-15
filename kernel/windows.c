@@ -290,15 +290,15 @@ bool check_window_close(int32_t window, int32_t x, int32_t y) {
 bool check_window_resize(int32_t window, int32_t x, int32_t y)
 {
     Window* w = get_window(window);
-    int ret = 1;
     int32_t resize_grip_x = w->x + w->width - GRIP_SIZE;
     int32_t resize_grip_y = w->y + w->height + WINDOW_TITLE_BAR_HEIGHT - GRIP_SIZE;
-    if (x < resize_grip_x)ret=0;
-    if (y < resize_grip_y) ret=0;
-    if (x >= resize_grip_x + GRIP_SIZE) ret=0;
-    if (y >= resize_grip_y + GRIP_SIZE) ret=0;
+    if (x < resize_grip_x)return false;
+    if (y < resize_grip_y)return false;
+    if (x >= resize_grip_x + GRIP_SIZE) return false;
+    if (y >= resize_grip_y + GRIP_SIZE) return false;
 
     //kernel_log("Function check_window_resize grip_x: %d, grip_y %d, w->x: %d, w->y: %d, x: %d, y: %d, return %d", resize_grip_x, resize_grip_y,w->x, w->y,x,y,ret);
+    return true;
 }
 
 // Functionname 	: find_window_from_pos

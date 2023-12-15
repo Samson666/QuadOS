@@ -110,7 +110,13 @@ static void handle_left_click() {
             handle_event(&click);
         } else {
             // we are clicking on its border
-            if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            
+            if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            {
+                kernel_log("Window resize grip clicked");
+            }
+            
+            else if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
             {
                 Window* w = get_window(window_under_cursor);
                 uint32_t task_id = w->owner_task_id;
@@ -120,17 +126,15 @@ static void handle_left_click() {
                 window_under_cursor = -1;
                 focused_window = -1;
             }
-            else if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
-            {
-                
-            }
+
             currently_dragging_window = window_under_cursor;
+            
         }
+        
     }
 
     gui.needs_redraw = true;
 }
-
 // Functionname 	: handle_right_click
 // Parameters		: none
 // Returns			: void

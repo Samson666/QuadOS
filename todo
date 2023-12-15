@@ -3,3 +3,4 @@
 - provide more and optimized drawing functions in the sfgx system //12.12.2023
 - Read/Write a config file to ramdisk
 - Gadgets
+- Scroll wheel
