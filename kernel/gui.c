@@ -42,6 +42,7 @@ void init_gui(int32_t width, int32_t height) {
     gui.window_list = kmalloc(sizeof(list_t));
     init_list(gui.window_list); 
     init_windows();
+    //add_window(300,300,0);
     
     testbutton_x = graphics.width - 100;
     testbutton_y = graphics.height - 100;
@@ -76,6 +77,7 @@ list_node_t* add_node(list_t* list)
     list->new_node = kmalloc(sizeof(list_node_t));
     list->new_node->next = list->next;
     list->next = list->new_node;
+    return(list->new_node);
 }
 
 int32_t add_window(int32_t width, int32_t height, uint32_t flags)
@@ -105,12 +107,12 @@ int32_t add_window(int32_t width, int32_t height, uint32_t flags)
 
     gui.active_window = w;
 
-    window_z_order[z_order_length++] = w->id;
+    //window_z_order[z_order_length++] = w->id;
 
-    move_window_to_front(w->id);
-    focused_window = w->id;
+    //move_window_to_front(w->id);
+    //focused_window = w->id;
 
-    gui.needs_redraw = true;
+    //gui.needs_redraw = true;
 
     return(w->id);
 }
