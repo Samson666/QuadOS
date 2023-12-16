@@ -35,7 +35,7 @@ typedef struct {
     uint8_t shown_buffer;                       //currently not used. buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
     char title[WINDOW_TITLE_MAX_LENGTH];        //character array for the window title
     int32_t owner_task_id;                      //pointer to the owner task
-    int32_t id;
+    int32_t id;                                 //id of the window
     void (*onClick);                            //point to function if window is clicked 
 } Window;
 

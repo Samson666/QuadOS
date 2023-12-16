@@ -73,6 +73,7 @@ int32_t create_window(int32_t width, int32_t height, uint32_t flags) {
     windows[index].framebuffer = sharedmem_map(windows[index].fb_shmem_id, 0);
     windows[index].shown_buffer = 0;
     windows[index].owner_task_id = current_task->id;
+    windows[index].id = index;
 
     strncpy(windows[index].title, "Cool Titles!", WINDOW_TITLE_MAX_LENGTH);
 
