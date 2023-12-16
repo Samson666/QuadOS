@@ -34,12 +34,29 @@ extern "C" {
 //System configs
 #define COLOR_WINDOW                COLOR_DARK_GREY
 #define COLOR_ACTIVE_WINDOW         COLOR_LIGHT_GREY
-#define COLOR_FRAME_BACKGROUND      COLOR_LIGHT_RED
+#define COLOR_FRAME_BACKGROUND      COLOR_WHITE
 #define COLOR_WINDOW_BACKGROUND     COLOR_DARK_BLUE
 #define COLOR_TITLE_BAR_ACTIVE      COLOR_LIGHT_BLUE
 #define COLOR_TITLE_BAR_INACTIVE    COLOR_DARK_BLUE
 #define COLOR_STATUS_BAR_ACTIVE     COLOR_LIGHT_GREEN
 #define COLOR_STATUS_BAR_INACTIVE   COLOR_DARK_GREEN
+
+//window stuff
+#define WINDOW_CONTENT_XOFFSET 1                //x-offset of the window. Used to give a distance between the windowborder and its content  
+#define WINDOW_TITLE_BAR_HEIGHT 20              //height of the window title bar
+#define WINDOW_STATUS_BAR_HEIGHT 20             //height of the window status bar
+
+#define CLOSE_BUTTON_WIDTH 18                   //x dimension of the window close button
+#define CLOSE_BUTTON_HEIGHT 18                  //y dimension of the window close button
+#define GRIP_SIZE WINDOW_STATUS_BAR_HEIGHT      //The size of the resizing grip. For now it has the same size (width and height) as the status bar height.                           
+
+#define WINDOW_TITLE_MAX_LENGTH 64              //The maximum length of the window title
+#define WINDOW_FLAG_FULLSCREEN (1 << 0)         //Window is opened in fullscreen size
+#define WINDOW_FLAG_DOUBLE_BUFFERED (1 << 1)    //Window is double buffered
+#define WINDOW_FLAG_RESIZABLE (1<<2)            //Window has a resize grip
+#define WINDOW_FLAG_TITLE_BAR (1<<3)            //Window has a title bar (at the top of the window)
+#define WINDOW_FLAG_STATUSBAR (1<<4)            //Window has a status bar (at the bottom of the window)
+#define WINDOW_FLAG_IS_WORKBENCH (1<<5)         //This window is the workbench window. Allways stay in the back
 
 #ifdef __cplusplus
 }

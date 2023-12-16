@@ -1,14 +1,15 @@
 CC = i386-elf-gcc
 LD = i386-elf-ld
-CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -Isgfx -Ikernel -Ikernel/include -Ikernel/workbench -no-pie
+CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -Isgfx -Ikernel -Ikernel/include -Ikernel/qgui -no-pie
 LDFLAGS = -melf_i386 -Tkernel.ld -Lsgfx -lsgfx
 ASFLAGS = -felf32
 LIBGCC = /usr/bin/../lib/gcc/i386-elf/7.5.0/libgcc.a
 
 SOURCES_C = $(patsubst %.c, %.o, $(wildcard kernel/*.c) $(wildcard kernel/**/*.c))
+SOURCES_CPP = $(patsubst %.cpp, %.o, $(wildcard kernel/qgui/*.cpp))
 SOURCES_ASM = $(patsubst %.asm, %.o, $(wildcard kernel/*.asm))
 
-OBJ = $(SOURCES_ASM) $(SOURCES_C)
+OBJ = $(SOURCES_ASM) $(SOURCES_C) $(SOURCES_CPP)
 
 KERNEL = kernel.bin
 IMAGE = os.iso
@@ -26,6 +27,9 @@ $(KERNEL): $(OBJ) libsgfx
 
 
 %.o: %.c
+	$(CC) -o $@ $(CFLAGS) -c $<
+
+%.o: %.cpp
 	$(CC) -o $@ $(CFLAGS) -c $<
 
 %.o: %.asm

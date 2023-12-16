@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		sharedmem.h
+// Description:
+// First Created: 	16.12.2023
+// Last Change:
+ 
+#ifndef __SHAREDMEM_H
+#define __SHAREDMEM_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "types.h"
 #include "config.h"
@@ -30,3 +39,10 @@ bool sharedmem_exists(int32_t id);
 void* sharedmem_map(int32_t id, uint32_t task_id);
 void sharedmem_unmap(int32_t id, uint32_t task_id);
 void shmem_print_mappings(SharedMemoryMappingPool* pool);
+
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__SHAREDMEM_H
+

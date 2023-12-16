@@ -87,6 +87,9 @@ void kernel_main(struct multiboot_info* info) {
     init_keyboard();                                    //Initalise the keyboard
     init_mouse();                                       //Initalise the mouse
 
+    //qwindow test
+    test_qwindow_class();
+
     set_timer_enabled(true);                            //Enable the timer    
     
            
