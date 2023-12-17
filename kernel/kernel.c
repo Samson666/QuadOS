@@ -89,6 +89,7 @@ void kernel_main(struct multiboot_info* info) {
 
     //qwindow test
     test_qwindow_class();
+    
 
     set_timer_enabled(true);                            //Enable the timer    
     

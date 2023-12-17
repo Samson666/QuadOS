@@ -47,6 +47,8 @@ OS_EXPORT void os_free(void* addr);
 #define OS_DOUBLE_BUFFERED (1 << 1)
 
 OS_EXPORT int32_t os_create_window(int32_t width, int32_t height, uint32_t flags);
+OS_EXPORT int32_t os_qcreate_window(int32_t width, int32_t height, uint32_t flags);
+
 OS_EXPORT void os_resize_window(int32_t id, int32_t width, int32_t height);
 OS_EXPORT int32_t os_destroy_window(int32_t window_id);
 OS_EXPORT void* os_map_window_framebuffer(int32_t window_id);

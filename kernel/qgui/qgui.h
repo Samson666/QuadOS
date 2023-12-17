@@ -14,6 +14,15 @@ extern "C" {
 #include "sharedmem.h"
 #include "tasks.h"
 #include "defs.h"
+#include "syscall.h"
+#include "interrupts.h"
+#include "graphics.h"
+
+//function declarations. Extern declaration is needed for the functions to use in C since the datatype Class is unknown in C.
+//No need to load the qwindow.h file! The magic is done by the linker :-)
+extern void test_qwindow_class();
+extern int32_t qcreate_window(int16_t width, int16_t height, uint32_t flags);
+extern void init_qgui(int32_t w, int32_t h);
 
 class qwindow                                       //window class
 {
@@ -45,6 +54,12 @@ class qwindow                                       //window class
             return kmalloc(size);
         };
 
+        void operator delete(void* p)
+        {
+            kfree(p);
+        };
+
+        //initialize the new qwindow
         void init(int16_t w, int16_t h, uint32_t f)
         {
             uint32_t fb_bytes = w * h * 4; //size of framebuffer in bytes
@@ -61,19 +76,136 @@ class qwindow                                       //window class
             framebuffer = (uint32_t*)(fb_shmem_id, 0);
             shown_buffer = 0;
             owner_task_id = current_task->id;
-            id = 0;
+            id = 1;
         };
 
-        void operator delete(void* p)
+        void draw()
         {
-            kfree(p);
+            // window outline
+            graphics_draw_hline(x, y, width + WINDOW_CONTENT_XOFFSET * 2, COLOR_BLACK);
+            graphics_draw_hline(x, y + WINDOW_TITLE_BAR_HEIGHT + height, width + WINDOW_CONTENT_XOFFSET * 2, COLOR_BLACK);
+            graphics_draw_vline(x, y, height + WINDOW_TITLE_BAR_HEIGHT, COLOR_BLACK);
+            graphics_draw_vline(x + width + 1, y, height + WINDOW_TITLE_BAR_HEIGHT, COLOR_BLACK);
         };
-    
        
 };
 
-//funktion declarations
-extern void test_qwindow_class();
+class list_node
+{
+    list_node* head;
+    list_node* node;
+    list_node* next;
+    void* data;
+};
+
+
+class list
+{
+    list_node* new_node;
+    list_node* next;
+    list_node* active;
+};
+
+
+class qgui
+{
+    public:
+    qgui(){};
+    ~qgui(){};
+    
+    void* operator new(size_t size)
+    {
+        return kmalloc(size);
+    };
+
+    void operator delete(void* p)
+    {
+        kfree(p);
+    };
+    
+    int32_t width, height;                  //holds the width an height of the gui
+    int32_t cursor_x, cursor_y;             //holds the current mouse coordinates    
+    int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates 
+    bool needs_redraw;                      //indicates if the frame needs a redraw
+    bool left_click;                        //left mouse button is clicked
+    bool right_click;                       //right mouse button is clicked
+    u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
+    qwindow* active_window;
+    list* window_list;
+
+    void init(int32_t w, int32_t h)
+    {
+        width = w;
+        height = h;
+        cursor_x = w / 2;
+        cursor_y = h / 2;
+        prev_cursor_x = cursor_x;
+        prev_cursor_y = cursor_y;
+        needs_redraw = true;
+
+        register_syscall(SYSCALL_QCREATE_WINDOW, (void*)qcreate_window);
+
+    // init_windows();
+    
+    // testbutton_x = graphics.width - 100;
+    // testbutton_y = graphics.height - 100;
+    // testbutton_w = 50;
+    // testbutton_h = 50;
+    };
+
+
+    void gui_task() 
+    {
+    // disable_interrupts();
+        while (1) 
+        {
+            if (needs_redraw) 
+            {
+                needs_redraw = false;
+                draw_frame();
+            }
+
+            disable_interrupts();
+            handle_events();
+            enable_interrupts();
+        }
+    };
+
+    void draw_qwindows()
+    {
+
+    };
+
+    void handle_events()
+    {
+
+    };
+
+    void draw_frame()
+    {
+        graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)
+        draw_debug_console(0);
+    };
+
+    void draw_debug_console(uint32_t color) 
+    {
+        int index = 0;
+        for (int y = 0; y < 50; y++) {
+            for (int x = 0; x < 80; x++) 
+            {
+                u16 c = fake_console_buffer[index];
+                graphics_draw_char(c & 0xFF, x * 10, y * 10, color);
+                index++;
+            }
+        }
+    };
+};
+    
+
+
+
+
+
 
 #ifdef __cplusplus
 }

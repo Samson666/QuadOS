@@ -23,6 +23,8 @@ all:
 	cp breakout/*.exe bin/
 	$(MAKE) -C tasks
 	cp tasks/*.exe bin/
+	$(MAKE) -C newgui_testbed
+	cp newgui_testbed/*.exe bin/
 
 clean:
 	$(MAKE) -C api clean
@@ -32,5 +34,6 @@ clean:
 	$(MAKE) -C files clean
 	$(MAKE) -C breakout clean
 	$(MAKE) -C timer clean
+	$(MAKE) -C newgui_testbed clean
 	
 	rm -f bin/*.exe bin/*.so

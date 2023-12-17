@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		interrupts.h
+// Description:
+// First Created: 	16.12.2023
+// Last Change:
+ 
+#ifndef __INTERRUPTS_H
+#define __INTERRUPTS_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "types.h"
 
@@ -49,3 +58,8 @@ void handle_interrupt(TrapFrame* frame);
 void push_cli();
 void pop_cli();
 bool are_interrupts_enabled();
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__INTERRUPTS_H
