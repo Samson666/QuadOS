@@ -14,6 +14,7 @@ extern "C" {
 
 void init_logging(bool serial);
 void kernel_log(const char* format, ...);
+void debug_log(const char* format, ...);
 
 #ifdef __cplusplus
 }

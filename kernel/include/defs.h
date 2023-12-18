@@ -9,6 +9,11 @@
 extern "C" {
 #endif
 
+//Debugging flags
+
+//#define _LOGIN_ON
+#define _DEBUG
+
 //Colors
 #define COLOR_WHITE         0xFFFFFFFF
 #define COLOR_BLACK         0xFF000000

@@ -17,6 +17,8 @@ extern "C" {
 #include "syscall.h"
 #include "interrupts.h"
 #include "graphics.h"
+#include "log.h"
+#include "defs.h"
 
 //function declarations. Extern declaration is needed for the functions to use in C since the datatype Class is unknown in C.
 //No need to load the qwindow.h file! The magic is done by the linker :-)
@@ -43,7 +45,9 @@ class qwindow                                       //window class
         uint8_t shown_buffer;                       //currently not used. buffer being displayed. 0 = first half, 1 = second half (starting at width * height * 4)
         char title[WINDOW_TITLE_MAX_LENGTH];        //character array for the window title
         int32_t owner_task_id;                      //pointer to the owner task
+        uint32_t adress;                            //pointer to this window
         int32_t id;                                 //id of the window
+
 
         //class member functions            
         qwindow(){};                                //construstor
@@ -73,10 +77,11 @@ class qwindow                                       //window class
             actual_height = height + WINDOW_TITLE_BAR_HEIGHT + 1;
             framebuffer_size_bytes = fb_bytes;
             fb_shmem_id = sharedmem_create(fb_bytes * (flags & WINDOW_FLAG_DOUBLE_BUFFERED ? 2 : 1), 0);
-            framebuffer = (uint32_t*)(fb_shmem_id, 0);
+            framebuffer = (uint32_t*) sharedmem_map(fb_shmem_id, 0);
             shown_buffer = 0;
             owner_task_id = current_task->id;
-            id = 1;
+            adress = (int32_t) this;
+            //debug_log("This pointer: %x", id);
         };
 
         void draw()
@@ -92,20 +97,48 @@ class qwindow                                       //window class
 
 class list_node
 {
-    list_node* head;
-    list_node* node;
-    list_node* next;
-    void* data;
+    public:
+    list_node(){};
+    ~list_node(){};
+
+    void* operator new(size_t size)
+    {
+        return kmalloc(size);
+    };
+
+    void operator delete(void* p)
+    {
+        kfree(p);
+    };
+
+    //insert a new node in the list
+    list_node* insert(void* d)
+    {
+        qwindow* w = (qwindow*)d;
+        debug_log("insert node right id:%d", w->id);
+        list_node* node = new list_node;            //create a new node
+        node->data = d;                             //assign data to new node
+        node->next = next;                          //point next of the new node to next of the header                     
+        next = node;                                //point next of the header to the new node
+        return node;                                //return pointer of the new node
+    }
+
+
+    void print()
+    {
+        uint32_t c = 0;
+        list_node* l = this;
+        while(l->next)
+        {
+            qwindow* w = (qwindow*)l->data;
+            debug_log("List window: window id:%d", w->id);
+            l = l->next;
+        }
+    }
+    
+    list_node* next = 0;
+    void* data = 0;
 };
-
-
-class list
-{
-    list_node* new_node;
-    list_node* next;
-    list_node* active;
-};
-
 
 class qgui
 {
@@ -122,17 +155,7 @@ class qgui
     {
         kfree(p);
     };
-    
-    int32_t width, height;                  //holds the width an height of the gui
-    int32_t cursor_x, cursor_y;             //holds the current mouse coordinates    
-    int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates 
-    bool needs_redraw;                      //indicates if the frame needs a redraw
-    bool left_click;                        //left mouse button is clicked
-    bool right_click;                       //right mouse button is clicked
-    u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
-    qwindow* active_window;
-    list* window_list;
-
+        
     void init(int32_t w, int32_t h)
     {
         width = w;
@@ -142,6 +165,10 @@ class qgui
         prev_cursor_x = cursor_x;
         prev_cursor_y = cursor_y;
         needs_redraw = true;
+        list_head = new list_node;
+        list_tail = new list_node;
+        list_tail->next = list_head;
+        list_head->next = NULL;
 
         register_syscall(SYSCALL_QCREATE_WINDOW, (void*)qcreate_window);
 
@@ -153,6 +180,55 @@ class qgui
     // testbutton_h = 50;
     };
 
+
+    void append_window(qwindow* w)
+    {
+        
+        list_node* newnode = new list_node;
+        newnode->data = w;
+
+        list_node* node;
+        node = list_tail->next;
+
+        //we have an empty list!
+        if(list_tail->next == list_head)
+        {
+            debug_log("empty list!");
+            list_tail->next = newnode;
+            newnode->next = list_head;
+        }
+        else
+        {
+            node = list_tail->next;
+            while(node->next != list_head)
+                node = node->next;
+            node->next=newnode;
+            newnode->next = list_head;
+        }
+    }
+
+    void print_window_list()
+    {
+        list_node* l;
+        l = list_tail->next;
+        while(l!=list_head)
+        {
+            if(l)
+            {
+                qwindow* w = (qwindow*) l->data;
+                if(!l->data)debug_log("print window list: no data!");
+                else if(w)
+                    debug_log("list window %d:",w->id);
+                else
+                    debug_log("list window: no window found!");
+            }
+            else
+            {
+                debug_log("list window: no node found!");
+            }
+            l = l->next;
+        }
+    }
 
     void gui_task() 
     {
@@ -173,7 +249,7 @@ class qgui
 
     void draw_qwindows()
     {
-
+        
     };
 
     void handle_events()
@@ -199,6 +275,18 @@ class qgui
             }
         }
     };
+
+    //member variables
+    int32_t width, height;                  //holds the width an height of the gui
+    int32_t cursor_x, cursor_y;             //holds the current mouse coordinates    
+    int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates 
+    bool needs_redraw;                      //indicates if the frame needs a redraw
+    bool left_click;                        //left mouse button is clicked
+    bool right_click;                       //right mouse button is clicked
+    u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
+    qwindow* active_window;
+    list_node* list_head;
+    list_node* list_tail;   
 };
     
 

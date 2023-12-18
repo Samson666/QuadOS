@@ -24,14 +24,13 @@
 static GraphicsContext ctx;
 
 int main(int argc, char* argv[]) {
-    int window = os_qcreate_window(width, height, (unsigned int) WINDOW_FLAG_RESIZABLE);
+    int window;
+    int* fb;
+    window = os_qcreate_window(width, height, (unsigned int) WINDOW_FLAG_RESIZABLE);
     //os_set_window_title(window, "Newgui Testbed");
-    int* fb = os_map_window_framebuffer(window);
-
+    fb = os_map_window_framebuffer(window);
     os_printf("newgui_testbed.exe window id: %d\n", window);
-    sgfx_init(&ctx, fb, width, height);
-
-   
+ 
     while (1) 
     {
     
