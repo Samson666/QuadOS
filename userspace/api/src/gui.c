@@ -6,8 +6,8 @@ int32_t os_create_window(int32_t width, int32_t height, uint32_t flags) {
     return syscall_create_window(width, height, flags);
 }
 
-int32_t os_qcreate_window(int32_t width, int32_t height, uint32_t flags) {
-    return syscall_qcreate_window(width, height, flags);
+int32_t os_cqcreate_window(int32_t width, int32_t height, uint32_t flags) {
+    return syscall_cqcreate_window(width, height, flags);
 }
 
 void os_resize_window(int32_t id, int32_t width, int32_t height)

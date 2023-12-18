@@ -65,12 +65,12 @@ int syscall_create_window(int width, int height, unsigned int flags) {
     return ret;
 }
 
-int syscall_qcreate_window(int width, int height, unsigned int flags) {
+int syscall_cqcreate_window(int width, int height, unsigned int flags) {
     int ret;
     asm volatile(
         "int $0x80"
         : "=a" (ret)
-        : "a"(SYSCALL_QCREATE_WINDOW), "b"(width), "c"(height), "d"(flags)
+        : "a"(SYSCALL_cqcreate_window), "b"(width), "c"(height), "d"(flags)
     );
     return ret;
 }

@@ -65,10 +65,15 @@ void gui_task() {
 
 //Draw the complete frame (screen)
 static void gui_draw_frame() {
-    graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)
+    
+    graphics_fill(COLOR_FRAME_BACKGROUND);  //fill the frame with given color (00RRGGBB)
 
+    #ifdef DEBUG_CONSOLE
     draw_debug_console(0);
+    #endif
+
     draw_windows();             //drawing the windows
+    cdraw_qwindows();
 
     graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF); //Drawing the testbutton to start file.exe
 

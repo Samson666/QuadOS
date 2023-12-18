@@ -10,7 +10,7 @@ int syscall_get_event_buffer_shmem_id();
 void syscall_wait_for_events();
 void syscall_set_timer_interval(int timer_id, int interval_ms);
 int syscall_create_window(int width, int height, unsigned int flags);
-int syscall_qcreate_window(int width, int height, unsigned int flags);
+int syscall_cqcreate_window(int width, int height, unsigned int flags);
 void syscall_resize_window(int32_t id, int32_t width, int32_t height);
 int syscall_destroy_window(int window_id);
 int syscall_get_window_fb_shmem_id(int window_id);

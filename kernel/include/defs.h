@@ -13,8 +13,9 @@ extern "C" {
 
 //#define _LOGIN_ON
 #define _DEBUG
+#define DEBUG_CONSOLE
 
-//Colors
+//predefined Colors
 #define COLOR_WHITE         0xFFFFFFFF
 #define COLOR_BLACK         0xFF000000
 #define COLOR_TRANSPARENT   0x00FFFFFF

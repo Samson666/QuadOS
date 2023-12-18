@@ -26,7 +26,7 @@ static GraphicsContext ctx;
 int main(int argc, char* argv[]) {
     int window;
     int* fb;
-    window = os_qcreate_window(width, height, (unsigned int) WINDOW_FLAG_RESIZABLE);
+    window = os_cqcreate_window(width, height, (unsigned int) WINDOW_FLAG_RESIZABLE);
     //os_set_window_title(window, "Newgui Testbed");
     fb = os_map_window_framebuffer(window);
     os_printf("newgui_testbed.exe window id: %d\n", window);

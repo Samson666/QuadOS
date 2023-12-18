@@ -81,7 +81,6 @@ void kernel_main(struct multiboot_info* info) {
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
         init_qgui(framebuffer_width, framebuffer_height);
         create_named_kernel_task(gui_task, "GUI");           //Create the kernel task for the GUI
-
         create_user_task("files.exe");                  //Starting task from file
     }
 

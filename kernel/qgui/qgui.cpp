@@ -23,18 +23,27 @@ void init_qgui(int32_t w, int32_t h)
 }
 
 //C Moniker for creating a new window
-int32_t qcreate_window(int16_t width, int16_t height, uint32_t flags)
+int32_t cqcreate_window(int16_t width, int16_t height, uint32_t flags)
 {
    
    qwindow* qw = new qwindow;
    qw->init(width, height, flags);
    qw->id = qwindow_count++;
+   qw->x = 100 + 30 * qwindow_count;
+   qw->y = 200 + 40 * qwindow_count;
    QGUI->append_window(qw);
-   debug_log("Function qcreate_window after inserting to list id:%d", qw->id);
-   debug_log("Function qcreate_window id:%d, adress:%x, widht=%d, height=%d, flags=%x, guiw:%d, guih:%d", qw->id, qw->adress, height, flags, QGUI->width, QGUI->height);
+   debug_log("Function cqcreate_window after inserting to list id:%d", qw->id);
+   debug_log("Function cqcreate_window id:%d, adress:%x, widht=%d, height=%d, flags=%x, guiw:%d, guih:%d", qw->id, qw->adress, height, flags, QGUI->width, QGUI->height);
    QGUI->print_window_list();
+   QGUI->draw_qwindows();
    qw->draw();
    return(qw->id);
+}
+
+//C Moniker for drawing our window list
+void cdraw_qwindows()
+{
+   QGUI->draw_qwindows();
 }
 
 //print the window list to the console. For debbuging purposes only!
@@ -102,7 +111,7 @@ void qgui::init(int32_t w, int32_t h)
    list_tail->next = list_head;
    list_head->next = NULL;
 
-   register_syscall(SYSCALL_QCREATE_WINDOW, (void*)qcreate_window);
+   register_syscall(SYSCALL_cqcreate_window, (void*)cqcreate_window);
 
 // init_windows();
 
@@ -133,7 +142,28 @@ void qgui::gui_task()
 //draw out window list
 void qgui::draw_qwindows()
 {
-
+   list_node* l;
+   l = list_tail->next;
+   while(l!=list_head)
+   {
+      if(l)
+      {
+            qwindow* w = (qwindow*) l->data;
+            if(!l->data)assert_msg(l->data==0,"draw window list: no data!");
+            else if(w)
+            {
+               w->draw();
+               //debug_log("draw window %d:",w->id);
+            }
+            else
+               debug_log("draw window: no window found!");
+      }
+      else
+      {
+            debug_log("list window: no node found!");
+      }
+      l = l->next;
+   }
 };
 
 //handles the gui events

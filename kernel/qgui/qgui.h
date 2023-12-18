@@ -21,11 +21,11 @@ extern "C" {
 #include "defs.h"
 #include "util.h"
 
-//function declarations. Extern declaration is needed for the functions to use in C since the datatype Class is unknown in C.
-//No need to load the qwindow.h file! The magic is done by the linker :-)
-extern void test_qwindow_class();
-extern int32_t qcreate_window(int16_t width, int16_t height, uint32_t flags);
+//function declarations. Extern declaration is needed for C++ functions to be used in C since the datatype Class is unknown in C.
+//No need to include qwindow.h file! The magic is done by the linker :-)
+extern int32_t cqcreate_window(int16_t width, int16_t height, uint32_t flags);
 extern void init_qgui(int32_t w, int32_t h);
+extern void cdraw_qwindows();
 
 //Class qwindow. Handles our window
 class qwindow                                       //window class
@@ -139,12 +139,6 @@ class qgui
         void draw_debug_console(uint32_t color);    
     };
     
-
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
