@@ -19,6 +19,7 @@ extern "C" {
 #include "graphics.h"
 #include "log.h"
 #include "defs.h"
+#include "util.h"
 
 //function declarations. Extern declaration is needed for the functions to use in C since the datatype Class is unknown in C.
 //No need to load the qwindow.h file! The magic is done by the linker :-)
@@ -193,7 +194,6 @@ class qgui
         //we have an empty list!
         if(list_tail->next == list_head)
         {
-            debug_log("empty list!");
             list_tail->next = newnode;
             newnode->next = list_head;
         }
@@ -216,7 +216,7 @@ class qgui
             if(l)
             {
                 qwindow* w = (qwindow*) l->data;
-                if(!l->data)debug_log("print window list: no data!");
+                if(!l->data)assert_msg(l->data==0,"print window list: no data!");
                 else if(w)
                     debug_log("list window %d:",w->id);
                 else
