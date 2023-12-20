@@ -1,6 +1,8 @@
 CC = i386-elf-gcc
 LD = i386-elf-ld
-CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -Isgfx -Ikernel -Ikernel/include -Ikernel/qgui -no-pie
+
+INCLUDEPATH = -Isgfx -Ikernel -Ikernel/include -Ikernel/qgui -Ikernel/res
+CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin -Isgfx -Ikernel -Ikernel/include -Ikernel/qgui -Ikernel/res -no-pie
 LDFLAGS = -melf_i386 -Tkernel.ld -Lsgfx -lsgfx
 ASFLAGS = -felf32
 LIBGCC = /usr/bin/../lib/gcc/i386-elf/7.5.0/libgcc.a

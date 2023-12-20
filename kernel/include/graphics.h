@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		graphics.h
+// Description:
+// First Created: 	19.12.2023
+// Last Change:
+ 
+#ifndef __GRAPHICS_H
+#define __GRAPHICS_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // basic software graphics
 
@@ -16,3 +25,10 @@ void graphics_draw_char(uint8_t c, int32_t x0, int32_t y0, uint32_t color);
 void graphics_draw_string(const char* str, int32_t x0, int32_t y0, uint32_t color);
 void graphics_draw_hline(int32_t x, int32_t y, int32_t w, uint32_t color);
 void graphics_draw_vline(int32_t x, int32_t y, int32_t h, uint32_t color);
+
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__GRAPHICS_H
+

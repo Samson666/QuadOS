@@ -43,6 +43,7 @@ void init_graphics(uint32_t* framebuffer_paddr, uint32_t width, uint32_t height,
 // Note				: 
  
 void graphics_fill(uint32_t color) {
+    //debug_log("Function graphics_fill");
     sgfx_fill(&graphics, color);
 }
 

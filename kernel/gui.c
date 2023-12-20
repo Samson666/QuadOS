@@ -28,7 +28,7 @@ int32_t redraw_indicator = 0;
 int32_t window_index = 0;
 
 static void gui_handle_events();
-static void gui_draw_frame();
+void gui_draw_frame();
 
 void init_gui(int32_t width, int32_t height) {
     gui.width = width;
@@ -64,7 +64,7 @@ void gui_task() {
 
 
 //Draw the complete frame (screen)
-static void gui_draw_frame() {
+void gui_draw_frame() {
     
     graphics_fill(COLOR_FRAME_BACKGROUND);  //fill the frame with given color (00RRGGBB)
 
@@ -142,6 +142,54 @@ static void handle_left_click() {
 
     gui.needs_redraw = true;
 }
+
+static void qhandle_left_click() {
+    //Testbutton was clicked -> start files.exe in a new usertask
+    if (gui.cursor_x >= testbutton_x && gui.cursor_x < testbutton_x + testbutton_w
+        && gui.cursor_y >= testbutton_y && gui.cursor_y < testbutton_y + testbutton_h) {
+        create_user_task("files.exe");
+    }
+
+    focused_window = window_under_cursor;
+
+    if (window_under_cursor != -1) {
+        // we are clicking on a window
+        move_window_to_front(window_under_cursor);      //bring the window to front
+
+        if (window_under_cursor_inside_content) {
+            Event click;
+            click.type = EVENT_MOUSE_CLICK;
+            click.data0 = gui.cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
+            click.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
+            click.data2 = 1;
+            handle_event(&click);
+        } else {
+            // we are clicking on its border
+            
+            if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            {
+                kernel_log("Window resize grip clicked");
+            }
+            
+            else if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
+            {
+                Window* w = get_window(window_under_cursor);
+                uint32_t task_id = w->owner_task_id;
+                // todo: allow for multiple windows
+                destroy_window(window_under_cursor);
+                kill_task(task_id);
+                window_under_cursor = -1;
+                focused_window = -1;
+            }
+
+            currently_dragging_window = window_under_cursor;
+            
+        }
+        
+    }
+
+    gui.needs_redraw = true;
+}
 // Functionname 	: handle_right_click
 // Parameters		: none
 // Returns			: void
@@ -163,6 +211,7 @@ static void handle_right_click()
  
 static void gui_handle_events() {
     //get the movement of the mousepointer
+    //mouse is a global structure!
     gui.cursor_x += mouse.x_acc;
     mouse.x_acc = 0;
     gui.cursor_y += mouse.y_acc;

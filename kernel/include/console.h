@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		console.h
+// Description:
+// First Created: 	19.12.2023
+// Last Change:
+ 
+#ifndef __CONSOLE_H
+#define __CONSOLE_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "types.h"
 
@@ -41,3 +50,9 @@ void init_console();
 void console_print(const char* str);
 void console_key_typed(char c);
 void console_set_prompt_enabled(bool enabled);
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__CONSOLE_H
+

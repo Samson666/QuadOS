@@ -20,12 +20,15 @@ extern "C" {
 #include "log.h"
 #include "defs.h"
 #include "util.h"
+#include "events.h"
 
 //function declarations. Extern declaration is needed for C++ functions to be used in C since the datatype Class is unknown in C.
 //No need to include qwindow.h file! The magic is done by the linker :-)
 extern int32_t cqcreate_window(int16_t width, int16_t height, uint32_t flags);
-extern void init_qgui(int32_t w, int32_t h);
+extern void cinit_qgui(int32_t w, int32_t h);
 extern void cdraw_qwindows();
+extern void qhandle_event(const Event* event);
+extern void qgui_task();
 
 //Class qwindow. Handles our window
 class qwindow                                       //window class
@@ -41,6 +44,8 @@ class qwindow                                       //window class
         uint32_t flags;                             //the window flags
         int16_t actual_width;                       //the window width of the content
         int16_t actual_height;                      //the window height of the content
+        bool    inside_content = false;             //mouse pointer is inside the content. Means between all other elements like titlebar etc.
+        bool    mouse_over_window = false;          //mouse pointer is over the window
         uint32_t* framebuffer;                      //pointer to the framebuffer
         uint32_t framebuffer_size_bytes;            //size of the buffer in bytes
         int16_t fb_shmem_id;                        //id of the used shared memory object
@@ -97,7 +102,6 @@ class list_node
 };
 
 //Class qgui. Handles all belongings of our gui
-
 class qgui
 {
     public:
@@ -105,12 +109,18 @@ class qgui
         //member variables
         int32_t width, height;                  //holds the width an height of the gui
         int32_t cursor_x, cursor_y;             //holds the current mouse coordinates    
-        int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates 
-        bool needs_redraw;                      //indicates if the frame needs a redraw
-        bool left_click;                        //left mouse button is clicked
-        bool right_click;                       //right mouse button is clicked
-        u16 fake_console_buffer[50 * 80];       //buffer for the kernel console
-        qwindow* active_window;
+        int32_t prev_cursor_x, prev_cursor_y;   //holds the previous mouse coordinates
+        bool    prev_mouse_left_button = false;
+        bool    prev_mouse_right_button = false;
+        qwindow* focused_window = NULL;
+        qwindow* window_under_cursor = NULL;
+        qwindow* currently_dragging_window = NULL;
+        bool    mouse_inside_content = false;
+        bool    needs_redraw;                      //indicates if the frame needs a redraw
+        bool    left_click;                        //left mouse button is clicked
+        bool    right_click;                       //right mouse button is clicked
+        u16     fake_console_buffer[50 * 80];       //buffer for the kernel console
+        
         list_node* list_head;
         list_node* list_tail;
 
@@ -132,11 +142,13 @@ class qgui
         void init(int32_t w, int32_t h);
         void append_window(qwindow* w);
         void print_window_list();
+        qwindow* find_window_from_pos(int32_t x, int32_t y);
         void gui_task(); 
         void draw_qwindows();
-        void handle_events();
+        void handle_gui_events();
+        void handle_system_events(const Event* event);
         void draw_frame();
-        void draw_debug_console(uint32_t color);    
+        void draw_debug_console(uint32_t color);  
     };
     
 #ifdef __cplusplus

@@ -13,7 +13,7 @@
 
 static uint32_t get_event_buffer_shmem_id();
 static void task_wait_for_event();
-static void send_event_to_task(int32_t task_id, const Event* event);
+void send_event_to_task(int32_t task_id, const Event* event);
 
 void init_events() {
     register_syscall(SYSCALL_GET_EVENT_BUFFER_SHMEM_ID, get_event_buffer_shmem_id);
@@ -35,10 +35,14 @@ void destroy_events_for_task(Task* task) {
     task->event_shmem_id = -1;
 }
 
+// Functionname 	: handle_event
+// Parameters		: pointer to event struct
+// Returns			: void
+// Description		: 
+// Note				: handles the events triggerd by mouse & keyboard
+ 
 void handle_event(const Event* event) {
     push_cli();
-
-    // should this be in gui.c?
 
     if (event->type == EVENT_MOUSE_MOVE) {
         Window* w = get_window(window_under_cursor);
@@ -62,7 +66,7 @@ void handle_event(const Event* event) {
     pop_cli();
 }
 
-static void send_event_to_task(int32_t task_id, const Event* event) {
+void send_event_to_task(int32_t task_id, const Event* event) {
     assert(task_id > 1000);
     Task* task = get_task(task_id);
     assert(task->state != TASK_STATE_DEAD);

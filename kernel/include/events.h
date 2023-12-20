@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		events.h
+// Description:
+// First Created: 	19.12.2023
+// Last Change:
+ 
+#ifndef __EVENTS_H
+#define __EVENTS_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "types.h"
 #include "tasks.h"
@@ -32,3 +41,11 @@ void init_events_for_task(Task* task);
 void destroy_events_for_task(Task* task);
 void handle_event(const Event* event);
 void check_event_timers();
+void send_event_to_task(int32_t task_id, const Event* event);
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__EVENTS_H
+
+

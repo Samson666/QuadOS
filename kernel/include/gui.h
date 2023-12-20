@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		gui.h
+// Description:
+// First Created: 	19.12.2023
+// Last Change:
+ 
+#ifndef __GUI_H
+#define __GUI_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "types.h"
 #include "windows.h"
@@ -19,3 +28,11 @@ extern GUI gui;
 void init_gui(int32_t width, int32_t height);
 void gui_task();
 void draw_debug_console(uint32_t color);
+void gui_draw_frame();
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__GUI_H
+
+

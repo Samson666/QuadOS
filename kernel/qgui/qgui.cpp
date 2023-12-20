@@ -7,19 +7,29 @@
 #include "qgui.h"
 #include "printf.h"
 #include "log.h"
+#include "mouse.h"
+#include "events.h"
+#include "tasks.h"
+#include "console.h"
+#include "graphics.h"
+#include "gui.h"
+#include "time.h"
+#include "physalloc.h"
+//#include "res/cursor_img.h"
 
-qgui* QGUI;                //qgui object. Exists exactly one time!
+qgui* QGUI;          //qgui object. Exists exactly one time!
 int32_t qwindow_count = 0; //The window counter. Needed to give a new window an ID. For the time beeing have to be used
                            //for the interface (SYSCALL) of the userspace api.
 
+//-----------------------------------------------C Moniker----------------------------------------------------
 
 //C Moniker for gui initialization 
-void init_qgui(int32_t w, int32_t h)
+void cinit_qgui(int32_t w, int32_t h)
 {
-   debug_log("Function init_qgui w:%d, h:%d", w, h);
+   debug_log("Function cinit_qgui w:%d, h:%d", w, h);
    QGUI = new qgui;
    QGUI->init(w,h);
-   debug_log("init_qgui w:%d, h:%d", QGUI->width, QGUI->height);
+   debug_log("cinit_qgui w:%d, h:%d", QGUI->width, QGUI->height);
 }
 
 //C Moniker for creating a new window
@@ -29,12 +39,13 @@ int32_t cqcreate_window(int16_t width, int16_t height, uint32_t flags)
    qwindow* qw = new qwindow;
    qw->init(width, height, flags);
    qw->id = qwindow_count++;
-   qw->x = 100 + 30 * qwindow_count;
-   qw->y = 200 + 40 * qwindow_count;
+   qw->x = 30 + 30 * qwindow_count;
+   qw->y = 40 + 40 * qwindow_count;
    QGUI->append_window(qw);
    debug_log("Function cqcreate_window after inserting to list id:%d", qw->id);
    debug_log("Function cqcreate_window id:%d, adress:%x, widht=%d, height=%d, flags=%x, guiw:%d, guih:%d", qw->id, qw->adress, height, flags, QGUI->width, QGUI->height);
-   QGUI->print_window_list();
+
+   QGUI->find_window_from_pos(100,100);
    QGUI->draw_qwindows();
    qw->draw();
    return(qw->id);
@@ -46,6 +57,27 @@ void cdraw_qwindows()
    QGUI->draw_qwindows();
 }
 
+//task loop for our gui
+void qgui_task() 
+{
+// disable_interrupts();
+   while (1) 
+   {
+      //debug_log("qgui task");
+      if (QGUI->needs_redraw) 
+      {
+            QGUI->needs_redraw = false;
+            gui_draw_frame();
+            //gui_draw_frame();
+      }
+
+      
+      disable_interrupts();
+      QGUI->handle_gui_events();
+      enable_interrupts();
+   }
+}
+//-------------------------------------qgui---------------------------------------------------------
 //print the window list to the console. For debbuging purposes only!
 void qgui::print_window_list()
 {
@@ -121,24 +153,6 @@ void qgui::init(int32_t w, int32_t h)
 // testbutton_h = 50;
 };
 
-//task loop for our gui
-void qgui::gui_task() 
-{
-// disable_interrupts();
-   while (1) 
-   {
-      if (needs_redraw) 
-      {
-            needs_redraw = false;
-            draw_frame();
-      }
-
-      disable_interrupts();
-      handle_events();
-      enable_interrupts();
-   }
-};
-
 //draw out window list
 void qgui::draw_qwindows()
 {
@@ -166,18 +180,91 @@ void qgui::draw_qwindows()
    }
 };
 
+//TODO - write function
 //handles the gui events
-void qgui::handle_events()
+void qgui::handle_gui_events()
 {
 
 };
 
+
+//TODO - complete the function
 //draw the whole frame
 void qgui::draw_frame()
 {
+   debug_log("Function qgui::draw_frame");
    graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)
    draw_debug_console(0);
+
+   QGUI->draw_qwindows();             //drawing the windows
+
+    //graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF); //Drawing the testbutton to start file.exe
+
+    //graphics_fill_rect(graphics.width - 10, 2, 8, 8, redraw_indicator ? 0xFF00FF : 0); //Drawing the indicator rectangle
+    //redraw_indicator ^= 1; //Invers the indicator color
+
+    //get time and save it time_str
+    uint64_t time = get_system_time_millis(); //Get the system time in milliseconds
+    char time_str[128];
+
+    int phys_mem = pmm_get_total_allocated_pages() * 4; //get used physical memory
+
+    sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
+    graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame
+
+    //graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, (uint32_t*) res_cursor_raw); //draw the cursor
+
+    //Since we draw everything to the backbuffer, we need to copy the backbuffer to the actual framebuffer
+    graphics_copy_backbuffer();
 };
+
+qwindow* qgui::find_window_from_pos(int32_t x, int32_t y) 
+{
+   //walk through window list
+   list_node* l;
+   l = list_tail->next;
+   while(l!=list_head)
+   {
+      if(l)
+      {
+         qwindow* w = (qwindow*) l->data;
+
+         if(!l->data)assert_msg(l->data==0,"draw window list: no data!");
+         else if(w)
+         {
+            w->inside_content = false;
+            debug_log("Function find_window_from_pos w->x: %d, w->y: %d, x: %d, y: %d", w->x, w->y, x, y);
+            if (w->state == 0)
+            {
+               l=l->next;
+               continue;
+            }
+
+            //is the mouse cursor inside the window?
+            if ((w->x > x) || (w->y > y) || (w->x + w->actual_width < x) || (w->y + w->actual_height < y))
+            {
+               l=l->next;
+               continue;
+            }
+
+            //is the mouse cursor in between of both window bars?
+            if ((y > w->y + WINDOW_TITLE_BAR_HEIGHT) && (y < w->y + w->height))
+               w->inside_content = true;
+            
+            debug_log("Mouse cursor is inside the window");
+            return w;
+         }
+         else
+            debug_log("draw window: no window found!");
+      }
+      else
+      {
+            debug_log("list window: no node found!");
+      }
+      l = l->next;
+   }
+   return NULL;
+}
 
 //draw the debug console
 void qgui::draw_debug_console(uint32_t color) 
@@ -192,6 +279,8 @@ void qgui::draw_debug_console(uint32_t color)
       }
    }
 };
+
+//----------------------------------------------qwindow----------------------------------------
 
 //Initialize the window
 void qwindow::init(int16_t w, int16_t h, uint32_t f)
@@ -214,6 +303,7 @@ void qwindow::init(int16_t w, int16_t h, uint32_t f)
    //debug_log("This pointer: %x", id);
 };
 
+
 //draw the window
 void qwindow::draw()
 {
@@ -223,6 +313,108 @@ void qwindow::draw()
    graphics_draw_vline(x, y, height + WINDOW_TITLE_BAR_HEIGHT, COLOR_BLACK);
    graphics_draw_vline(x + width + 1, y, height + WINDOW_TITLE_BAR_HEIGHT, COLOR_BLACK);
 };
+
+//---------------------------------------qgui--events------------------------------------------
+
+
+// void qgui::handle_events() 
+// {
+//    //get the movement of the mousepointer
+//     //mouse is a global structure!
+//     cursor_x += mouse.x_acc;
+//     mouse.x_acc = 0;
+//     cursor_y += mouse.y_acc;
+//     mouse.y_acc = 0;
+
+//     //check if mousepointer is in the boundaries.
+//     if (cursor_x < 0)
+//         cursor_x = 0;
+//     if (cursor_y < 0)
+//         cursor_y = 0;
+//     if (cursor_x >= graphics.width)
+//         cursor_x = graphics.width - 1;
+//     if (cursor_y >= graphics.height)
+//         cursor_y = graphics.height - 1;
+
+//     //get the window which is currently under the cursor
+//     if(cursor_x != prev_cursor_x && cursor_y != prev_cursor_y)
+//         window_under_cursor = find_window_from_pos(cursor_x, cursor_y, &window_under_cursor_inside_content);
+
+//     static bool prev_mouse_left_button = 0;
+//     static bool prev_mouse_right_button = 0;
+
+//     if (prev_mouse_left_button != left_click || prev_mouse_right_button != right_click)
+//     {
+//         if (left_click) {
+//             handle_left_click();
+//         }
+//         else if (right_click){
+//             handle_right_click();
+//         } 
+//         else {
+//             currently_dragging_window = -1;
+//         }
+
+//         prev_mouse_left_button = left_click;
+//         prev_mouse_right_button = right_click;
+//     }
+    
+//     left_click = mouse.left_button;
+//     right_click = mouse.right_button;
+
+//     int32_t dx = cursor_x - prev_cursor_x;
+//     int32_t dy = cursor_y - prev_cursor_y;
+
+//     if (dx != 0 || dy != 0) {
+//         needs_redraw = true;
+
+//         if (currently_dragging_window != -1) {
+//             windows[currently_dragging_window].x += dx;
+//             windows[currently_dragging_window].y += dy;
+//         } else if (window_under_cursor_inside_content) { // && focused_window == window_under_cursor
+//             Event move;
+//             move.type = EVENT_MOUSE_MOVE;
+//             move.data0 = cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
+//             move.data1 = cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
+//             move.data2 = 0;
+//             handle_event(&move);
+//         }
+
+//         prev_cursor_x = cursor_x;
+//         prev_cursor_y = cursor_y;
+//     }
+// }
+
+
+
+void qhandle_event(const Event* event) {
+
+   debug_log("Function qhandle_event()");
+   push_cli();
+
+   if (event->type == EVENT_MOUSE_MOVE) {
+      qwindow* w = QGUI->window_under_cursor;
+      if (w != NULL) {
+         send_event_to_task(w->owner_task_id, event);
+      }
+   }
+   
+   if (event->type == EVENT_MOUSE_CLICK || event->type == EVENT_KEYBOARD) {
+      qwindow* w = QGUI->focused_window;
+
+      if (w != NULL) {
+         send_event_to_task(w->owner_task_id, event);
+      } else if (event->type == EVENT_KEYBOARD) {
+         if (event->data0 >> 7 == 0 && event->data1 != 0)
+               console_key_typed(event->data1);
+      }
+   }
+   // todo: send events to tasks listening in the background
+
+   pop_cli();
+}
+
+//--------------------------------------------------lists-----------------------------------------
 
 //insert a new node in the list
 list_node* list_node::insert(void* d)

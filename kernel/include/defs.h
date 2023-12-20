@@ -11,7 +11,7 @@ extern "C" {
 
 //Debugging flags
 
-//#define _LOGIN_ON
+#define _LOGING_ON
 #define _DEBUG
 #define DEBUG_CONSOLE
 

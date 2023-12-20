@@ -1,4 +1,13 @@
-#pragma once
+// Title:	 		sgfx.h
+// Description:
+// First Created: 	19.12.2023
+// Last Change:
+ 
+#ifndef __SGFX_H
+#define __SGFX_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "types.h"
 
@@ -22,4 +31,11 @@ void sgfx_draw_hline(const GraphicsContext* ctx, int32_t x, int32_t y, int32_t w
 void sgfx_draw_vline(const GraphicsContext* ctx, int32_t x, int32_t y, int32_t h, uint32_t color);
 void sgfx_pixel(GraphicsContext* context, int32_t x, int32_t y, uint32_t color);
 void sgfx_draw_line(GraphicsContext* context, int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t color);
+
+#ifdef __cplusplus
+}
+#endif
+#endif //__SGFX_H
+
+
 
