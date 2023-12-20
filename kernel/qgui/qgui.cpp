@@ -15,11 +15,15 @@
 #include "gui.h"
 #include "time.h"
 #include "physalloc.h"
-//#include "res/cursor_img.h"
+#include "defs.h"
+
+#ifdef NEWGUI
+   #include "res/cursor_img.h"
+#endif
 
 qgui* QGUI;          //qgui object. Exists exactly one time!
 int32_t qwindow_count = 0; //The window counter. Needed to give a new window an ID. For the time beeing have to be used
-                           //for the interface (SYSCALL) of the userspace api.
+                           //as an interface (SYSCALL) of the userspace api.
 
 //-----------------------------------------------C Moniker----------------------------------------------------
 
@@ -51,6 +55,10 @@ int32_t cqcreate_window(int16_t width, int16_t height, uint32_t flags)
    return(qw->id);
 }
 
+void qhandle_event(const Event* event)
+{
+   QGUI->handle_event(event);
+}
 //C Moniker for drawing our window list
 void cdraw_qwindows()
 {
@@ -131,6 +139,7 @@ void qgui::append_window(qwindow* w)
 //initialize the gui
 void qgui::init(int32_t w, int32_t h)
 {
+   debug_log("Function qgui::init");
    width = w;
    height = h;
    cursor_x = w / 2;
@@ -142,6 +151,11 @@ void qgui::init(int32_t w, int32_t h)
    list_tail = new list_node;
    list_tail->next = list_head;
    list_head->next = NULL;
+
+   testbutton_x = graphics.width - 100;
+   testbutton_y = graphics.height - 100;
+   testbutton_w = 50;
+   testbutton_h = 50;
 
    register_syscall(SYSCALL_cqcreate_window, (void*)cqcreate_window);
 
@@ -180,14 +194,6 @@ void qgui::draw_qwindows()
    }
 };
 
-//TODO - write function
-//handles the gui events
-void qgui::handle_gui_events()
-{
-
-};
-
-
 //TODO - complete the function
 //draw the whole frame
 void qgui::draw_frame()
@@ -212,7 +218,9 @@ void qgui::draw_frame()
     sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
     graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame
 
-    //graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, (uint32_t*) res_cursor_raw); //draw the cursor
+   #ifdef NEWGUI
+    graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, (uint32_t*) res_cursor_raw); //draw the cursor
+    #endif
 
     //Since we draw everything to the backbuffer, we need to copy the backbuffer to the actual framebuffer
     graphics_copy_backbuffer();
@@ -314,97 +322,137 @@ void qwindow::draw()
    graphics_draw_vline(x + width + 1, y, height + WINDOW_TITLE_BAR_HEIGHT, COLOR_BLACK);
 };
 
+bool qwindow::check_window_close(int32_t x, int32_t y) {
+
+    int32_t close_button_x = x + width + 2 - CLOSE_BUTTON_WIDTH - 1;
+    int32_t close_button_y = y + 10;
+
+    if (x < close_button_x) return false;
+    if (y < close_button_y) return false;
+    if (x >= close_button_x + CLOSE_BUTTON_WIDTH) return false;
+    if (y >= close_button_y + CLOSE_BUTTON_HEIGHT) return false;
+
+    return true;
+}
+
+bool qwindow::check_window_resize(int32_t x, int32_t y)
+{
+    int32_t resize_grip_x = x + width - GRIP_SIZE;
+    int32_t resize_grip_y = y + height + WINDOW_TITLE_BAR_HEIGHT - GRIP_SIZE;
+    if (x < resize_grip_x)return false;
+    if (y < resize_grip_y)return false;
+    if (x >= resize_grip_x + GRIP_SIZE) return false;
+    if (y >= resize_grip_y + GRIP_SIZE) return false;
+
+    //kernel_log("Function check_window_resize grip_x: %d, grip_y %d, w->x: %d, w->y: %d, x: %d, y: %d, return %d", resize_grip_x, resize_grip_y,w->x, w->y,x,y,ret);
+    return true;
+}
+
+void qwindow::destroy_window() {
+
+    sharedmem_destroy(fb_shmem_id);
+    delete(this);
+
+    //!SECTION(&windows[window_id], 0, sizeof(Window));
+
+   //  int index = z_order_find_index(window_id);
+   //  if (index != -1) {
+   //      z_order_remove_at(index);
+   //  }
+
+    QGUI->needs_redraw = true;
+}
 //---------------------------------------qgui--events------------------------------------------
 
 
-// void qgui::handle_events() 
-// {
-//    //get the movement of the mousepointer
-//     //mouse is a global structure!
-//     cursor_x += mouse.x_acc;
-//     mouse.x_acc = 0;
-//     cursor_y += mouse.y_acc;
-//     mouse.y_acc = 0;
+void qgui::handle_gui_events() 
+{
+   //get the movement of the mousepointer
+    //mouse is a global structure!
+    cursor_x += mouse.x_acc;
+    mouse.x_acc = 0;
+    cursor_y += mouse.y_acc;
+    mouse.y_acc = 0;
 
-//     //check if mousepointer is in the boundaries.
-//     if (cursor_x < 0)
-//         cursor_x = 0;
-//     if (cursor_y < 0)
-//         cursor_y = 0;
-//     if (cursor_x >= graphics.width)
-//         cursor_x = graphics.width - 1;
-//     if (cursor_y >= graphics.height)
-//         cursor_y = graphics.height - 1;
+    //check if mousepointer is in the boundaries.
+    if (cursor_x < 0)
+        cursor_x = 0;
+    if (cursor_y < 0)
+        cursor_y = 0;
+    if (cursor_x >= graphics.width)
+        cursor_x = graphics.width - 1;
+    if (cursor_y >= graphics.height)
+        cursor_y = graphics.height - 1;
 
-//     //get the window which is currently under the cursor
-//     if(cursor_x != prev_cursor_x && cursor_y != prev_cursor_y)
-//         window_under_cursor = find_window_from_pos(cursor_x, cursor_y, &window_under_cursor_inside_content);
+    //get the window which is currently under the cursor
+    if(cursor_x != prev_cursor_x && cursor_y != prev_cursor_y)
+        window_under_cursor = find_window_from_pos(cursor_x, cursor_y);
 
-//     static bool prev_mouse_left_button = 0;
-//     static bool prev_mouse_right_button = 0;
+    static bool prev_mouse_left_button = 0;
+    static bool prev_mouse_right_button = 0;
 
-//     if (prev_mouse_left_button != left_click || prev_mouse_right_button != right_click)
-//     {
-//         if (left_click) {
-//             handle_left_click();
-//         }
-//         else if (right_click){
-//             handle_right_click();
-//         } 
-//         else {
-//             currently_dragging_window = -1;
-//         }
+    if (prev_mouse_left_button != left_click || prev_mouse_right_button != right_click)
+    {
+        if (left_click) {
+            handle_left_click();
+        }
+        else if (right_click){
+            handle_right_click();
+        } 
+        else {
+            currently_dragging_window = NULL;
+        }
 
-//         prev_mouse_left_button = left_click;
-//         prev_mouse_right_button = right_click;
-//     }
+        prev_mouse_left_button = left_click;
+        prev_mouse_right_button = right_click;
+    }
     
-//     left_click = mouse.left_button;
-//     right_click = mouse.right_button;
+    left_click = mouse.left_button;
+    right_click = mouse.right_button;
 
-//     int32_t dx = cursor_x - prev_cursor_x;
-//     int32_t dy = cursor_y - prev_cursor_y;
+    int32_t dx = cursor_x - prev_cursor_x;
+    int32_t dy = cursor_y - prev_cursor_y;
 
-//     if (dx != 0 || dy != 0) {
-//         needs_redraw = true;
+    if (dx != 0 || dy != 0) {
+        needs_redraw = true;
 
-//         if (currently_dragging_window != -1) {
-//             windows[currently_dragging_window].x += dx;
-//             windows[currently_dragging_window].y += dy;
-//         } else if (window_under_cursor_inside_content) { // && focused_window == window_under_cursor
-//             Event move;
-//             move.type = EVENT_MOUSE_MOVE;
-//             move.data0 = cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
-//             move.data1 = cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
-//             move.data2 = 0;
-//             handle_event(&move);
-//         }
+        if (currently_dragging_window) {
+            currently_dragging_window->x += dx;
+            currently_dragging_window->y += dy;
+        } else if (window_under_cursor_inside_content) { // && focused_window == window_under_cursor
+            Event move;
+            move.type = EVENT_MOUSE_MOVE;
+            move.data0 = cursor_x - window_under_cursor->x - WINDOW_CONTENT_XOFFSET;
+            move.data1 = cursor_y - window_under_cursor->y - WINDOW_TITLE_BAR_HEIGHT;
+            move.data2 = 0;
+            handle_event(&move);
+        }
 
-//         prev_cursor_x = cursor_x;
-//         prev_cursor_y = cursor_y;
-//     }
-// }
+        prev_cursor_x = cursor_x;
+        prev_cursor_y = cursor_y;
+    }
+}
 
 
 
-void qhandle_event(const Event* event) {
+void qgui::handle_event(const Event* event) {
 
-   debug_log("Function qhandle_event()");
+   //debug_log("Function qhandle_event()");
    push_cli();
 
    if (event->type == EVENT_MOUSE_MOVE) {
-      qwindow* w = QGUI->window_under_cursor;
-      if (w != NULL) {
-         send_event_to_task(w->owner_task_id, event);
-      }
+      if (window_under_cursor)
+            send_event_to_task(window_under_cursor->owner_task_id, event);
    }
    
-   if (event->type == EVENT_MOUSE_CLICK || event->type == EVENT_KEYBOARD) {
-      qwindow* w = QGUI->focused_window;
-
-      if (w != NULL) {
-         send_event_to_task(w->owner_task_id, event);
-      } else if (event->type == EVENT_KEYBOARD) {
+   if (event->type == EVENT_MOUSE_CLICK || event->type == EVENT_KEYBOARD) 
+   {
+      if (focused_window) 
+      {
+         send_event_to_task(focused_window->owner_task_id, event);
+      } 
+      else if (event->type == EVENT_KEYBOARD) 
+      {
          if (event->data0 >> 7 == 0 && event->data1 != 0)
                console_key_typed(event->data1);
       }
@@ -414,6 +462,58 @@ void qhandle_event(const Event* event) {
    pop_cli();
 }
 
+void qgui::handle_left_click() {
+    //Testbutton was clicked -> start files.exe in a new usertask
+    if (cursor_x >= testbutton_x && cursor_x < testbutton_x + testbutton_w
+        && cursor_y >= testbutton_y && cursor_y < testbutton_y + testbutton_h) {
+        create_user_task("files.exe");
+    }
+
+    focused_window = window_under_cursor;
+
+    if (window_under_cursor) {
+        // we are clicking on a window
+        //move_window_to_front(window_under_cursor);      //bring the window to front
+
+        if (window_under_cursor_inside_content) {
+            Event click;
+            click.type = EVENT_MOUSE_CLICK;
+            click.data0 = gui.cursor_x - window_under_cursor->x - WINDOW_CONTENT_XOFFSET;
+            click.data1 = gui.cursor_y - window_under_cursor->y - WINDOW_TITLE_BAR_HEIGHT;
+            click.data2 = 1;
+            handle_event(&click);
+        } else {
+            //we are clicking on its border
+            
+            if(window_under_cursor->check_window_resize (cursor_x, cursor_y))
+            {
+                kernel_log("Window resize grip clicked");
+            }
+            
+            else if (window_under_cursor->check_window_close (cursor_x, cursor_y))
+            {
+                uint32_t task_id = window_under_cursor->owner_task_id;
+                // todo: allow for multiple windows
+                window_under_cursor->destroy_window();
+                kill_task(task_id);
+                window_under_cursor = NULL;
+                focused_window = NULL;
+            }
+
+            currently_dragging_window = window_under_cursor;
+            
+        }
+        
+    }
+
+    gui.needs_redraw = true;
+}
+
+void qgui::handle_right_click()
+{
+
+
+}
 //--------------------------------------------------lists-----------------------------------------
 
 //insert a new node in the list

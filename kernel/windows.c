@@ -12,6 +12,7 @@
 #include "util.h"
 #include "log.h"
 #include "defs.h"
+#include "events.h"
 
 Window windows[MAX_WINDOWS];
 int32_t currently_dragging_window = -1;
@@ -128,6 +129,11 @@ void destroy_window(int32_t window_id) {
     }
 
     gui.needs_redraw = true;
+}
+
+void dummy_handler(Event* event)
+{
+    debug_log("handle even kb");
 }
 
 // Functionname 	: 

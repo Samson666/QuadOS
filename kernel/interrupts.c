@@ -63,6 +63,7 @@ void register_isr(uint8_t vector, ISRFunction func) {
 }
 
 void handle_interrupt(TrapFrame* frame) {
+    //debug_log("handle_interrup %d", frame->interrupt);
     if (frame->interrupt >= 32 && frame->interrupt <= 47) {
         // acknowledge IRQ
         if (frame->interrupt >= 40) {

@@ -2,7 +2,7 @@
 
 #include "types.h"
 #include "ramdisk.h"
-#include "fatfs/fatfs_ff.h"
+#include "../fatfs/fatfs_ff.h"
 #include "slib.h"
 #include "config.h"
 #include "sharedmem.h"

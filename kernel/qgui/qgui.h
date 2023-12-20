@@ -70,6 +70,9 @@ class qwindow                                       //window class
             kfree(p);
         };
 
+        bool check_window_close(int32_t x, int32_t y);
+        bool check_window_resize(int32_t x, int32_t y);
+        void destroy_window();
         //initialize the new qwindow
         void init(int16_t w, int16_t h, uint32_t f);
         void draw();     
@@ -124,6 +127,9 @@ class qgui
         list_node* list_head;
         list_node* list_tail;
 
+        int32_t testbutton_x, testbutton_y;
+        int32_t testbutton_w, testbutton_h;
+
         //member functions definitions
         qgui(){};
         ~qgui(){};
@@ -145,8 +151,10 @@ class qgui
         qwindow* find_window_from_pos(int32_t x, int32_t y);
         void gui_task(); 
         void draw_qwindows();
+        void handle_event(const Event* event);
         void handle_gui_events();
-        void handle_system_events(const Event* event);
+        void handle_left_click();
+        void handle_right_click();
         void draw_frame();
         void draw_debug_console(uint32_t color);  
     };

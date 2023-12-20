@@ -7,6 +7,8 @@
 #include "tasks.h"
 #include "events.h"
 #include "kernel.h"
+#include "defs.h"
+#include "windows.h"
 
 static void handle_key_event(TrapFrame* frame);
 static uint8_t translate_to_ascii(uint8_t scancode, bool shift, bool alt);
@@ -39,7 +41,11 @@ void handle_key_event(TrapFrame* frame) {
     event.data0 = scancode;
     event.data1 = key;
     event.data2 = scancode >> 7 == 0;
-    handle_event(&event);
+    #ifndef NEWGUI
+    dummy_handler(&event);
+    #else
+    qhandle_event(&event);
+    #endif
     // kernel_log("key scancode: %u", scancode);
 }
 

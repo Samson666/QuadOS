@@ -3,6 +3,7 @@
 // GUI window management
 
 #include "types.h"
+#include "events.h"
 
 #define WINDOW_CONTENT_XOFFSET 1                //x-offset of the window. Used to give a distance between the windowborder and its content  
 #define WINDOW_TITLE_BAR_HEIGHT 20              //height of the window title bar
@@ -63,3 +64,4 @@ int32_t get_framebuffer_shmem_id(int32_t window_id);
 int32_t set_title(int32_t window_id, const char* title);
 void resize_window(int32_t id, int32_t width, int32_t height);
 bool check_window_resize(int32_t window, int32_t x, int32_t y);
+void dummy_handler(Event* event);

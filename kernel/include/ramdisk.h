@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "fatfs/fatfs_ff.h"
+#include "../fatfs/fatfs_ff.h"
 
 #define RAMDISK_BLOCKSIZE 512
 

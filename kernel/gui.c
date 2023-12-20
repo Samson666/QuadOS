@@ -14,10 +14,13 @@
 #include "tasks.h"
 #include "events.h"
 #include "windows.h"
-#include "res/cursor_img.h"
+#include "defs.h"
+#ifndef NEWGUI
+    #include "res/cursor_img.h"
+#endif
 #include "time.h"
 #include "interrupts.h"
-#include "defs.h"
+
 
 GUI gui;
 
@@ -89,7 +92,9 @@ void gui_draw_frame() {
     sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
     graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame
 
+    #ifndef NEWGUI
     graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, res_cursor_raw); //draw the cursor
+    #endif
 
     //Since we draw everything to the backbuffer, we need to copy the backbuffer to the actual framebuffer
     graphics_copy_backbuffer();
@@ -143,64 +148,17 @@ static void handle_left_click() {
     gui.needs_redraw = true;
 }
 
-static void qhandle_left_click() {
-    //Testbutton was clicked -> start files.exe in a new usertask
-    if (gui.cursor_x >= testbutton_x && gui.cursor_x < testbutton_x + testbutton_w
-        && gui.cursor_y >= testbutton_y && gui.cursor_y < testbutton_y + testbutton_h) {
-        create_user_task("files.exe");
-    }
+void handle_right_click()
+{
 
-    focused_window = window_under_cursor;
 
-    if (window_under_cursor != -1) {
-        // we are clicking on a window
-        move_window_to_front(window_under_cursor);      //bring the window to front
-
-        if (window_under_cursor_inside_content) {
-            Event click;
-            click.type = EVENT_MOUSE_CLICK;
-            click.data0 = gui.cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
-            click.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
-            click.data2 = 1;
-            handle_event(&click);
-        } else {
-            // we are clicking on its border
-            
-            if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
-            {
-                kernel_log("Window resize grip clicked");
-            }
-            
-            else if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
-            {
-                Window* w = get_window(window_under_cursor);
-                uint32_t task_id = w->owner_task_id;
-                // todo: allow for multiple windows
-                destroy_window(window_under_cursor);
-                kill_task(task_id);
-                window_under_cursor = -1;
-                focused_window = -1;
-            }
-
-            currently_dragging_window = window_under_cursor;
-            
-        }
-        
-    }
-
-    gui.needs_redraw = true;
 }
+
 // Functionname 	: handle_right_click
 // Parameters		: none
 // Returns			: void
 // Description		: handles the mouse right click
 // Note				: 
- 
-static void handle_right_click()
-{
-
-    kernel_log("Mouse right click");
-}
 
 
 // Functionname 	: gui_handle_events

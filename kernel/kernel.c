@@ -22,6 +22,7 @@
 #include "mouse.h"
 #include "fpu.h"
 #include "slib.h"
+#include "defs.h"
 
 #include "console_window.h"
 
@@ -74,19 +75,27 @@ void kernel_main(struct multiboot_info* info) {
     uint32_t ramdisk_size = mod1 - mod0;                //Getting the Ramdisk size (from GRUB Module)
     init_ramdisk(mod0 + 0xC0000000, ramdisk_size);      //Initialise the Ramdisk
 
+    init_keyboard();                                    //Initalise the keyboard
+    init_mouse(); 
+    
     //If graphics is enabled:
     if (graphics_enabled) {
         init_graphics((uint32_t*) framebuffer_addr, framebuffer_width, framebuffer_height, (uint32_t) framebuffer_bpp / 8, framebuffer_pitch);
                                                         //Initialise the graphics
+        #ifdef NEWGUI
+        cinit_qgui(framebuffer_width, framebuffer_height);
+        uint32_t (*gt)() = qgui_task();
+        create_named_kernel_task(gui_task, "QGUI");    
+        #else
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
         cinit_qgui(framebuffer_width, framebuffer_height);
         uint32_t (*gt)() = gui_task;
+        #endif
         create_named_kernel_task(gui_task, "QGUI");           //Create the kernel task for the GUI
         create_user_task("files.exe");                  //Starting task from file
     }
 
-    init_keyboard();                                    //Initalise the keyboard
-    init_mouse();                                       //Initalise the mouse
+                                          //Initalise the mouse
 
     //qwindow test
     
