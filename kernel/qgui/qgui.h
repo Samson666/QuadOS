@@ -55,7 +55,6 @@ class qwindow                                       //window class
         uint32_t adress;                            //pointer to this window
         int32_t id;                                 //id of the window
 
-
         //class member functions            
         qwindow(){};                                //construstor
         ~qwindow(){};                               //destructor 

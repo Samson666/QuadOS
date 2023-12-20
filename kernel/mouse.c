@@ -4,19 +4,13 @@
 #include "interrupts.h"
 #include "log.h"
 #include "gui.h"
+#include "defs.h"
 
 Mouse mouse;
 
 #define PACKET_BYTES 3
 static uint8_t buffer[PACKET_BYTES];
 static uint8_t buffer_index;
-
-static void wait_read();
-static void wait_write();
-static void write_mouse(uint8_t data);
-static void handle_mouse_interrupt(TrapFrame* frame);
-static uint8_t get_mouse_id();
-static void set_wheel_mode();
 
 void init_mouse() {
     mouse.x_acc = 0;
@@ -44,18 +38,18 @@ void init_mouse() {
     
 }
 
-static void wait_write() {
+void wait_write() {
     int32_t try_count = 1000;
     while (((inb(0x64) & 2) != 0) && --try_count > 0);
 }
 
-static void wait_read()
+void wait_read()
 {
     int32_t try_count = 1000;
     while (((inb(0x64) & 0x20) == 0) && --try_count > 0);
 }
 
-static void write_mouse(uint8_t data) {
+void write_mouse(uint8_t data) {
     wait_write();
     outb(0x64, 0xD4);
 
@@ -63,7 +57,7 @@ static void write_mouse(uint8_t data) {
     outb(0x60, data);
 }
 
-static int8_t read_mouse()
+int8_t read_mouse()
 {
     wait_read();
     return(inb(0x60));
@@ -100,8 +94,9 @@ void set_wheel_mode()
 // Returns			: void
 // Description		: handles the mouse interrupt
 // Note				: 
- 
-static void handle_mouse_interrupt(TrapFrame* frame) {
+
+#ifndef NEWGUI
+void handle_mouse_interrupt(TrapFrame* frame) {
     UNUSED_VAR (frame);
 
     uint8_t scroll = 0;
@@ -124,3 +119,4 @@ static void handle_mouse_interrupt(TrapFrame* frame) {
         // kernel_log("mouse x=%d, y=%d", mouse_x_acc, mouse_y_acc);
     }
 }
+#endif

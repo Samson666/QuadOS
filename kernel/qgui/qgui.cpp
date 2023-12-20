@@ -16,6 +16,7 @@
 #include "time.h"
 #include "physalloc.h"
 #include "defs.h"
+#include "mouse.h"
 
 #ifdef NEWGUI
    #include "res/cursor_img.h"
@@ -24,6 +25,9 @@
 qgui* QGUI;          //qgui object. Exists exactly one time!
 int32_t qwindow_count = 0; //The window counter. Needed to give a new window an ID. For the time beeing have to be used
                            //as an interface (SYSCALL) of the userspace api.
+#define PACKET_BYTES 3
+uint8_t buffer[PACKET_BYTES];
+uint8_t buffer_index = 0;
 
 //-----------------------------------------------C Moniker----------------------------------------------------
 
@@ -72,14 +76,13 @@ void qgui_task()
    while (1) 
    {
       //debug_log("qgui task");
-      if (QGUI->needs_redraw) 
+      if (QGUI->needs_redraw == true) 
       {
-            QGUI->needs_redraw = false;
-            gui_draw_frame();
-            //gui_draw_frame();
+               QGUI->needs_redraw = false;
+               QGUI->draw_frame();
       }
 
-      
+      //QGUI->draw_frame();
       disable_interrupts();
       QGUI->handle_gui_events();
       enable_interrupts();
@@ -151,6 +154,7 @@ void qgui::init(int32_t w, int32_t h)
    list_tail = new list_node;
    list_tail->next = list_head;
    list_head->next = NULL;
+   needs_redraw = true;
 
    testbutton_x = graphics.width - 100;
    testbutton_y = graphics.height - 100;
@@ -198,28 +202,28 @@ void qgui::draw_qwindows()
 //draw the whole frame
 void qgui::draw_frame()
 {
-   debug_log("Function qgui::draw_frame");
+   //debug_log("Function qgui::draw_frame");
    graphics_fill(COLOR_FRAME_BACKGROUND);  //Frame with given color (00RRGGBB)
    draw_debug_console(0);
 
-   QGUI->draw_qwindows();             //drawing the windows
+   draw_qwindows();             //drawing the windows
 
-    //graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF); //Drawing the testbutton to start file.exe
+   graphics_fill_rect(testbutton_x, testbutton_y, testbutton_w, testbutton_h, 0xFFFF00FF); //Drawing the testbutton to start file.exe
 
-    //graphics_fill_rect(graphics.width - 10, 2, 8, 8, redraw_indicator ? 0xFF00FF : 0); //Drawing the indicator rectangle
-    //redraw_indicator ^= 1; //Invers the indicator color
+   //graphics_fill_rect(graphics.width - 10, 2, 8, 8, redraw_indicator ? 0xFF00FF : 0); //Drawing the indicator rectangle
+   //redraw_indicator ^= 1; //Invers the indicator color
 
-    //get time and save it time_str
-    uint64_t time = get_system_time_millis(); //Get the system time in milliseconds
-    char time_str[128];
+   //get time and save it time_str
+   uint64_t time = get_system_time_millis(); //Get the system time in milliseconds
+   char time_str[128];
 
-    int phys_mem = pmm_get_total_allocated_pages() * 4; //get used physical memory
+   int phys_mem = pmm_get_total_allocated_pages() * 4; //get used physical memory
 
-    sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
-    graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame
+   sprintf(time_str, "phys used: %dKiB   systime: %u", phys_mem, time);
+   graphics_draw_string(time_str, 3, graphics.height - 15, 0); //Print the system time at the bottom of the frame
 
    #ifdef NEWGUI
-    graphics_copy_rect(gui.cursor_x, gui.cursor_y, 12, 19, 0, 0, (uint32_t*) res_cursor_raw); //draw the cursor
+    graphics_copy_rect(cursor_x, cursor_y, 12, 19, 0, 0, (uint32_t*) res_cursor_raw); //draw the cursor
     #endif
 
     //Since we draw everything to the backbuffer, we need to copy the backbuffer to the actual framebuffer
@@ -364,9 +368,38 @@ void qwindow::destroy_window() {
 }
 //---------------------------------------qgui--events------------------------------------------
 
+#ifdef NEWGUI
+void handle_mouse_interrupt(TrapFrame* frame) 
+{
+   UNUSED_VAR (frame);
+
+   //debug_log("handle mouse interrupt buffer index %d", buffer_index);
+   uint8_t scroll = 0;
+   uint8_t data = read_mouse();
+
+   buffer[buffer_index++] = data;
+
+   if (buffer_index >= PACKET_BYTES) 
+   {
+      buffer_index = 0;
+
+      mouse.x_acc += (int8_t) buffer[2];
+      mouse.y_acc -= (int8_t) buffer[0];
+      mouse.left_button = buffer[1] & 1;
+      mouse.right_button = buffer[1] & 2;
+      if (mouse.left_button)
+         QGUI->left_click = true;
+      if (mouse.right_button)
+         QGUI->right_click = true;
+
+      // kernel_log("mouse x=%d, y=%d", mouse_x_acc, mouse_y_acc);
+   }
+}
+#endif
 
 void qgui::handle_gui_events() 
 {
+   //debug_log("Function handle_gui_events");
    //get the movement of the mousepointer
     //mouse is a global structure!
     cursor_x += mouse.x_acc;
@@ -437,10 +470,11 @@ void qgui::handle_gui_events()
 
 void qgui::handle_event(const Event* event) {
 
-   //debug_log("Function qhandle_event()");
+   //debug_log("Function qhandle_event() %d",event->type);
    push_cli();
 
    if (event->type == EVENT_MOUSE_MOVE) {
+      debug_log("function handle_event Mouse move");
       if (window_under_cursor)
             send_event_to_task(window_under_cursor->owner_task_id, event);
    }
@@ -478,8 +512,8 @@ void qgui::handle_left_click() {
         if (window_under_cursor_inside_content) {
             Event click;
             click.type = EVENT_MOUSE_CLICK;
-            click.data0 = gui.cursor_x - window_under_cursor->x - WINDOW_CONTENT_XOFFSET;
-            click.data1 = gui.cursor_y - window_under_cursor->y - WINDOW_TITLE_BAR_HEIGHT;
+            click.data0 = cursor_x - window_under_cursor->x - WINDOW_CONTENT_XOFFSET;
+            click.data1 = cursor_y - window_under_cursor->y - WINDOW_TITLE_BAR_HEIGHT;
             click.data2 = 1;
             handle_event(&click);
         } else {
@@ -506,7 +540,7 @@ void qgui::handle_left_click() {
         
     }
 
-    gui.needs_redraw = true;
+    needs_redraw = true;
 }
 
 void qgui::handle_right_click()

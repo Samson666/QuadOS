@@ -85,14 +85,14 @@ void kernel_main(struct multiboot_info* info) {
         #ifdef NEWGUI
         cinit_qgui(framebuffer_width, framebuffer_height);
         uint32_t (*gt)() = qgui_task();
-        create_named_kernel_task(gui_task, "QGUI");    
+        create_named_kernel_task(gt, "QGUI");    
         #else
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
         cinit_qgui(framebuffer_width, framebuffer_height);
         uint32_t (*gt)() = gui_task;
         #endif
-        create_named_kernel_task(gui_task, "QGUI");           //Create the kernel task for the GUI
-        create_user_task("files.exe");                  //Starting task from file
+        //create_named_kernel_task(gui_task, "QGUI");           //Create the kernel task for the GUI
+        //create_user_task("files.exe");                  //Starting task from file
     }
 
                                           //Initalise the mouse

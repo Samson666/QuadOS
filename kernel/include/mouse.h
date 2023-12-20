@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include "types.h"
+#include "interrupts.h"
 
 // PS/2 mouse
 
@@ -24,6 +25,13 @@ typedef struct {
 extern Mouse mouse;
 
 void init_mouse();
+void wait_read();
+void wait_write();
+void write_mouse(uint8_t data);
+int8_t read_mouse();
+void handle_mouse_interrupt(TrapFrame* frame);
+uint8_t get_mouse_id();
+void set_wheel_mode();
 
 #ifdef __cplusplus
 }
