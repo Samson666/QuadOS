@@ -73,8 +73,8 @@ void cdraw_qwindows()
 void qgui_task() 
 {
 // disable_interrupts();
-   while (1) 
-   {
+   // while (1) 
+   // {
       //debug_log("qgui task");
       if (QGUI->needs_redraw == true) 
       {
@@ -82,11 +82,10 @@ void qgui_task()
                QGUI->draw_frame();
       }
 
-      //QGUI->draw_frame();
       disable_interrupts();
       QGUI->handle_gui_events();
       enable_interrupts();
-   }
+   // }
 }
 //-------------------------------------qgui---------------------------------------------------------
 //print the window list to the console. For debbuging purposes only!
@@ -161,7 +160,7 @@ void qgui::init(int32_t w, int32_t h)
    testbutton_w = 50;
    testbutton_h = 50;
 
-   register_syscall(SYSCALL_cqcreate_window, (void*)cqcreate_window);
+   register_syscall(SYSCALL_CQCREATE_WINDOW, (void*)cqcreate_window);
 
 // init_windows();
 
@@ -500,7 +499,7 @@ void qgui::handle_left_click() {
     //Testbutton was clicked -> start files.exe in a new usertask
     if (cursor_x >= testbutton_x && cursor_x < testbutton_x + testbutton_w
         && cursor_y >= testbutton_y && cursor_y < testbutton_y + testbutton_h) {
-        create_user_task("files.exe");
+        create_user_task("newgui_testbed.exe");
     }
 
     focused_window = window_under_cursor;

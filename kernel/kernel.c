@@ -26,6 +26,13 @@
 
 #include "console_window.h"
 
+void test_task()
+{
+    while(1)
+    {
+        qgui_task();
+    }
+}
 bool graphics_enabled;
 
 void kernel_main(struct multiboot_info* info) {
@@ -84,8 +91,8 @@ void kernel_main(struct multiboot_info* info) {
                                                         //Initialise the graphics
         #ifdef NEWGUI
         cinit_qgui(framebuffer_width, framebuffer_height);
-        uint32_t (*gt)() = qgui_task();
-        create_named_kernel_task(gt, "QGUI");    
+        //uint32_t (*gt)() = qgui_task();
+        create_named_kernel_task(test_task, "QGUI");    
         #else
         init_gui(framebuffer_width, framebuffer_height);//Initialise the graphical user interface
         cinit_qgui(framebuffer_width, framebuffer_height);
