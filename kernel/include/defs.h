@@ -41,6 +41,9 @@ extern "C" {
 #define COLOR_STATUS_BAR_ACTIVE     COLOR_LIGHT_GREEN
 #define COLOR_STATUS_BAR_INACTIVE   COLOR_DARK_GREEN
 
+#define WINDOW_CONTENT_XOFFSET 1
+#define WINDOW_CONTENT_YOFFSET 20
+
 #ifdef __cplusplus
 }
 #endif

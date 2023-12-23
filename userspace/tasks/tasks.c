@@ -59,7 +59,8 @@ int main(int argc, char* argv[]) {
         os_swap_window_buffers(window);
         os_wait_for_events();
         
-        while (os_poll_event(&event)) {
+        while (os_poll_event(&event)) 
+        {
             if (event.type == OS_EVENT_MOUSE_MOVE || event.type == OS_EVENT_MOUSE_CLICK) {
                 OSMouseEvent* e = (OSMouseEvent*) &event;
 

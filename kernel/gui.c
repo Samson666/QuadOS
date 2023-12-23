@@ -105,18 +105,12 @@ static void handle_left_click() {
             Event click;
             click.type = EVENT_MOUSE_CLICK;
             click.data0 = gui.cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
-            click.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
+            click.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_CONTENT_YOFFSET;
             click.data2 = 1;
             handle_event(&click);
         } else {
-            // we are clicking on its border
-            
-            if(check_window_resize(window_under_cursor, gui.cursor_x, gui.cursor_y))
-            {
-                kernel_log("Window resize grip clicked");
-            }
-            
-            else if (check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
+          
+            if(check_window_close(window_under_cursor, gui.cursor_x, gui.cursor_y))
             {
                 Window* w = get_window(window_under_cursor);
                 uint32_t task_id = w->owner_task_id;
@@ -127,9 +121,10 @@ static void handle_left_click() {
                 focused_window = -1;
             }
 
-            currently_dragging_window = window_under_cursor;
+            
             
         }
+        currently_dragging_window = window_under_cursor;
         
     }
 
@@ -204,13 +199,14 @@ static void gui_handle_events() {
         gui.needs_redraw = true;
 
         if (currently_dragging_window != -1) {
+            kernel_log("We are dragging!");
             windows[currently_dragging_window].x += dx;
             windows[currently_dragging_window].y += dy;
         } else if (window_under_cursor_inside_content) { // && focused_window == window_under_cursor
             Event move;
             move.type = EVENT_MOUSE_MOVE;
             move.data0 = gui.cursor_x - windows[window_under_cursor].x - WINDOW_CONTENT_XOFFSET;
-            move.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_TITLE_BAR_HEIGHT;
+            move.data1 = gui.cursor_y - windows[window_under_cursor].y - WINDOW_CONTENT_YOFFSET;
             move.data2 = 0;
             handle_event(&move);
         }

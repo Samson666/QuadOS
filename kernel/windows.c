@@ -12,6 +12,7 @@
 #include "util.h"
 #include "log.h"
 #include "defs.h"
+#include "sgfx.h"
 
 Window windows[MAX_WINDOWS];
 int32_t currently_dragging_window = -1;
@@ -271,7 +272,7 @@ bool check_window_close(int32_t window, int32_t x, int32_t y) {
     Window* w = get_window(window);
 
     int32_t close_button_x = w->x + w->width + 2 - CLOSE_BUTTON_WIDTH - 1;
-    int32_t close_button_y = w->y + 10;
+    int32_t close_button_y = w->y + 1;
 
     if (x < close_button_x) return false;
     if (y < close_button_y) return false;
@@ -307,7 +308,9 @@ bool check_window_resize(int32_t window, int32_t x, int32_t y)
 // Description		: find out if and which window is under the cursor
 // Note				: 
  
-int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {
+
+int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) 
+{
     *inside_content = false;
     for (int i = 0; i < z_order_length; i++) {
         int32_t id = window_z_order[i];
@@ -315,19 +318,18 @@ int32_t find_window_from_pos(int32_t x, int32_t y, bool* inside_content) {
         if (w->state == 0)
             continue;
 
-        //kernel_log("Function find_window_from_pos w->x: %d, w->y: %d, x: %d, y: %d", w->x, w->y, x, y);
         if (w->x > x) continue;
         if (w->y > y) continue;
         if (w->x + w->actual_width < x) continue;
         if (w->y + w->actual_height < y) continue;
 
-        //is the mouse cursor in between of both window bars?
-        if ((y > w->y + WINDOW_TITLE_BAR_HEIGHT) && (y < w->y + w->height))
+        if (y - w->y > WINDOW_CONTENT_YOFFSET)
             *inside_content = true;
         return id;
     }
     return -1;
 }
+
 
 // Functionname 	: get_focused_window
 // Parameters		: 
