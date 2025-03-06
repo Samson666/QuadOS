@@ -1,10 +1,10 @@
 CC = i386-elf-gcc
 LD = i386-elf-ld
 INCLUDES = -Isgfx -Ikernel -Ikernel/include -Ikernel/res
-CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin $(INCLUDES) -no-pie
+CFLAGS = -g -nostdlib -ffreestanding -m32 -fno-builtin $(INCLUDES) -no-pie -Wimplicit-function-declaration
 LDFLAGS = -melf_i386 -Tkernel.ld -Lsgfx -lsgfx
 ASFLAGS = -felf32
-LIBGCC = /usr/bin/../lib/gcc/i386-elf/7.5.0/libgcc.a
+LIBGCC = /usr/local/i386elfgcc/lib/gcc/i386-elf/12.2.0/libgcc.a
 
 SOURCES_C = $(patsubst %.c, %.o, $(wildcard kernel/*.c) $(wildcard kernel/**/*.c))
 SOURCES_ASM = $(patsubst %.asm, %.o, $(wildcard kernel/*.asm))

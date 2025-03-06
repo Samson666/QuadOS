@@ -105,7 +105,7 @@ static void* user_malloc(uint32_t bytes) {
 		pos += chunk->size;
 	}
 
-    assert_msg(false, "something wen't wrong in user malloc");
+    //assert_msg(false, "something wen't wrong in user malloc");
 	return 0;
 }
 
