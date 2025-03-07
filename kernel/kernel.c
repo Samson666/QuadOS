@@ -45,9 +45,6 @@ void kernel_main(struct multiboot_info* info) {
     assert_msg(mod_count, "zero modules!"); //No modules found? -> exit
     uint32_t mod0 = *(uint32_t*) (info->mods_addr);   //Getting the adress of the GRUB modules
     uint32_t mod1 = *(uint32_t*) (info->mods_addr + 4);
-    uint32_t mod2 = *(uint32_t*) (info->mods_addr + 20);
-    kernel_log("mod0 %x, mod1 %x, mod2 %x", mod0, mod1, mod2);
-    
 
     uint32_t framebuffer_addr = info->framebuffer_addr;      //Getting the framebuffer address from the multiboot structure
     uint32_t framebuffer_width = info->framebuffer_width;    //Getting the framebuffer width from the multiboot structure
@@ -80,10 +77,7 @@ void kernel_main(struct multiboot_info* info) {
 
     uint32_t ramdisk_size = mod1 - mod0;                //Getting the Ramdisk size (from GRUB Module)
     init_ramdisk(mod0 + 0xC0000000, ramdisk_size);      //Initialise the Ramdisk
-
-    uint32_t ramdisk_size2 = mod2 - mod1;                //Getting the second Ramdisk size (from GRUB Module)
-    init_ramdisk2(mod2 + 0xC0000000, ramdisk_size2);      //Initialise the second Ramdisk
-
+    
     write_to_ramdisk();
     
     //If graphics is enabled:

@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 
     sgfx_init(&ctx, fb, width, height);
 
-    strcpy(path, "/");
+    strcpy(path, "0:/");
     read_directory();
 
     unsigned int prev_left_mouse_state = 0;

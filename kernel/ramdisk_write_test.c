@@ -8,7 +8,7 @@ int32_t write_to_ramdisk(void)
 {
     FIL file;
     FRESULT res;
-    res = f_open(&file, "1:test.txt", FA_OPEN_ALWAYS | FA_WRITE);
+    res = f_open(&file, "test.txt", FA_OPEN_ALWAYS | FA_WRITE);
     if (res != FR_OK) {
         kernel_log("ramdisk write test: failed to open file %s. error=%u", "test.txt", res);
         return -1;
@@ -35,10 +35,10 @@ int32_t write_to_ramdisk(void)
         kernel_log("ramdisk write test: failed to close file %s. error=%u", "test.txt", res);
         return -1;
     }
-
+    
     memset(b,0,btw);
 
-    res = f_open(&file, "1:test.txt", FA_READ);
+    res = f_open(&file, "test.txt", FA_READ);
     if (res != FR_OK) {
         kernel_log("ramdisk write test: failed to open file %s. error=%u", "test.txt", res);
         return -1;

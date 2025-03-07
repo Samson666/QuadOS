@@ -13,7 +13,7 @@ static struct {
     uint32_t location;
     uint32_t size;
     FATFS fs;
-} ramdisk, ramdisk2;
+} ramdisk;
 
 void init_ramdisk(uint32_t location, uint32_t size) {
     kernel_log("Ram disk located at %x with size %u bytes", location, size);
@@ -30,7 +30,7 @@ void init_ramdisk(uint32_t location, uint32_t size) {
     }
 }
 
-void init_ramdisk2(uint32_t location, uint32_t size) {
+/* void init_ramdisk2(uint32_t location, uint32_t size) {
     kernel_log("Ram disk located at %x with size %u bytes", location, size);
     ramdisk2.location = location;
     ramdisk2.size = size;
@@ -43,7 +43,8 @@ void init_ramdisk2(uint32_t location, uint32_t size) {
         kernel_log("f_mount error: %u\n", (uint32_t) res);
         crash_and_burn();
     }
-}
+}*/
+
 DSTATUS disk_initialize(BYTE pdrv) {
     return 0;
 }

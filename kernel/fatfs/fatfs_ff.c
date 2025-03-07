@@ -4391,6 +4391,7 @@ FRESULT f_opendir (
 	FATFS *fs;
 	DEF_NAMBUF
 
+	kernel_log("f_opendir path: %s", path);
 
 	if (!dp) return FR_INVALID_OBJECT;
 
