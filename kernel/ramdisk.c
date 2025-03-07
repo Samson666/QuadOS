@@ -22,7 +22,7 @@ void init_ramdisk(uint32_t location, uint32_t size) {
 
     FRESULT res;
 
-    res = f_mount(&ramdisk.fs, "RD1", 0);
+    res = f_mount(&ramdisk.fs, "0:", 0);
 
     if (res != FR_OK) {
         kernel_log("f_mount error: %u\n", (uint32_t) res);
@@ -37,7 +37,7 @@ void init_ramdisk2(uint32_t location, uint32_t size) {
 
     FRESULT res;
 
-    res = f_mount(&ramdisk2.fs, "RD2", 0);
+    res = f_mount(&ramdisk2.fs, "1:", 0);
 
     if (res != FR_OK) {
         kernel_log("f_mount error: %u\n", (uint32_t) res);
@@ -63,7 +63,12 @@ DRESULT disk_read(BYTE pdrv, BYTE* buffer, DWORD sector, UINT count) {
     return RES_OK;
 }
 
-DRESULT disk_write(BYTE pdrv, const BYTE* buff, DWORD sector, UINT count) {
+DRESULT disk_write(BYTE pdrv, const BYTE* buffer, DWORD sector, UINT count) {
+    uint32_t offset = sector * RAMDISK_BLOCKSIZE;
+    uint32_t size = count * RAMDISK_BLOCKSIZE;
+
+    memcpy((uint8_t*) (ramdisk.location + offset), buffer, size);
+
     return RES_OK;
 }
 

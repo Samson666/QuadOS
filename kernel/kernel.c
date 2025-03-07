@@ -27,6 +27,8 @@
 
 #include "console_window.h"
 
+int32_t write_to_ramdisk(void);
+
 bool graphics_enabled;
 
 void kernel_main(struct multiboot_info* info) {
@@ -82,6 +84,8 @@ void kernel_main(struct multiboot_info* info) {
     uint32_t ramdisk_size2 = mod2 - mod1;                //Getting the second Ramdisk size (from GRUB Module)
     init_ramdisk2(mod2 + 0xC0000000, ramdisk_size2);      //Initialise the second Ramdisk
 
+    write_to_ramdisk();
+    
     //If graphics is enabled:
     if (graphics_enabled) {
         init_graphics((uint32_t*) framebuffer_addr, framebuffer_width, framebuffer_height, (uint32_t) framebuffer_bpp / 8, framebuffer_pitch);
