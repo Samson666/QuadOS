@@ -4,13 +4,16 @@
 #include "fatfs/fatfs_ff.h"
 #include "interrupts.h"
 #include "util.h"
+#include "types.h"
+#include "time.h"
+#include "rtc.h"
 #include "log.h"
 
 static struct {
     uint32_t location;
     uint32_t size;
     FATFS fs;
-} ramdisk;
+} ramdisk, ramdisk2;
 
 void init_ramdisk(uint32_t location, uint32_t size) {
     kernel_log("Ram disk located at %x with size %u bytes", location, size);
@@ -19,7 +22,7 @@ void init_ramdisk(uint32_t location, uint32_t size) {
 
     FRESULT res;
 
-    res = f_mount(&ramdisk.fs, "", 0);
+    res = f_mount(&ramdisk.fs, "RD1", 0);
 
     if (res != FR_OK) {
         kernel_log("f_mount error: %u\n", (uint32_t) res);
@@ -27,6 +30,20 @@ void init_ramdisk(uint32_t location, uint32_t size) {
     }
 }
 
+void init_ramdisk2(uint32_t location, uint32_t size) {
+    kernel_log("Ram disk located at %x with size %u bytes", location, size);
+    ramdisk2.location = location;
+    ramdisk2.size = size;
+
+    FRESULT res;
+
+    res = f_mount(&ramdisk2.fs, "RD2", 0);
+
+    if (res != FR_OK) {
+        kernel_log("f_mount error: %u\n", (uint32_t) res);
+        crash_and_burn();
+    }
+}
 DSTATUS disk_initialize(BYTE pdrv) {
     return 0;
 }
@@ -46,8 +63,9 @@ DRESULT disk_read(BYTE pdrv, BYTE* buffer, DWORD sector, UINT count) {
     return RES_OK;
 }
 
-// DRESULT disk_write(BYTE pdrv, const BYTE* buff, DWORD sector, UINT count) {
-// }
+DRESULT disk_write(BYTE pdrv, const BYTE* buff, DWORD sector, UINT count) {
+    return RES_OK;
+}
 
 DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void* buff) {
     DRESULT dr = RES_ERROR;
@@ -69,4 +87,16 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void* buff) {
     }
 
     return dr;
+}
+
+DWORD get_fattime (void)
+{
+    struct tm stm;
+
+    return (DWORD)(stm.tm_year - 80) << 25 |
+           (DWORD)(stm.tm_mon + 1) << 21 |
+           (DWORD)stm.tm_mday << 16 |
+           (DWORD)stm.tm_hour << 11 |
+           (DWORD)stm.tm_min << 5 |
+           (DWORD)stm.tm_sec >> 1;
 }

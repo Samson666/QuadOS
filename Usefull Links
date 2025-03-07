@@ -1,5 +1,7 @@
 //LINK - https://github.com/Samson666/QuadOS
 //LINK - https://wiki.osdev.org/Main_Page
 //LINK - http://www.lowlevel.eu/wiki/Lowlevel:Portal
+Infos about the mulitboot structure esp. the modules structure
+//LINK - https://android.googlesource.com/platform/external/grub/+/1650e5296608be8925d9831310c9ad3595fd6869/docs/multiboot.info 
 
 

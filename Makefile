@@ -14,12 +14,14 @@ OBJ = $(SOURCES_ASM) $(SOURCES_C)
 KERNEL = kernel.bin
 IMAGE = os.iso
 RAMDISK = ramdisk.fat
+RAMDISK2 = ramdisk2.fat
 
 all: $(IMAGE)
 
 $(IMAGE): $(KERNEL) $(RAMDISK)
 	cp $(KERNEL) image/boot
 	cp $(RAMDISK) image/boot
+	cp $(RAMDISK2) image/boot
 	grub-mkrescue -o $(IMAGE) image
 
 $(KERNEL): $(OBJ) libsgfx
@@ -36,6 +38,10 @@ $(RAMDISK): user
 	dd if=/dev/zero of=$(RAMDISK) bs=8M count=1
 	mformat -i $(RAMDISK) ::
 	mcopy -i $(RAMDISK) userspace/bin/* ::
+	dd if=/dev/zero of=$(RAMDISK2) bs=8M count=1
+	mformat -i $(RAMDISK2) ::
+
+
 
 user: libsgfx
 	make -C userspace
@@ -44,7 +50,7 @@ libsgfx:
 	make -C sgfx
 
 run: $(IMAGE)
-	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -m 4G -vga vmware -cpu Haswell-v4 -serial stdio
+	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -m 4G -vga vmware -cpu Haswell-v4 -serial stdio -rtc base=localtime
 
 drun: $(IMAGE)
 	qemu-system-i386 -s -S -cdrom $(IMAGE) -machine accel=kvm  -serial stdio
