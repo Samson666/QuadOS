@@ -31,6 +31,7 @@
 int32_t write_to_ramdisk(void);
 
 bool graphics_enabled;
+static volatile uint8_t FLOPPYDISKIRQ = 0; //Set to >0 if the floppy interrupt was fired, done by the interrupt handler
 
 void kernel_main(struct multiboot_info* info) {
     disable_interrupts();               //disable all interrupts that we are not disturbed while changing gdt/idt
@@ -98,10 +99,13 @@ void kernel_main(struct multiboot_info* info) {
     init_mouse();                                       //Initalise the mouse
     init_floppy();
 
+    
+
     set_timer_enabled(true);                            //Enable the timer    
     
     kernel_log("QuadOS is up and running");             //Message success to stdout
     console_set_prompt_enabled(true);                   //Enable the prompt in the graphical console
+    create_kernel_task(task_test_floppy);
     enable_interrupts();                                //Enable interrupts
 
     //Idle loop for kernel task (this task)

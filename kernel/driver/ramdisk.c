@@ -84,7 +84,7 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void* buff) {
     case GET_SECTOR_COUNT:
         *(DWORD*) buff = ramdisk.size / RAMDISK_BLOCKSIZE;
         dr = RES_OK;
-        // printkf("disk_ioctl GET_SECTOR_COUNT: %d\n", value);
+        // kernel_logf("disk_ioctl GET_SECTOR_COUNT: %d\n", value);
         break;
     case GET_BLOCK_SIZE:
         *(DWORD*) buff = RAMDISK_BLOCKSIZE;

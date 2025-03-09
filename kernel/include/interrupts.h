@@ -49,3 +49,4 @@ void handle_interrupt(TrapFrame* frame);
 void push_cli();
 void pop_cli();
 bool are_interrupts_enabled();
+void floppydisk_wait_irq();
