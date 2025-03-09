@@ -199,7 +199,7 @@ static void gui_handle_events() {
         gui.needs_redraw = true;
 
         if (currently_dragging_window != -1) {
-            kernel_log("We are dragging!");
+            //kernel_log("We are dragging!");
             windows[currently_dragging_window].x += dx;
             windows[currently_dragging_window].y += dy;
         } else if (window_under_cursor_inside_content) { // && focused_window == window_under_cursor

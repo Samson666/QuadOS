@@ -24,6 +24,7 @@
 #include "slib.h"
 #include "rtc.h"
 #include "time.h"
+#include "floppy.h"
 
 #include "console_window.h"
 
@@ -75,11 +76,14 @@ void kernel_main(struct multiboot_info* info) {
     init_shared_libs();                                 //Initialise the shared librarys
     init_events();                                      //Init events
 
+
     uint32_t ramdisk_size = mod1 - mod0;                //Getting the Ramdisk size (from GRUB Module)
     init_ramdisk(mod0 + 0xC0000000, ramdisk_size);      //Initialise the Ramdisk
+
+    floppy_detect_drives();
+
     
-    write_to_ramdisk();
-    
+
     //If graphics is enabled:
     if (graphics_enabled) {
         init_graphics((uint32_t*) framebuffer_addr, framebuffer_width, framebuffer_height, (uint32_t) framebuffer_bpp / 8, framebuffer_pitch);
@@ -92,17 +96,13 @@ void kernel_main(struct multiboot_info* info) {
 
     init_keyboard();                                    //Initalise the keyboard
     init_mouse();                                       //Initalise the mouse
+    init_floppy();
 
     set_timer_enabled(true);                            //Enable the timer    
     
-           
     kernel_log("QuadOS is up and running");             //Message success to stdout
     console_set_prompt_enabled(true);                   //Enable the prompt in the graphical console
     enable_interrupts();                                //Enable interrupts
-
-    
-
-  
 
     //Idle loop for kernel task (this task)
     while (true) {

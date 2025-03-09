@@ -4,6 +4,7 @@
 #include "util.h"
 #include "tasks.h"
 #include "events.h"
+#include "log.h"
 
 PIT pit = {0};
 

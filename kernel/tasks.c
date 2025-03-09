@@ -154,11 +154,12 @@ int32_t create_user_task(const char* path) {
     return tasks[index].id;
 }
 
-void create_kernel_task(void* func) {
+int32_t create_kernel_task(void* func) {
     int index = find_available_task_slot();
 
     num_tasks++;
     create_task(index, (uint32_t) func, true, initial_page_dir);
+    return tasks[index].id;
 }
 
 // Functionname: create_named_kernel_task

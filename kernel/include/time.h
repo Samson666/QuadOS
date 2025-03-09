@@ -5,6 +5,7 @@
 typedef int32_t time_t;
 
 uint64_t get_system_time_millis();
+void sleep(uint64_t wait_time_millis);
 
 struct tm {
     int tm_sec; // seconds,  range 0 to 59

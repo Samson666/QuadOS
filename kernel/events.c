@@ -10,6 +10,7 @@
 #include "console.h"
 #include "time.h"
 #include "log.h"
+#include "time.h"
 
 static uint32_t get_event_buffer_shmem_id();
 static void task_wait_for_event();
@@ -105,7 +106,6 @@ typedef struct {
 
 void check_event_timers() {
     uint64_t time = get_system_time_millis();
-
     for (int i = 0; i < MAX_TASKS; i++) {
         Task* task = &tasks[i];
         if (task->state == TASK_STATE_DEAD)

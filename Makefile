@@ -50,7 +50,9 @@ libsgfx:
 	make -C sgfx
 
 run: $(IMAGE)
-	qemu-system-i386 -cdrom $(IMAGE) -machine accel=kvm -m 4G -vga vmware -cpu Haswell-v4 -serial stdio -rtc base=localtime
+	qemu-system-i386 -boot order=d -machine accel=kvm -m 4G -vga vmware -cpu Haswell-v4 -serial stdio -rtc base=localtime \
+	-fda /home/samson/Dokumente/Programmierung/QuadOS/floppy1.img -cdrom $(IMAGE)
+#IMPORTANT: place the cdrom image at the end of the commandline, else qemu wants to start from the floppy!
 
 drun: $(IMAGE)
 	qemu-system-i386 -s -S -cdrom $(IMAGE) -machine accel=kvm  -serial stdio
