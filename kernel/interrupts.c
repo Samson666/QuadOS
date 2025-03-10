@@ -4,13 +4,13 @@
 #include "util.h"
 #include "log.h"
 #include "tasks.h"
+#include "kernel.h"
 
 
 
 IDTEntry idt[256] __attribute__((aligned(0x10)));
 IDTPointer idt_pointer;
 ISRFunction isr_functions[256];
-
 
 static void set_idt_entry(uint8_t vector, void* isr, uint8_t attributes);
 static void remap_pic();
@@ -127,15 +127,4 @@ void pop_cli() {
 
 bool are_interrupts_enabled() {
     return read_eflags() & FL_IF;
-}
-
-
-inline void floppydisk_wait_irq()
-{
-    extern int8_t FLOPPYDISKIRQ;
-    kernel_log("Wait for floppy interrupt...");
-    kernel_log("wait irq FLOPPYDISKIRQ=%d", FLOPPYDISKIRQ);
-    while(FLOPPYDISKIRQ == 0);
-    FLOPPYDISKIRQ = 0;
-    kernel_log("IRQ was fired");
 }

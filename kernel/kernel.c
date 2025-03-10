@@ -29,9 +29,11 @@
 #include "console_window.h"
 
 int32_t write_to_ramdisk(void);
+void test_physical_memory(void);
 
 bool graphics_enabled;
-static volatile uint8_t FLOPPYDISKIRQ = 0; //Set to >0 if the floppy interrupt was fired, done by the interrupt handler
+
+
 
 void kernel_main(struct multiboot_info* info) {
     disable_interrupts();               //disable all interrupts that we are not disturbed while changing gdt/idt
@@ -72,6 +74,7 @@ void kernel_main(struct multiboot_info* info) {
     kernel_log("Setting up kernel heap");
     kmalloc_init(0x1000);                               //Initialise the heap
 
+    //test_physical_memory();
     setup_tasks();                                      //Setting up the task system        
     sharedmem_init();                                   //Initialise the shared memory 
     init_shared_libs();                                 //Initialise the shared librarys
@@ -105,7 +108,7 @@ void kernel_main(struct multiboot_info* info) {
     
     kernel_log("QuadOS is up and running");             //Message success to stdout
     console_set_prompt_enabled(true);                   //Enable the prompt in the graphical console
-    create_kernel_task(task_test_floppy);
+    create_named_kernel_task(task_test_floppy,"Floppy Driver");
     enable_interrupts();                                //Enable interrupts
 
     //Idle loop for kernel task (this task)

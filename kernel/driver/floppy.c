@@ -70,20 +70,30 @@ void floppy_detect_drives() {
    outb(0x70, 0x10);
    unsigned drives = inb(0x71);
 
-   kernel_log(" - Floppy drive 0: %s", drive_types[drives >> 4]);
-   kernel_log(" - Floppy drive 1: %s", drive_types[drives & 0xf]);
+   //kernel_log(" - Floppy drive 0: %s", drive_types[drives >> 4]);
+   //kernel_log(" - Floppy drive 1: %s", drive_types[drives & 0xf]);
 
+}
+
+inline void floppydisk_wait_irq()
+{
+    
+    //kernel_log("Wait for floppy interrupt...");
+    //kernel_log("wait irq FLOPPYDISKIRQ=%d", FLOPPDISKYIRQ);
+    while(FLOPPDISKYIRQ == 0);
+    FLOPPDISKYIRQ = 0;
+    //kernel_log("IRQ was fired");
 }
 
 void handle_floppy_interrupt()
 {
-    FLOPPYDISKIRQ = 1;
-    kernel_log("Floppy interrupt");
+    FLOPPDISKYIRQ = 1;
+    //kernel_log("Floppy interrupt");
 }
 
 void init_floppy()
 {
-    //FLOPPYDISKIRQ = 0;
+    FLOPPDISKYIRQ = 0;
     register_isr(IRQ_OFFSET + floppy_irq, handle_floppy_interrupt);
 }
 
@@ -107,7 +117,7 @@ void init_floppy()
 //
 
 void floppy_write_cmd(int base, char cmd) {
-    kernel_log("floppy write cmd");
+    //kernel_log("floppy write cmd");
     int i; // do timeout, 60 seconds
     for(i = 0; i < 600; i++) {
         for(int i=0; i<1000000; i++); // sleep 10 ms
@@ -115,7 +125,7 @@ void floppy_write_cmd(int base, char cmd) {
             return (void) outb(base+FLOPPY_FIFO, cmd);
         }
     }
-    kernel_log("floppy_write_cmd: timeout");    
+    //kernel_log("floppy_write_cmd: timeout");    
 }
 
 unsigned char floppy_read_data(int base) {
@@ -127,7 +137,7 @@ unsigned char floppy_read_data(int base) {
             return inb(base+FLOPPY_FIFO);
         }
     }
-    kernel_log("floppy_read_data: timeout");
+    //kernel_log("floppy_read_data: timeout");
     return 0; // not reached
 }
 
@@ -157,7 +167,7 @@ int floppy_calibrate(int base) {
         if(st0 & 0xC0) {
             static const char * status[] =
             { 0, "error", "invalid", "drive" };
-            kernel_log("floppy_calibrate: status = %s\n", status[st0 >> 6]);
+            //kernel_log("floppy_calibrate: status = %s\n", status[st0 >> 6]);
             continue;
         }
 
@@ -167,7 +177,7 @@ int floppy_calibrate(int base) {
         }
     }
 
-    kernel_log("floppy_calibrate: 10 retries exhausted\n");
+    //kernel_log("floppy_calibrate: 10 retries exhausted\n");
     floppy_motor(base, floppy_motor_off);
     return -1;
 }
@@ -223,7 +233,7 @@ static volatile int floppy_motor_state = 0;
 
 void floppy_motor(int base, int onoff) {
 
-    kernel_log("floppy motor");
+    //kernel_log("floppy motor");
     if(onoff) {
         if(!floppy_motor_state) {
             // need to turn on
@@ -233,12 +243,12 @@ void floppy_motor(int base, int onoff) {
         floppy_motor_state = floppy_motor_on;
     } else {
         if(floppy_motor_state == floppy_motor_wait) {
-            kernel_log("floppy_motor: strange, fd motor-state already waiting..\n");
+            //kernel_log("floppy_motor: strange, fd motor-state already waiting..\n");
         }
         floppy_motor_ticks = 300; // 3 seconds, see floppy_timer() below
         floppy_motor_state = floppy_motor_wait;
     }
-    kernel_log("floppy motor end");
+    //kernel_log("floppy motor end");
 }
 
 void floppy_motor_kill(int base) {
@@ -267,7 +277,7 @@ void floppy_timer() {
 // Seek for a given cylinder, with a given head
 int floppy_seek(int base, unsigned cyli, int head) {
 
-    kernel_log("floppy seek");
+    //kernel_log("floppy seek");
 
     unsigned i, st0, cyl = -1; // set to bogus cylinder
 
@@ -281,16 +291,16 @@ int floppy_seek(int base, unsigned cyli, int head) {
         floppy_write_cmd(base, head<<2);
         floppy_write_cmd(base, cyli);
 
-        kernel_log("floppy seek before wait irq");
-        kernel_log("floppy seek FLOPPYDISKIRQ = %d", FLOPPYDISKIRQ);
+        //kernel_log("floppy seek before wait irq");
+        //kernel_log("floppy seek FLOPPYDISKIRQ = %d", FLOPPDISKYIRQ);
         floppydisk_wait_irq();
-        kernel_log("floppy seek after wait irq");
+        //kernel_log("floppy seek after wait irq");
         floppy_check_interrupt(base, &st0, &cyl);
 
         if(st0 & 0xC0) {
             static const char * status[] =
             { "normal", "error", "invalid", "drive" };
-            kernel_log("floppy_seek: status = %s\n", status[st0 >> 6]);
+            //kernel_log("floppy_seek: status = %s\n", status[st0 >> 6]);
             continue;
         }
 
@@ -301,7 +311,7 @@ int floppy_seek(int base, unsigned cyli, int head) {
 
     }
 
-    kernel_log("floppy_seek: 10 retries exhausted\n");
+    //kernel_log("floppy_seek: 10 retries exhausted\n");
     floppy_motor(base, floppy_motor_off);
     return -1;
 }
@@ -335,9 +345,9 @@ static void floppy_dma_init(floppy_dir dir) {
     // check that count is at most 16-bits (DMA limit)
     // check that if we add count and address we don't get a carry
     // (DMA can't deal with such a carry, this is the 64k boundary limit)
-    if((a.l >> 24) || (c.l >> 16) || (((a.l&0xffff)+c.l)>>16)) {
-        kernel_log("floppy_dma_init: static buffer problem\n");
-    }
+    /* if((a.l >> 24) || (c.l >> 16) || (((a.l&0xffff)+c.l)>>16)) {
+        //kernel_log("floppy_dma_init: static buffer problem\n");
+    } */
 
     unsigned char mode;
     switch(dir) {
@@ -345,7 +355,7 @@ static void floppy_dma_init(floppy_dir dir) {
         case floppy_dir_read:  mode = 0x46; break;
         // 01:0:0:10:10 = single/inc/no-auto/from-mem/chan2
         case floppy_dir_write: mode = 0x4a; break;
-        default: kernel_log("floppy_dma_init: invalid direction");
+        default: //kernel_log("floppy_dma_init: invalid direction");
                  return; // not reached, please "mode user uninitialized"
     }
 
@@ -374,7 +384,7 @@ static void floppy_dma_init(floppy_dir dir) {
 //
 int floppy_do_track(int base, unsigned cyl, floppy_dir dir) {
     
-    kernel_log("floppy do track");
+    //kernel_log("floppy do track");
     // transfer command, set below
     unsigned char cmd;
 
@@ -392,7 +402,7 @@ int floppy_do_track(int base, unsigned cyl, floppy_dir dir) {
             break;
         default: 
 
-            kernel_log("floppy_do_track: invalid direction");
+            //kernel_log("floppy_do_track: invalid direction");
             return 0; // not reached, but pleases "cmd used uninitialized"
     }
 
@@ -408,9 +418,9 @@ int floppy_do_track(int base, unsigned cyl, floppy_dir dir) {
         floppy_dma_init(dir);
 
         //timer_sleep(10); // give some time (100ms) to settle after the seeks
-        kernel_log("floppy do track before sleep");
+        //kernel_log("floppy do track before sleep");
         for(int i=0; i<10000000; i++);
-        kernel_log("floppy do track after sleep");
+        //kernel_log("floppy do track after sleep");
 
         floppy_write_cmd(base, cmd);  // set above for current direction
         floppy_write_cmd(base, 0);    // 0:0:0:0:0:HD:US1:US0 = head and drive
@@ -422,12 +432,12 @@ int floppy_do_track(int base, unsigned cyl, floppy_dir dir) {
         floppy_write_cmd(base, 0x1b); // GAP3 length, 27 is default for 3.5"
         floppy_write_cmd(base, 0xff); // data length (0xff if B/S != 0)
         
-        kernel_log("floppy do track before wait irq");
-        kernel_log("floppy do track FLOPPYDISKIRQ = %d", FLOPPYDISKIRQ);
+        //kernel_log("floppy do track before wait irq");
+        //kernel_log("floppy do track FLOPPYDISKIRQ = %d", FLOPPDISKYIRQ);
 
         floppydisk_wait_irq(); // don't SENSE_INTERRUPT here!
 
-        kernel_log("floppy do track after wait irq");
+        //kernel_log("floppy do track after wait irq");
 
         // first read status information
         unsigned char st0, st1, st2, rcy, rhe, rse, bps;
@@ -450,59 +460,59 @@ int floppy_do_track(int base, unsigned cyl, floppy_dir dir) {
         if(st0 & 0xC0) {
             static const char * status[] =
             { 0, "error", "invalid command", "drive not ready" };
-            kernel_log("floppy_do_sector: status = %s\n", status[st0 >> 6]);
+            //kernel_log("floppy_do_sector: status = %s\n", status[st0 >> 6]);
             error = 1;
         }
         if(st1 & 0x80) {
-            kernel_log("floppy_do_sector: end of cylinder\n");
+            //kernel_log("floppy_do_sector: end of cylinder\n");
             error = 1;
         }
         if(st0 & 0x08) {
-            kernel_log("floppy_do_sector: drive not ready\n");
+            //kernel_log("floppy_do_sector: drive not ready\n");
             error = 1;
         }
         if(st1 & 0x20) {
-            kernel_log("floppy_do_sector: CRC error\n");
+            //kernel_log("floppy_do_sector: CRC error\n");
             error = 1;
         }
         if(st1 & 0x10) {
-            kernel_log("floppy_do_sector: controller timeout\n");
+            //kernel_log("floppy_do_sector: controller timeout\n");
             error = 1;
         }
         if(st1 & 0x04) {
-            kernel_log("floppy_do_sector: no data found\n");
+            //kernel_log("floppy_do_sector: no data found\n");
             error = 1;
         }
         if((st1|st2) & 0x01) {
-            kernel_log("floppy_do_sector: no address mark found\n");
+            //kernel_log("floppy_do_sector: no address mark found\n");
             error = 1;
         }
         if(st2 & 0x40) {
-            kernel_log("floppy_do_sector: deleted address mark\n");
+            //kernel_log("floppy_do_sector: deleted address mark\n");
             error = 1;
         }
         if(st2 & 0x20) {
-            kernel_log("floppy_do_sector: CRC error in data\n");
+            //kernel_log("floppy_do_sector: CRC error in data\n");
             error = 1;
         }
         if(st2 & 0x10) {
-            kernel_log("floppy_do_sector: wrong cylinder\n");
+            //kernel_log("floppy_do_sector: wrong cylinder\n");
             error = 1;
         }
         if(st2 & 0x04) {
-            kernel_log("floppy_do_sector: uPD765 sector not found\n");
+            //kernel_log("floppy_do_sector: uPD765 sector not found\n");
             error = 1;
         }
         if(st2 & 0x02) {
-            kernel_log("floppy_do_sector: bad cylinder\n");
+            //kernel_log("floppy_do_sector: bad cylinder\n");
             error = 1;
         }
         if(bps != 0x2) {
-            kernel_log("floppy_do_sector: wanted 512B/sector, got %d", (1<<(bps+7)));
+            //kernel_log("floppy_do_sector: wanted 512B/sector, got %d", (1<<(bps+7)));
             error = 1;
         }
         if(st1 & 0x02) {
-            kernel_log("floppy_do_sector: not writable\n");
+            //kernel_log("floppy_do_sector: not writable\n");
             error = 2;
         }
 
@@ -511,20 +521,20 @@ int floppy_do_track(int base, unsigned cyl, floppy_dir dir) {
             return 0;
         }
         if(error > 1) {
-            kernel_log("floppy_do_sector: not retrying..\n");
+            //kernel_log("floppy_do_sector: not retrying..\n");
             floppy_motor(base, floppy_motor_off);
             return -2;
         }
     }
 
-    kernel_log("floppy_do_sector: 20 retries exhausted\n");
+    //kernel_log("floppy_do_sector: 20 retries exhausted\n");
     floppy_motor(base, floppy_motor_off);
     return -1;
 
 }
 
 int floppy_read_track(int base, unsigned cyl) {
-    kernel_log("floppy read track");
+    //kernel_log("floppy read track");
     return floppy_do_track(base, cyl, floppy_dir_read);
 }
 
@@ -534,7 +544,15 @@ int floppy_write_track(int base, unsigned cyl) {
 
 void task_test_floppy()
 {
-    kernel_log("task test floppy");
-    floppy_read_track(floppy_base, 0);
+    //kernel_log("task test floppy");
+    for(int c = 0; c<80; c++)
+    {
+        floppy_read_track(floppy_base, c);
+        for(int i=0; i<floppy_dmalen; i++)
+        {
+            if(floppy_dmabuf[i])
+                kernel_log("%d", floppy_dmabuf[i]);
+        }
+    }
     while(1);
 }

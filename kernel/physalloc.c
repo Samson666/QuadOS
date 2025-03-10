@@ -8,9 +8,6 @@
 
 uint8_t physical_memory_bitmap[NUM_PAGE_FRAMES / 8]; // todo: dynamically allocate based on available RAM
 
-static bool is_pf_used(uint32_t pf_index);
-static void set_pf_used(uint32_t pf_index, bool used);
-
 static uint32_t page_frame_min;
 static uint32_t page_frame_max;
 static uint32_t total_allocated;

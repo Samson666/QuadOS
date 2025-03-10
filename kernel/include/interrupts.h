@@ -10,6 +10,8 @@
 
 #define VERIFY_INTERRUPTS_DISABLED assert(!are_interrupts_enabled())
 
+static volatile uint8_t FLOPPDISKYIRQ;
+
 typedef struct {
     u16 isr_low;
     u16 kernel_cs;

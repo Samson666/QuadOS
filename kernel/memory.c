@@ -26,6 +26,11 @@ void init_memory(uint32_t mem_high) {
     initial_page_dir[0] = 0;
     invalidate(0);
 
+ /*    for(uint32_t i=0; i<4096; i++)
+    {
+        set_pf_used(i, (bool)1);
+    } */
+
     // recursive table mapping
     initial_page_dir[1023] = ((uint32_t) initial_page_dir - KERNEL_START) | PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE;
     invalidate(0xFFFFF000);
